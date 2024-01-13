@@ -2,6 +2,7 @@
 import BlankLayout from "../layout/BlankLayout/blankLayout";
 // import DefaultLayout from "../layout/DefaultLayout/defaultLayout";
 import { configRouter } from "@/configs/router";
+import AdminLayout from "@/layout/AdminLayout/adminLayout";
 import { FC, lazy } from "react";
 // pages
 
@@ -55,5 +56,60 @@ const publicRoutes: IRouter[] = [
   // employee router
 
   // admin router
+  {
+    path: configRouter.dashboardAdmin,
+    component: lazy(() => import("../pages/AdminPage/DashboardAmin")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.categorys,
+    component: lazy(() => import("../pages/AdminPage/Categorys")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.products,
+    component: lazy(() => import("../pages/AdminPage/Products")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.profileAdmin,
+    component: lazy(() => import("../pages/AdminPage/ProfileAdmin")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.ourStaff,
+    component: lazy(() => import("../pages/AdminPage/OurStaff")),
+    layout: AdminLayout,
+    role: null,
+  },
+
+  {
+    path: configRouter.orders,
+    component: lazy(() => import("../pages/AdminPage/Orders")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.coupons,
+    component: lazy(() => import("../pages/AdminPage/Coupons")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.customPage,
+    component: lazy(() => import("../pages/AdminPage/CustomPage")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.marketing,
+    component: lazy(() => import("../pages/AdminPage/Marketing")),
+    layout: AdminLayout,
+    role: null,
+  },
 ];
 export { publicRoutes };

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { configRouter } from "@/configs/router";
 import * as authApi from "../../api/authApi/authApi";
@@ -10,6 +10,10 @@ function ResetPassword() {
   const [token, setToken] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const nav = useNavigate();
+
+  useEffect(() => {
+    document.title = "Shopfee | Reset Password";
+  }, []);
 
   const handleResetPass = async () => {
     if (password === "" || confirmPassword === "" || token === "") {
