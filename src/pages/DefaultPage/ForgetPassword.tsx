@@ -13,6 +13,10 @@ function ForgetPassword() {
   const nav = useNavigate();
 
   useEffect(() => {
+    document.title = "Shopfee | Forget Password";
+  }, []);
+
+  useEffect(() => {
     setError("");
   }, [email]);
 

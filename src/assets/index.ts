@@ -1,32 +1,18 @@
-import avatar1 from "./images/avatar.png";
-import backgroundLogin from "./images/backgroundgd.png";
-import logoMain from "./images/Logo.svg";
-import successInfo from "./images/successInfo.svg";
-import bgCourse from "./images/bgcourse.png";
-import categoryItem from "./images/categoryitem.png";
-import avatarBlack from "./images/blank-profile.png";
-import task from "./images/task.png";
-import cameraLogo from "./images/cameraLogo.jpg";
+import imageLogin from "./images/image-login.jpg";
+import shopfeeIcon from "./images/shopfee_icon.png";
+import facebookLogo from "./images/facebook-logo.svg";
+import googleLogo from "./images/google-logo.svg";
 import noAvatar from "./images/noavatar.png";
-import noBg from "./images/nobg.jpg";
+
 const assets = {
-  // working
-  // step 2: import the image
   images: {
-    avatar1: avatar1,
-    backgroundLogin: backgroundLogin,
-    logoMain: logoMain,
-    successInfo: successInfo,
-    bgCourse: bgCourse,
-    categoryItem: categoryItem,
-    avatarBlack: avatarBlack,
-    task: task,
-    cameraLogo: cameraLogo,
+    imageLogin: imageLogin,
+    shopfeeIcon: shopfeeIcon,
+    facebookLogo: facebookLogo,
+    googleLogo: googleLogo,
     noAvatar: noAvatar,
-    noBg: noBg,
   },
-  audios: {
-  },
+  audios: {},
 
   icons: {},
   fonts: {},
