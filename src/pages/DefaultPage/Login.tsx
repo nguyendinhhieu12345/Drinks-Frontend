@@ -5,7 +5,7 @@ import { Auth } from "../../type";
 import { AppDispatch } from "../../redux/store";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FacebookLogo, HandWaving } from "@phosphor-icons/react";
+import { HandWaving } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import assets from "@/assets";
 import { configRouter } from "@/configs/router";

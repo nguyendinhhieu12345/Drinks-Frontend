@@ -22,7 +22,7 @@ const Sidebar = React.forwardRef<Ref, Props>(
         >
           {/* logo */}
           <div className="relative w-full flex items-center justify-center mb-10">
-            <img src={assets.images.logoMain} alt="" className="h-[40px]" />
+            <img src={assets.images.shopfeeIcon} alt="" className="h-[40px]" />
             <div className="absolute left-3">
               <div className="rounded-full bg-gray-200 p-2 xl:hidden flex transition-all delay-200">
                 <X
