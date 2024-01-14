@@ -111,5 +111,11 @@ const publicRoutes: IRouter[] = [
     layout: AdminLayout,
     role: null,
   },
+  {
+    path: configRouter.addProduct,
+    component: lazy(() => import("../pages/AdminPage/AddProduct")),
+    layout: AdminLayout,
+    role: null,
+  },
 ];
 export { publicRoutes };
