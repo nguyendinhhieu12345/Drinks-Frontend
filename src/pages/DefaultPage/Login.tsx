@@ -47,6 +47,7 @@ const Login = () => {
     });
   };
   const loginHandler = async () => {
+    navigate(configRouter.dashboardAdmin);
     setLoading(true);
     const auth: Auth = { username: username, password: password };
     const loginSuccess = await dispatch(login(auth));
