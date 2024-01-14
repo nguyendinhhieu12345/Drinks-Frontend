@@ -15,7 +15,8 @@ export const configRouter = {
   ourStaff: "/admin/our-staff",
   orders: "/admin/orders",
   coupons: "/admin/coupons",
-  marketing: "admin/marketing",
+  marketing: "/admin/marketing",
   customPage: "/admin/custom-page",
-  profileAdmin: "admin/profile",
+  profileAdmin: "/admin/profile",
+  addProduct: "/admin/add-product"
 };

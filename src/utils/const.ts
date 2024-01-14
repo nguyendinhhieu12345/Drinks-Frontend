@@ -1,4 +1,4 @@
-export const formatCurrency = (value: number): string => {
+export const formatVND = (value: number): string => {
   return value.toLocaleString("vi-VN", {
     style: "currency",
     currency: "VND",
@@ -45,3 +45,4 @@ export const formatBirthDay = (utcTimestamp: string): string => {
   });
   return localDateString.split(",")[0];
 };
+
