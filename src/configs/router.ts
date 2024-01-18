@@ -18,5 +18,6 @@ export const configRouter = {
   marketing: "/admin/marketing",
   customPage: "/admin/custom-page",
   profileAdmin: "/admin/profile",
-  addProduct: "/admin/add-product"
+  addProduct: "/admin/add-product",
+  orderDetail: "/admin/orders/:id",
 };
