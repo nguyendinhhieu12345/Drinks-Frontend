@@ -125,5 +125,11 @@ const publicRoutes: IRouter[] = [
     layout: AdminLayout,
     role: null,
   },
+  {
+    path: configRouter.orderDetail,
+    component: lazy(() => import("../pages/AdminPage/OrderDetail")),
+    layout: AdminLayout,
+    role: null,
+  },
 ];
 export { publicRoutes };
