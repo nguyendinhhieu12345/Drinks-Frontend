@@ -7,10 +7,15 @@ import assets from "@/assets";
 import { configRouter } from "@/configs/router";
 import FromWrap from "@/components/FormWrap/FromWrap";
 import InputWrap from "@/components/FormWrap/InputWrap";
+import { Auth } from "@/type";
+import { useDispatch } from "react-redux";
+import { login } from "@/features/auth/authSlice";
+import { AppDispatch } from "@/redux/store";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
     document.title = "Shopfee | login";
@@ -24,22 +29,19 @@ const Login = () => {
     navigate(configRouter.signUp);
   };
 
-  const handleLogin = (email: string, password: string) => {
+  const handleLogin =async (email: string, password: string) => {
     setLoading(true);
-    if (email === "1" && password === "1") {
-      toast.success("Đăng nhập thành công", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      setLoading(false);
-      navigate(configRouter.dashboardAdmin);
+    const auth: Auth = { username: email, password: password };
+    const loginSuccess = await dispatch(login(auth));
+
+    if (loginSuccess.type === "auth/login/fulfilled") {
+      toast.success("Login successful")
+      navigate(configRouter.dashboardAdmin)
+    } else {
+      console.log((loginSuccess as { error: { message: string } }).error?.message)
+      toast.error((loginSuccess as { error: { message: string } }).error?.message)
     }
+    setLoading(false);
   };
 
   return (

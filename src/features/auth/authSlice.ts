@@ -39,7 +39,6 @@ export const logoutThunk = createAsyncThunk<any>(
 export const signup = createAsyncThunk(
   "auth/signup",
   async (params: signupState) => {
-    console.log(params);
     const res = await authApi.signup({
       username: params.username,
       password: params.password,
@@ -76,7 +75,6 @@ export const authSlice = createSlice({
     });
 
     builder.addCase(login.rejected, (state, action) => {
-      console.log(action);
       state.loading = false;
       state.error = action.error.message;
       state.isError = true;
@@ -86,8 +84,6 @@ export const authSlice = createSlice({
       state.loading = false;
       state.isError = false;
       state.error = undefined;
-      // console.log(action.payload);
-
       state.currentUser = action.payload;
     });
 
@@ -108,10 +104,8 @@ export const authSlice = createSlice({
       state.isError = true;
     });
 
-    builder.addCase(signup.fulfilled, (state, action) => {
+    builder.addCase(signup.fulfilled, (state) => {
       state.loading = false;
-      console.log(action.payload);
-      // state.currentUser = action.payload;
     });
   },
 });
