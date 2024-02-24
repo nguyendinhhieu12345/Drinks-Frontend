@@ -45,7 +45,7 @@ export default function AddProduct() {
             priceSize: parseInt(pricingSize),
           },
         ]);
-        setSize("");
+        setSize("Small");
         setPricingSize("");
       }
     }

@@ -21,7 +21,7 @@ export const get = async (path: string, options = {}) => {
 export const post = async (
   path: string,
   options = {},
-  headers?: AxiosRequestHeaders
+  headers?: AxiosRequestHeaders["headers"]
 ) => {
   try {
     const response = await instance.post(path, options, {

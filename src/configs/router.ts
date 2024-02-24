@@ -20,4 +20,5 @@ export const configRouter = {
   profileAdmin: "/admin/profile",
   addProduct: "/admin/add-product",
   orderDetail: "/admin/orders/:id",
+  addMarketting: "/admin/add-campaign"
 };

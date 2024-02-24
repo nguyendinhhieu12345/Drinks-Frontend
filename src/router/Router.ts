@@ -120,6 +120,12 @@ const publicRoutes: IRouter[] = [
     role: null,
   },
   {
+    path: configRouter.addMarketting,
+    component: lazy(() => import("../pages/AdminPage/AddCampaign")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
     path: configRouter.addProduct,
     component: lazy(() => import("../pages/AdminPage/AddProduct")),
     layout: AdminLayout,

@@ -6,8 +6,17 @@ import {
   MenuList,
 } from "@material-tailwind/react";
 import ImageWithError from "../ImageError/ImageWithError";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { logoutThunk } from "@/features/auth/authSlice";
 
 const AccountHeader = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  
+  const handleLogout = async()=>{
+    await dispatch(logoutThunk())
+  }
+
   return (
     <div>
       <div className="flex items-center justify-center px-3 py-2 gap-3 bg-white">
@@ -30,7 +39,7 @@ const AccountHeader = () => {
             <MenuItem placeholder="">DashBoard</MenuItem>
             <MenuItem placeholder="">Profile</MenuItem>
             <hr className="my-3" />
-            <MenuItem placeholder="">Logout</MenuItem>
+            <MenuItem placeholder="" onClick={handleLogout}>Logout</MenuItem>
           </MenuList>
         </Menu>
       </div>
