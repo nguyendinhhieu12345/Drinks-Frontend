@@ -9,13 +9,8 @@ import TableConfirmDelete from "@/components/TableAdmin/TableConfirmDelete";
 import { Drawer } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
-
-interface ICategory {
-  id: string;
-  name: string;
-  imageUrl: string;
-  status: string;
-}
+import { toast } from "react-toastify";
+import { ICategory } from "@/types/type";
 
 interface IResponseCategory {
   timestamp: string;
@@ -28,22 +23,38 @@ export default function Categorys() {
   const [open, setOpen] = useState<boolean>(false);
   const [openCreateCategory, setOpenCreateCategory] = useState<boolean>(false);
   const [categorys, setCategorys] = useState<IResponseCategory>();
+  const [dataDelete, setDataDelete] = useState<string>("");
 
   // Open confirm delete
-  const handleDelete = () => {
+  const handleDelete = (e: string) => {
     setOpen(!open);
+    setDataDelete(e);
   };
   const handleOpen = () => setOpen(!open);
+
+  const handleDeleteCate = async () => {
+    setOpen(!open);
+    try {
+      const data = await categoryApi.deleteCategory(dataDelete);
+      console.log(data);
+      if (data?.success) {
+        toast.success(data?.message);
+        getAllCategory();
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
 
   // Drawer
   const openDrawer = () => setOpenCreateCategory(true);
   const closeDrawer = () => setOpenCreateCategory(false);
 
+  const getAllCategory = async () => {
+    const data = await categoryApi.getAllCategory();
+    setCategorys(data);
+  };
   useEffect(() => {
-    const getAllCategory = async () => {
-      const data = await categoryApi.getAllCategory();
-      setCategorys(data);
-    };
     getAllCategory();
   }, []);
 
@@ -229,7 +240,7 @@ export default function Categorys() {
                       </button>
                       <button
                         className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
-                        onClick={handleDelete}
+                        onClick={() => handleDelete(cate.id)}
                       >
                         <p
                           data-tip="true"
@@ -250,6 +261,7 @@ export default function Categorys() {
           open={open}
           handleOpen={handleOpen}
           title="Category"
+          handleDeleteCate={handleDeleteCate}
         />
       </div>
     </div>

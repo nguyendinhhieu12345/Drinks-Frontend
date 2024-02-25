@@ -1,8 +1,8 @@
 import * as httpRequest from "../../../utils/httpRequest";
 
-export const addCategory = async (formData: FormData) => {
+export const addProduct = async (formData: FormData, type: string) => {
   try {
-    const res = await httpRequest.post(`/category`, formData, {
+    const res = await httpRequest.post(`/product?type=${type}`, formData, {
       "Content-Type": "multipart/form-data",
     });
     return res;
@@ -11,18 +11,18 @@ export const addCategory = async (formData: FormData) => {
   }
 };
 
-export const getAllCategory = async () => {
+export const getAllProduct = async () => {
   try {
-    const res = await httpRequest.get(`/category`);
+    const res = await httpRequest.get(`/product`);
     return res;
   } catch (error) {
     return Promise.reject(error);
   }
 };
 
-export const deleteCategory = async (categoryId: string) => {
+export const deleteProduct = async (ProductId: string) => {
   try {
-    const res = await httpRequest.deleted(`/category/${categoryId}`);
+    const res = await httpRequest.deleted(`/product/${ProductId}`);
     return res;
   } catch (error) {
     return Promise.reject(error);

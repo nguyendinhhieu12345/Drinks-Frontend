@@ -9,7 +9,8 @@ import {
 interface ITableConfirmDelete {
   open: boolean;
   handleOpen: () => void;
-  title: string
+  title: string;
+  handleDeleteCate: () => void;
 }
 
 function TableConfirmDelete(props: ITableConfirmDelete) {
@@ -17,8 +18,8 @@ function TableConfirmDelete(props: ITableConfirmDelete) {
     <Dialog placeholder="" open={props.open} handler={props.handleOpen}>
       <DialogHeader placeholder="">Confirm delete {props.title}</DialogHeader>
       <DialogBody placeholder="">
-        Are you sure you want to delete this {props.title.toLowerCase()}? This action cannot be
-        undone.
+        Are you sure you want to delete this {props.title.toLowerCase()}? This
+        action cannot be undone.
       </DialogBody>
       <DialogFooter placeholder="">
         <Button
@@ -31,7 +32,7 @@ function TableConfirmDelete(props: ITableConfirmDelete) {
           Cancel
         </Button>
         <Button
-          onClick={props.handleOpen}
+          onClick={props.handleDeleteCate}
           placeholder=""
           variant="gradient"
           color="green"
