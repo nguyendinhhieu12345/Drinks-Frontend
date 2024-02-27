@@ -1,7 +1,7 @@
 import { ColumnDashboard } from "@/components/ColumnDashboard/ColumnDashboard";
 import { RowDashboard } from "@/components/ColumnDashboard/RowDashboard";
-import { Files } from "@phosphor-icons/react";
-import { useEffect } from "react";
+import { ArrowRight, Files } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -61,6 +61,14 @@ export default function DashboardAmin() {
 }
 
 const RevenueChart = () => {
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date()
+      .toLocaleString("en-US", {
+        weekday: "long",
+        timeZone: "Asia/Ho_Chi_Minh",
+      })
+      .toString()
+  );
   return (
     <div className="w-full h-auto flex flex-col lg:flex-row justify-center items-center mt-4">
       <div className="my-4 mx-1 md:p-5 bg-white w-full lg:w-full rounded-lg">
@@ -69,11 +77,22 @@ const RevenueChart = () => {
             <p className="font-semibold text-[14px] text-[#685F78] uppercase">
               Revenue chart
             </p>
-            <select className="bg-gray-50 w-25 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 ml-3">
+            {/* <select className="bg-gray-50 w-25 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 ml-3">
               <option value="Day">Day</option>
               <option value="Month">Month</option>
               <option value="Year">Year</option>
-            </select>
+            </select> */}
+            <input
+              className="bg-gray-50 w-25 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 ml-3"
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+            <ArrowRight className="p-2.5 ml-3" size={32} />
+            <input
+              className="bg-gray-50 w-25 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 ml-3"
+              type="date"
+            />
           </div>
           <button className="flex items-center cursor-pointer group bg-white rounded-lg shadow-md px-2 py-1">
             <Files size={20} />

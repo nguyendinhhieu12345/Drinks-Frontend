@@ -2,8 +2,12 @@ import { Delete } from "@/components/SVG/Delete.svg";
 import { Edit } from "@/components/SVG/Edit.svg";
 import { configRouter } from "@/configs/router";
 import { ArrowLeft } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import * as productApi from "@/api/adminApi/productApi/productApi";
+import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
+import { ICategory } from "@/types/type";
+import { toast } from "react-toastify";
 
 interface IPriceProductSize {
   size: string;
@@ -15,6 +19,7 @@ interface IPriceProductTopping {
 }
 
 export default function AddProduct() {
+  const [image, setImage] = useState<File[]>([]);
   const [size, setSize] = useState<string>("Small");
   const [pricingSize, setPricingSize] = useState<string>("");
   const [topping, setTopping] = useState<string>("");
@@ -23,8 +28,25 @@ export default function AddProduct() {
   const [listPriceTopping, setListPriceTopping] = useState<
     IPriceProductTopping[]
   >([]);
-
+  const [category, setCategory] = useState<ICategory[]>([]);
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [categoryId, setCategoryId] = useState<string>("");
   const nav = useNavigate();
+
+  useEffect(() => {
+    const getAllCategory = async () => {
+      const data = await categoryApi.getAllCategory();
+      setCategory([...data?.data]);
+    };
+    getAllCategory();
+  }, []);
+
+  const handleInputImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImage([...e.target.files]);
+    }
+  };
 
   const handleRedirectProducts = () => {
     nav(configRouter.products);
@@ -73,6 +95,41 @@ export default function AddProduct() {
     }
   };
 
+  const handleAddProduct = async () => {
+    let formData = new FormData();
+    // Thêm các trường dữ liệu vào FormData
+    listPriceSize.forEach((size, index) => {
+      formData.append(
+        `sizeList[${index}].size`,
+        size.size.toString().toUpperCase()
+      );
+      formData.append(`sizeList[${index}].price`, size.priceSize.toString());
+    });
+
+    listPriceTopping.forEach((topping, index) => {
+      formData.append(`toppingList[${index}].name`, topping.topping.toString());
+      formData.append(
+        `toppingList[${index}].price`,
+        topping.priceTopping.toString()
+      );
+    });
+
+    formData.append("name", name);
+
+    formData.append("description", description);
+    formData.append("categoryId", categoryId);
+    image.forEach((img) => {
+      formData.append("image", img);
+    });
+    const data = await productApi.addProduct(formData, "BEVERAGE");
+    if (data?.success) {
+      toast.success(data?.message);
+      nav(configRouter.products);
+    } else {
+      toast.success(data?.message);
+    }
+  };
+
   return (
     <div className="w-full h-auto min-h-full overflow-auto py-3 px-8 ">
       <div className="mb-3 flex items-center justify-between">
@@ -86,7 +143,10 @@ export default function AddProduct() {
           <p className="text-lg font-semibold">Add Product</p>
         </div>
         <div>
-          <button className="px-4 py-2 bg-green-400 rounded-full text-white">
+          <button
+            className="px-4 py-2 bg-green-400 rounded-full text-white"
+            onClick={handleAddProduct}
+          >
             Save
           </button>
         </div>
@@ -101,6 +161,7 @@ export default function AddProduct() {
                 className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                 type="text"
                 placeholder="Product name"
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="mb-2">
@@ -108,14 +169,20 @@ export default function AddProduct() {
               <textarea
                 className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 min-h-20 h-40 max-h-60"
                 placeholder="Desciption"
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <div className="">
               <p className="mb-3 font-normal text-sm">Category</p>
-              <select className="w-full rounded-xl text-base">
-                <option>Coffe</option>
-                <option>Tea</option>
-                <option>Others</option>
+              <select
+                className="w-full rounded-xl text-base"
+                onChange={(e) => setCategoryId(e.target.value)}
+              >
+                {category?.map((cate, index) => (
+                  <option key={index} value={cate.id}>
+                    {cate.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -131,34 +198,49 @@ export default function AddProduct() {
                   <input
                     accept="image/*,.jpeg,.jpg,.png,.webp"
                     type="file"
+                    id="file"
                     className="hidden"
+                    onChange={(e) => {
+                      handleInputImage(e);
+                    }}
                   />
-                  <span className="mx-auto flex justify-center">
-                    <svg
-                      stroke="currentColor"
-                      fill="none"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-3xl text-green-500"
-                      height="1em"
-                      width="1em"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <polyline points="16 16 12 12 8 16"></polyline>
-                      <line x1="12" y1="12" x2="12" y2="21"></line>
-                      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                      <polyline points="16 16 12 12 8 16"></polyline>
-                    </svg>
-                  </span>
-                  <p className="text-sm mt-2">Drag your images here</p>
-                  <em className="text-xs text-gray-400">
-                    (Only *.jpeg, *.webp and *.png images will be accepted)
-                  </em>
+                  <label htmlFor="file" className="cursor-pointer">
+                    {image.length > 0 ? (
+                      <img
+                        src={URL.createObjectURL(image[0])}
+                        alt="image-category"
+                        className="w-full h-60 object-contain"
+                      />
+                    ) : (
+                      <>
+                        <span className="mx-auto flex justify-center">
+                          <svg
+                            stroke="currentColor"
+                            fill="none"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-3xl text-green-500"
+                            height="1em"
+                            width="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                          </svg>
+                        </span>
+                        <p className="text-sm mt-2">Choose your images here</p>
+                        <em className="text-xs text-gray-400">
+                          (Only *.jpeg, *.webp and *.png images will be
+                          accepted)
+                        </em>
+                      </>
+                    )}
+                  </label>
                 </div>
-                <div className="text-emerald-500"></div>
-                <aside className="flex flex-row flex-wrap mt-4"></aside>
               </div>
             </div>
           </div>

@@ -46,3 +46,27 @@ export const formatBirthDay = (utcTimestamp: string): string => {
   return localDateString.split(",")[0];
 };
 
+export const checkTypeImage = (file: FileList) => {
+  const type: string[] = ["jpeg", "png", "jpg"];
+  return type.some((ty) => ty === file[0]?.type.split("/")[1].toString());
+};
+
+// convert link image to image
+export const imageUrlToFile = async (imageUrl: string): Promise<File | null> => {
+  try {
+    // Fetch the image data
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+
+    // Extract file name from URL
+    const fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+
+    // Create a File object
+    const file = new File([blob], fileName, { type: blob.type });
+
+    return file;
+  } catch (error) {
+    console.error("Error converting image URL to file:", error);
+    return null;
+  }
+};
