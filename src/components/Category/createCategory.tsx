@@ -1,20 +1,42 @@
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import useLoading from "@/hooks/useLoading";
-import { Spinner } from "@material-tailwind/react";
-import { useState } from "react";
+import { ICategory } from "@/types/type";
+import { checkTypeImage, imageUrlToFile } from "@/utils/const";
+import { Spinner, Switch } from "@material-tailwind/react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface ICreateCategory {
   setOpenCreateCategory: React.Dispatch<React.SetStateAction<boolean>>;
+  currentCategory?: ICategory | null;
+  categorys?: ICategory[];
+  type?: string;
 }
 
 function CreateCategory(props: ICreateCategory) {
   const [name, setName] = useState<string>("");
   const [image, setImage] = useState<File[]>([]);
-  // const [loading, setLoading] = useState<boolean>(false)
+  const [status, setStatus] = useState<boolean>(true);
   const { isLoading, startLoading, stopLoading } = useLoading();
 
   let newCategory = new FormData();
+
+  const handleImageAdd = async (imageUrl: string) => {
+    const file = await imageUrlToFile(imageUrl);
+    if (file) {
+      setImage([...image, file]);
+    } else {
+      console.log("Failed to convert image URL to file");
+    }
+  };
+
+  useEffect(() => {
+    if (props.type === "edit" && props.currentCategory) {
+      setName(props?.currentCategory?.name);
+      setStatus(props?.currentCategory?.status === "HIDDEN" ? false : true);
+      handleImageAdd(props.currentCategory?.imageUrl);
+    }
+  }, []);
 
   const handleClose = () => {
     props.setOpenCreateCategory(false);
@@ -22,7 +44,13 @@ function CreateCategory(props: ICreateCategory) {
 
   const handleInputImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setImage([...e.target.files]);
+      if (checkTypeImage(e.target.files)) {
+        setImage([...e.target.files]);
+      } else {
+        toast.error("Only *.jpeg, *.jpg and *.png images will be accepted!", {
+          position: "bottom-left",
+        });
+      }
     }
   };
 
@@ -33,19 +61,44 @@ function CreateCategory(props: ICreateCategory) {
         newCategory.append("image", img);
       });
       newCategory.append("name", name);
-      const data = await categoryApi.addCategory(newCategory);
-      if (data?.success) {
-        toast.success(data?.message);
-        props.setOpenCreateCategory(false);
-        setName("");
-        setImage([]);
-        stopLoading();
+      newCategory.append("status", status ? "VISIBLE" : "HIDDEN");
+      if (props?.type === "create") {
+        const data = await categoryApi.addCategory(newCategory);
+        if (data?.success) {
+          toast.success(data?.message, {
+            position: "bottom-left",
+          });
+          props.setOpenCreateCategory(false);
+          setName("");
+          setImage([]);
+          stopLoading();
+        } else {
+          stopLoading();
+          console.log(data);
+        }
       } else {
-        console.log(data);
+        const data = await categoryApi.updateCategory(
+          newCategory,
+          props?.currentCategory?.id as string
+        );
+        if (data?.success) {
+          toast.success(data?.message, {
+            position: "bottom-left",
+          });
+          props.setOpenCreateCategory(false);
+          setName("");
+          setImage([]);
+          stopLoading();
+        } else {
+          stopLoading();
+          console.log(data);
+        }
       }
     } else {
       stopLoading();
-      toast.error("Please fill out all fields completely!");
+      toast.error("Please fill out all fields completely!", {
+        position: "bottom-left",
+      });
     }
   };
 
@@ -54,9 +107,12 @@ function CreateCategory(props: ICreateCategory) {
       <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50">
         <div className="flex md:flex-row flex-col justify-between mr-20">
           <div>
-            <h4 className="text-xl font-medium">Add Category</h4>
+            <h4 className="text-xl font-medium">
+              {props?.type === "edit" ? "Edit" : "Add"} Category
+            </h4>
             <p className="mb-0 text-sm">
-              Add your Product category and necessary information from here
+              {props?.type === "edit" ? "Edit" : "Add"} your Product category
+              and necessary information from here
             </p>
           </div>
         </div>
@@ -71,7 +127,6 @@ function CreateCategory(props: ICreateCategory) {
             <input
               className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
               type="text"
-              name="name"
               placeholder="Category title"
               onChange={(e) => setName(e.target.value)}
               value={name}
@@ -89,7 +144,7 @@ function CreateCategory(props: ICreateCategory) {
             <div className="w-full text-center">
               <div className="border-2 border-gray-300 border-dashed rounded-md cursor-pointer px-6 pt-5 pb-6">
                 <input
-                  accept="image/*,.jpeg,.jpg,.png,.webp"
+                  accept="image/.jpeg,.jpg,.png"
                   type="file"
                   id="file"
                   className="hidden"
@@ -127,7 +182,7 @@ function CreateCategory(props: ICreateCategory) {
                       </span>
                       <p className="text-sm mt-2">Choose your images here</p>
                       <em className="text-xs text-gray-400">
-                        (Only *.jpeg, *.webp and *.png images will be accepted)
+                        (Only *.jpeg, *.jpg and *.png images will be accepted)
                       </em>
                     </>
                   )}
@@ -140,14 +195,21 @@ function CreateCategory(props: ICreateCategory) {
         </div>
 
         {/* Choose status */}
-        {/* <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+        <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
           <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
             Published
           </label>
           <div className="col-span-8 sm:col-span-4">
-            <Switch crossOrigin color="green" />
+            <Switch
+              color="green"
+              onChange={(e) => {
+                setStatus(e.target.checked);
+              }}
+              checked={status}
+              crossOrigin={true.toString()}
+            />
           </div>
-        </div> */}
+        </div>
       </div>
       <div className="relative z-10 bottom-0 w-full right-0 py-4 lg:py-8 px-6 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex bg-gray-50 border-t border-gray-100">
         <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
@@ -169,11 +231,13 @@ function CreateCategory(props: ICreateCategory) {
           >
             {isLoading ? (
               <p className="flex items-center justify-center">
-                <span className="mr-2">Add Category</span>{" "}
+                <span className="mr-2">
+                  {props?.type === "edit" ? "Edit" : "Add"} Category
+                </span>{" "}
                 <Spinner className="h-4 w-4" />
               </p>
             ) : (
-              <span>Add Category</span>
+              <span>{props?.type === "edit" ? "Edit" : "Add"} Category</span>
             )}
           </button>
         </div>

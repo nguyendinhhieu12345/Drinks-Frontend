@@ -24,6 +24,9 @@ export default function Categorys() {
   const [openCreateCategory, setOpenCreateCategory] = useState<boolean>(false);
   const [categorys, setCategorys] = useState<IResponseCategory>();
   const [dataDelete, setDataDelete] = useState<string>("");
+  const [currentCategory, setCurrentCategory] = useState<ICategory | null>(
+    null
+  );
 
   // Open confirm delete
   const handleDelete = (e: string) => {
@@ -50,13 +53,18 @@ export default function Categorys() {
   const openDrawer = () => setOpenCreateCategory(true);
   const closeDrawer = () => setOpenCreateCategory(false);
 
+  const handleAddCate = () => {
+    setOpenCreateCategory(true);
+    setCurrentCategory(null);
+  };
+
   const getAllCategory = async () => {
     const data = await categoryApi.getAllCategory();
     setCategorys(data);
   };
   useEffect(() => {
     getAllCategory();
-  }, []);
+  }, [openCreateCategory]);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -103,7 +111,7 @@ export default function Categorys() {
                   <button
                     className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-green-500 border border-transparent w-full rounded-md h-12"
                     type="button"
-                    onClick={openDrawer}
+                    onClick={handleAddCate}
                   >
                     <span className="mr-2">
                       <Add />
@@ -144,7 +152,14 @@ export default function Categorys() {
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <CreateCategory setOpenCreateCategory={setOpenCreateCategory} />
+          {openCreateCategory && (
+            <CreateCategory
+              type={currentCategory ? "edit" : "create"}
+              categorys={categorys?.data}
+              setOpenCreateCategory={setOpenCreateCategory}
+              currentCategory={currentCategory}
+            />
+          )}
         </Drawer>
 
         {/* Filter */}
@@ -233,7 +248,13 @@ export default function Categorys() {
 
                   <td className="px-4 py-2">
                     <div className="flex justify-end text-right">
-                      <button className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none">
+                      <button
+                        className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none"
+                        onClick={() => {
+                          setCurrentCategory(cate);
+                          openDrawer();
+                        }}
+                      >
                         <p data-tip="true" data-for="edit" className="text-xl">
                           <Edit />
                         </p>
