@@ -1,4 +1,4 @@
-import { ReactNode} from "react";
+import { ReactNode, useEffect, useState } from "react";
 import TablePaging from "./TablePaging";
 
 interface ITableAdmin {
@@ -10,9 +10,21 @@ interface ITableAdmin {
     React.TdHTMLAttributes<HTMLTableDataCellElement>,
     HTMLTableDataCellElement
   >;
+  getAllProduct?: (
+    key: string,
+    page: number,
+    productStatus: string,
+    categoryId: string
+  ) => Promise<void>;
 }
 
 function TableAdmin(props: ITableAdmin) {
+  const [pageActive, setPageActive] = useState<number>(1);
+
+  useEffect(() => {
+    props.getAllProduct && props.getAllProduct("", pageActive, "", "");
+  }, [pageActive]);
+
   return (
     <div className="w-full overflow-hidden border border-gray-200 rounded-lg mb-8 rounded-b-lg">
       {/* table */}
@@ -39,7 +51,13 @@ function TableAdmin(props: ITableAdmin) {
         </table>
       </div>
       {/* paging */}
-      {props.isPaging && <TablePaging />}
+      {props.isPaging && props?.data?.data?.totalPage >= 2 && (
+        <TablePaging
+          data={props?.data}
+          setPageActive={setPageActive}
+          pageActive={pageActive}
+        />
+      )}
     </div>
   );
 }
