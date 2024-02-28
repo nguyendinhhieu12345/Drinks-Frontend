@@ -23,3 +23,11 @@ export interface ICategory {
   imageUrl: string;
   status: string;
 }
+
+export interface IProduct {
+  id: string;
+  name: string;
+  thumbnailUrl: string;
+  status: string;
+  price: number;
+}

@@ -19,12 +19,18 @@ export default withMT({
       },
       width: {
         90: "360px",
-        15: "60px"
+        15: "60px",
+        25: "100px",
+        30: "120px"
       },
       zIndex: {
         99: "99",
         999: "999",
         9999: "9999",
+      },
+      height: {
+        25: "100px",
+        30: "120px"
       }
     },
     screens: {

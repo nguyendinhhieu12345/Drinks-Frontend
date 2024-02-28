@@ -11,9 +11,20 @@ export const addProduct = async (formData: FormData, type: string) => {
   }
 };
 
-export const getAllProduct = async () => {
+export const getAllProduct = async (
+  key?: string,
+  pageCurrent?: number,
+  productStatus?: string,
+  categoryId?: string
+) => {
   try {
-    const res = await httpRequest.get(`/product`);
+    const res = await httpRequest.get(
+      `/product?page=${pageCurrent}&size=2${
+        productStatus !== "" ? `&productStatus=${productStatus}` : ""
+      }${key !== "" ? `&key=${key}` : ""}${
+        categoryId !== "" ? `&categoryId=${categoryId}` : ""
+      } `
+    );
     return res;
   } catch (error) {
     return Promise.reject(error);
@@ -23,6 +34,26 @@ export const getAllProduct = async () => {
 export const deleteProduct = async (ProductId: string) => {
   try {
     const res = await httpRequest.deleted(`/product/${ProductId}`);
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateProduct = async (formData: FormData, ProductId: string) => {
+  try {
+    const res = await httpRequest.put(`/product/${ProductId}`, formData, {
+      "Content-Type": "multipart/form-data",
+    });
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getProductById = async (productId: string) => {
+  try {
+    const res = await httpRequest.get(`/product/${productId}/details`);
     return res;
   } catch (error) {
     return Promise.reject(error);

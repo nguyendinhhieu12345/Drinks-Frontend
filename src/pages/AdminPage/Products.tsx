@@ -4,22 +4,102 @@ import { Edit } from "@/components/SVG/Edit.svg";
 import { Export } from "@/components/SVG/Export.svg";
 import { Import } from "@/components/SVG/Import.svg";
 import { configRouter } from "@/configs/router";
-import {
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-} from "@material-tailwind/react";
-import { CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import * as productApi from "@/api/adminApi/productApi/productApi";
+import TableConfirmDelete from "@/components/TableAdmin/TableConfirmDelete";
+import TableAdmin from "@/components/TableAdmin/TableAdmin";
+import { ICategory, IProduct } from "@/types/type";
+import { formatVND } from "@/utils/const";
+import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
+import { toast } from "react-toastify";
+
+interface IProductsResponse {
+  timestamp: string;
+  success: boolean;
+  message: string;
+  data: {
+    totalPage: number;
+    productList: IProduct[];
+  };
+}
 
 export default function Products() {
+  const [products, setProducts] = useState<IProductsResponse>();
+  const [status, setStatus] = useState<string>("");
+  const [category, setCategory] = useState<ICategory[]>([]);
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
+  const [productDeleteId, setProductDeleteId] = useState<string>("");
+
   const nav = useNavigate();
 
+  const getAllCategory = async () => {
+    const data = await categoryApi.getAllCategory();
+    setCategory([...data?.data]);
+    setCategoryId(data?.data[0]?.id);
+  };
+
+  const getAllProduct = async (
+    key: string,
+    page: number,
+    productStatus: string,
+    categoryId: string
+  ) => {
+    const data = await productApi.getAllProduct(
+      key,
+      page,
+      productStatus,
+      categoryId
+    );
+    setProducts(data);
+  };
+
+  useEffect(() => {
+    getAllProduct("", 1, "", "");
+    getAllCategory();
+  }, []);
+
+  // Redirect add product
   const handleRedirectAddProduct = () => {
     nav(configRouter.addProduct);
+  };
+
+  // Redirect edit product
+  const handleRedirectEditProduct = (productId: string) => {
+    nav(`/admin/edit-product/${productId}`);
+  };
+
+  const handleSeachProduct = async () => {
+    getAllProduct(search, 1, status, categoryId);
+  };
+
+  const handleResetProduct = async () => {
+    setStatus("AVAILABLE");
+    getAllProduct("", 1, "", "");
+  };
+
+  // Open confirm delete
+  const handleOpen = () => setOpen(!open);
+
+  const handleDelete = (e: string) => {
+    setOpen(!open);
+    setProductDeleteId(e);
+  };
+
+  const handleDeleteProduct = async () => {
+    setOpen(!open);
+    try {
+      const data = await productApi.deleteProduct(productDeleteId);
+      console.log(data);
+      if (data?.success) {
+        toast.success(data?.message);
+        getAllProduct("", 1, "", "");
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   return (
@@ -88,6 +168,7 @@ export default function Products() {
                   type="search"
                   name="search"
                   placeholder="Search Product"
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <button
                   type="submit"
@@ -95,14 +176,25 @@ export default function Products() {
                 ></button>
               </div>
               <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                <select className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5">
-                  <option value="All">Category</option>
+                <select
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5"
+                >
+                  {category?.map((cate, index) => (
+                    <option key={index} value={cate.id}>
+                      {cate.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                <select className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5">
-                  <option value="Active">Active</option>
-                  <option value="UnActive">Un Active</option>
+                <select
+                  className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5"
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="AVAILABLE">AVAILABLE</option>
+                  <option value="HIDDEN">HIDDEN</option>
+                  <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
                 </select>
               </div>
               <div className="flex items-center gap-2 flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
@@ -110,6 +202,7 @@ export default function Products() {
                   <button
                     className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 rounded-lg text-sm text-white bg-green-500 border border-transparent active:bg-green-600 hover:bg-green-600 h-12 w-full"
                     type="submit"
+                    onClick={handleSeachProduct}
                   >
                     Filter
                   </button>
@@ -118,6 +211,7 @@ export default function Products() {
                   <button
                     className="transition-colors duration-150 font-medium text-gray-600 focus:outline-none rounded-lg border bg-gray-200 border-gray-200 w-full mr-3 flex items-center justify-center cursor-pointer h-12 px-4 md:py-1 py-2 text-sm"
                     type="reset"
+                    onClick={handleResetProduct}
                   >
                     <span className="text-black ">Reset</span>
                   </button>
@@ -128,179 +222,90 @@ export default function Products() {
         </div>
 
         {/* Table product */}
-        <TableProducts />
+        <TableAdmin
+          fieldTable={["id", "name", "Min price", "Image", "Status", "actions"]}
+          data={products}
+          isPaging={true}
+          title="Product"
+          getAllProduct={getAllProduct}
+          scriptData={
+            <tbody className="bg-white divide-y divide-gray-100  text-gray-800">
+              {products?.data?.productList?.map((prod, i) => (
+                <tr key={i}>
+                  <td className="px-4 py-2">
+                    <span className="text-sm">{prod.id}</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-sm">{prod.name}</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-sm font-semibold">
+                      {formatVND(prod.price)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <img
+                      className="object-contain w-30 h-30 rounded-lg"
+                      src={prod.thumbnailUrl}
+                      alt="product"
+                      loading="lazy"
+                    />
+                  </td>
+                  <td className="px-4 py-2">
+                    {prod.status === "AVAILABLE" && (
+                      <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-green-600 bg-green-100">
+                        {prod.status}
+                      </span>
+                    )}
+                    {prod.status === "HIDDEN" && (
+                      <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-red-600 bg-red-100 italic">
+                        {prod.status}
+                      </span>
+                    )}
+                    {prod.status === "OUT_OF_STOCK" && (
+                      <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-gray-600 bg-gray-100 italic">
+                        {prod.status}
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-4 py-2">
+                    <div className="flex justify-end text-right">
+                      <button
+                        className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none"
+                        onClick={() => handleRedirectEditProduct(prod?.id)}
+                      >
+                        <p data-tip="true" data-for="edit" className="text-xl">
+                          <Edit />
+                        </p>
+                      </button>
+                      <button
+                        className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
+                        onClick={() => handleDelete(prod.id)}
+                      >
+                        <p
+                          data-tip="true"
+                          data-for="delete"
+                          className="text-xl"
+                        >
+                          <Delete />
+                        </p>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          }
+        />
+        {/*  */}
+        <TableConfirmDelete
+          open={open}
+          handleOpen={handleOpen}
+          title="Product"
+          handleDeleteCate={handleDeleteProduct}
+        />
       </div>
     </div>
   );
 }
-
-const TableProducts = () => {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const handleDelete = () => {
-    setOpen(!open);
-  };
-
-  const handleOpen = () => setOpen(!open);
-
-  return (
-    <div className="w-full overflow-hidden border border-gray-200 rounded-lg mb-8 rounded-b-lg">
-      {/* table */}
-      <div className="w-full overflow-x-auto">
-        <table className="w-full whitespace-nowrap">
-          <thead className="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-100">
-            <tr>
-              <td className="px-4 py-2">
-                <input id="selectAll" name="selectAll" type="checkbox" />
-              </td>
-              <td className="px-4 py-2">ID</td>
-              <td className="px-4 py-2">NAME</td>
-              <td className="px-4 py-2">Min price</td>
-              <td className="px-4 py-2">Description</td>
-              <td className="px-4 py-2">Image</td>
-              <td className="px-4 py-2">Status</td>
-              <td className="px-4 py-2 text-right">ACTIONS</td>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100  text-gray-800">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <tr key={i}>
-                <td className="px-4 py-2">
-                  <input
-                    id="644501ab7094a0000851284b"
-                    name="Premium T-Shirt"
-                    type="checkbox"
-                  />
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm">ICE Men</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm">ICE Men</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm font-semibold">450.00</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm font-normal w-40 max-w-40 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                    fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-                  </span>
-                </td>
-                <td className="px-4 py-2">
-                  <img
-                    className="object-contain w-20 h-20 rounded-lg"
-                    src="https://firebasestorage.googleapis.com/v0/b/shopfee-12b03.appspot.com/o/product%2Fcoffee1.png?alt=media&token=274503e4-9efd-4649-aba5-781e457932cb"
-                    alt="product"
-                    loading="lazy"
-                  />
-                </td>
-                <td className="px-4 py-2">
-                  <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-green-600 bg-green-100">
-                    Selling
-                  </span>
-                </td>
-
-                <td className="px-4 py-2">
-                  <div className="flex justify-end text-right">
-                    <button className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none">
-                      <p data-tip="true" data-for="edit" className="text-xl">
-                        <Edit />
-                      </p>
-                    </button>
-                    <button
-                      className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
-                      onClick={handleDelete}
-                    >
-                      <p data-tip="true" data-for="delete" className="text-xl">
-                        <Delete />
-                      </p>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {/* paging */}
-      <div className="px-4 py-3 border-t border-gray-200  bg-white text-gray-500 ">
-        <div className="flex flex-col justify-between text-xs sm:flex-row text-gray-600 ">
-          <span className="flex items-center font-semibold tracking-wide uppercase">
-            Showing 1-10 of 500
-          </span>
-          <div className="flex mt-2 sm:mt-auto sm:justify-end">
-            <nav aria-label="Product Page Navigation">
-              <ul className="inline-flex items-center">
-                <li>
-                  <button
-                    className="inline-flex items-center justify-center leading-5 transition-colors duration-150 font-medium p-2 rounded-md text-gray-600 focus:outline-none border border-transparent hover:bg-gray-100"
-                    type="button"
-                    aria-label="Previous"
-                  >
-                    <CaretLeft size={12} />
-                  </button>
-                </li>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <li
-                    key={i}
-                    className={`${
-                      i === 0
-                        ? "bg-green-500 rounded-md"
-                        : "hover:bg-gray-100 rounded-md"
-                    }`}
-                  >
-                    <button
-                      className={`${
-                        i === 0 ? "bg-green-500 hover:bg-green-500" : ""
-                      }inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-3 py-1 rounded-md text-xs text-gray-600 border border-transparent `}
-                      type="button"
-                    >
-                      {i + 1}
-                    </button>
-                  </li>
-                ))}
-                <li>
-                  <button
-                    className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium p-2 rounded-md text-gray-600 focus:outline-none border border-transparent hover:bg-gray-100"
-                    type="button"
-                    aria-label="Next"
-                  >
-                    <CaretRight size={12} />
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </div>
-      {/* Confirm Delete */}
-      <Dialog placeholder="" open={open} handler={handleOpen}>
-        <DialogHeader placeholder="">Confirm delete Product</DialogHeader>
-        <DialogBody placeholder="">
-          Are you sure you want to delete this product? This action cannot be
-          undone.
-        </DialogBody>
-        <DialogFooter placeholder="">
-          <Button
-            placeholder=""
-            variant="text"
-            color="red"
-            onClick={handleOpen}
-            className="mr-1 cursor-pointer"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleOpen}
-            placeholder=""
-            variant="gradient"
-            color="green"
-            className="cursor-pointer"
-          >
-            Confirm
-          </Button>
-        </DialogFooter>
-      </Dialog>
-    </div>
-  );
-};
