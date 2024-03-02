@@ -143,5 +143,11 @@ const publicRoutes: IRouter[] = [
     layout: AdminLayout,
     role: null,
   },
+  {
+    path: configRouter.addBranch,
+    component: lazy(() => import("../pages/AdminPage/Branchs")),
+    layout: AdminLayout,
+    role: null,
+  },
 ];
 export { publicRoutes };

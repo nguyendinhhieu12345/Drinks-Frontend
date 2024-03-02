@@ -41,10 +41,10 @@ export default function OurStaff() {
             <svg
               stroke="currentColor"
               fill="none"
-              stroke-width="2"
+              strokeWidth="2"
               viewBox="0 0 24 24"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               className="mx-auto"
               height="1em"
               width="1em"
@@ -60,8 +60,7 @@ export default function OurStaff() {
                 <div>
                   <h4 className="text-xl font-medium">Add Staff</h4>
                   <p className="mb-0 text-sm">
-                    Add your staff and necessary information from
-                    here
+                    Add your staff and necessary information from here
                   </p>
                 </div>
               </div>

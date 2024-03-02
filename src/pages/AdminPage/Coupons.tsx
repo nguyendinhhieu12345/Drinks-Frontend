@@ -9,17 +9,12 @@ import {
   DialogBody,
   DialogFooter,
   DialogHeader,
-  Drawer,
   Switch,
 } from "@material-tailwind/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { useState } from "react";
 
 export default function Coupons() {
-  const [openCreateCategory, setOpenCreateCategory] = useState<boolean>(false);
-
-  const openDrawer = () => setOpenCreateCategory(true);
-  const closeDrawer = () => setOpenCreateCategory(false);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -64,7 +59,6 @@ export default function Coupons() {
                   <button
                     className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-green-500 border border-transparent w-full rounded-md h-12"
                     type="button"
-                    onClick={openDrawer}
                   >
                     <span className="mr-2">
                       <Add />
@@ -76,141 +70,6 @@ export default function Coupons() {
             </div>
           </div>
         </div>
-
-        {/* Model create category */}
-        <Drawer
-          placeholder=""
-          placement="right"
-          open={openCreateCategory}
-          onClose={closeDrawer}
-          size={700}
-        >
-          <button
-            className="absolute focus:outline-none z-10 text-red-500 hover:bg-red-100 hover:text-gray-700 transition-colors duration-150 bg-white shadow-md mr-6 mt-6 right-0 left-auto w-10 h-10 rounded-full block text-center"
-            onClick={closeDrawer}
-          >
-            <svg
-              stroke="currentColor"
-              fill="none"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="mx-auto"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-          <div className="flex flex-col w-full h-full justify-between">
-            <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50">
-              <div className="flex md:flex-row flex-col justify-between mr-20">
-                <div>
-                  <h4 className="text-xl font-medium">Add Coupon</h4>
-                  <p className="mb-0 text-sm">
-                    Add your coupon and necessary information from here
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 flex-grow scrollbar-hide w-full max-h-full pb-40">
-              {/* Input Name */}
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
-                  Name
-                </label>
-                <div className="col-span-8 sm:col-span-4">
-                  <input
-                    className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
-                    type="text"
-                    name="name"
-                    placeholder="Category title"
-                    value=""
-                  />
-                </div>
-              </div>
-
-              {/* Input Image */}
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
-                  Category Image
-                </label>
-
-                <div className="col-span-8 sm:col-span-4">
-                  <div className="w-full text-center">
-                    <div className="border-2 border-gray-300 border-dashed rounded-md cursor-pointer px-6 pt-5 pb-6">
-                      <input
-                        accept="image/*,.jpeg,.jpg,.png,.webp"
-                        type="file"
-                        className="hidden"
-                      />
-                      <span className="mx-auto flex justify-center">
-                        <svg
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-width="2"
-                          viewBox="0 0 24 24"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          className="text-3xl text-green-500"
-                          height="1em"
-                          width="1em"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <polyline points="16 16 12 12 8 16"></polyline>
-                          <line x1="12" y1="12" x2="12" y2="21"></line>
-                          <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                          <polyline points="16 16 12 12 8 16"></polyline>
-                        </svg>
-                      </span>
-                      <p className="text-sm mt-2">Drag your images here</p>
-                      <em className="text-xs text-gray-400">
-                        (Only *.jpeg, *.webp and *.png images will be accepted)
-                      </em>
-                    </div>
-                    <div className="text-emerald-500"></div>
-                    <aside className="flex flex-row flex-wrap mt-4"></aside>
-                  </div>
-                </div>
-              </div>
-
-              {/* Choose status */}
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
-                  Published
-                </label>
-                <div className="col-span-8 sm:col-span-4">
-                  <Switch crossOrigin color="green" defaultChecked />
-                </div>
-              </div>
-            </div>
-            <div className="relative z-10 bottom-0 w-full right-0 py-4 lg:py-8 px-6 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex bg-gray-50 border-t border-gray-100">
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                <button
-                  className="transition-colors duration-150 font-medium py-2 text-sm focus:outline-none rounded-lg border 
-                  border-gray-200 px-4 mr-3 flex items-center justify-center cursor-pointer bg-white w-full text-red-500
-                   hover:bg-red-50 hover:border-red-100 hover:text-red-600 
-                   "
-                  onClick={closeDrawer}
-                >
-                  Cancel
-                </button>
-              </div>
-              <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                <button
-                  className="align-bottom inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 rounded-lg text-sm text-white bg-green-500 border border-transparent hover:bg-green-600 w-full"
-                  type="submit"
-                  onClick={closeDrawer}
-                >
-                  <span>Add Coupon</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </Drawer>
 
         {/* Filter */}
         <div className="min-w-0 rounded-lg overflow-hidden bg-white shadow-xs rounded-t-lg rounded-0 mb-4">

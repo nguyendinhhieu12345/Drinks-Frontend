@@ -6,6 +6,7 @@ import {
   Megaphone,
   Percent,
   ShoppingCart,
+  Storefront,
   UserRectangle,
   UsersThree,
 } from "@phosphor-icons/react";
@@ -69,6 +70,11 @@ const ITEM_ADMIN_SIDEBAR = [
     title: "Coupons",
     icon: <Percent size={25} />,
     to: configRouter.coupons,
+  },
+  {
+    title: "Branchs",
+    icon: <Storefront size={25} />,
+    to: configRouter.addBranch,
   },
   {
     title: "Marketing",

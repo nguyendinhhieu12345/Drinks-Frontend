@@ -10,7 +10,7 @@ interface ITableConfirmDelete {
   open: boolean;
   handleOpen: () => void;
   title: string;
-  handleDeleteCate: () => void;
+  handleDelete: () => void;
 }
 
 function TableConfirmDelete(props: ITableConfirmDelete) {
@@ -32,7 +32,7 @@ function TableConfirmDelete(props: ITableConfirmDelete) {
           Cancel
         </Button>
         <Button
-          onClick={props.handleDeleteCate}
+          onClick={props.handleDelete}
           placeholder=""
           variant="gradient"
           color="green"
