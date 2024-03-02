@@ -303,7 +303,7 @@ export default function Products() {
           open={open}
           handleOpen={handleOpen}
           title="Product"
-          handleDeleteCate={handleDeleteProduct}
+          handleDelete={handleDeleteProduct}
         />
       </div>
     </div>

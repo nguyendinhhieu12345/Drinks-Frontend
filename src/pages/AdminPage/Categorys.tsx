@@ -282,7 +282,7 @@ export default function Categorys() {
           open={open}
           handleOpen={handleOpen}
           title="Category"
-          handleDeleteCate={handleDeleteCate}
+          handleDelete={handleDeleteCate}
         />
       </div>
     </div>
