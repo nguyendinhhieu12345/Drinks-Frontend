@@ -1,8 +1,9 @@
 import useLoading from "@/hooks/useLoading";
 import { IBranch } from "@/types/type";
 import { Spinner } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import * as branchApi from "@/api/adminApi/branchApi/branchApi";
+import * as ortherApi from "@/api/adminApi/ortherApi/ortherApi";
 import { toast } from "react-toastify";
 
 interface ICreateBranch {
@@ -12,23 +13,124 @@ interface ICreateBranch {
   type?: string;
 }
 
+interface IProvince {
+  province_id: string;
+  province_name: string;
+  province_type: string;
+}
+
+interface IDistrict {
+  district_id: string;
+  district_name: string;
+  district_type: string;
+  lat: number | null;
+  lng: number | null;
+  province_id: string;
+}
+
+interface IWard {
+  district_id: string;
+  ward_id: string;
+  ward_name: string;
+  ward_type: string;
+}
+
+interface INewBranch {
+  province: string;
+  district: string;
+  ward: string;
+  detail: string;
+  phone: number;
+}
+
 function CreateBranch(props: ICreateBranch) {
-  const [provinceSelect, setProvinceSelect] = useState<string>("");
-  const [districtSelect, setDistrictSelect] = useState<string>("");
-  const [wardsSelect, setWardSelect] = useState<string>("");
-  const [detail, setDetail] = useState<string>("");
-  const [phone, setPhone] = useState<number>(0);
+  const [newBranch, setNewBranch] = useState<INewBranch>({
+    province: "",
+    district: "",
+    ward: "",
+    detail: "",
+    phone: 0,
+  });
   const { isLoading, startLoading, stopLoading } = useLoading();
+  const [province, setProvince] = useState<IProvince[]>([]);
+  const [district, setDistrict] = useState<IDistrict[]>([]);
+  const [ward, setWard] = useState<IWard[]>([]);
+
+  const getAllProvince = async () => {
+    const data = await ortherApi.getAllProvince();
+    setProvince(data?.data?.results);
+  };
+
+  const getAllDistrict = async (province_id: string) => {
+    const data = await ortherApi.getAllDistrict(province_id);
+    setDistrict(data?.data?.results);
+  };
+
+  const getAllWard = async (district_id: string) => {
+    const data = await ortherApi.getAllWard(district_id);
+    setWard(data?.data?.results);
+  };
+
+  const handleChangeProvinces = (event: ChangeEvent<HTMLSelectElement>) => {
+    setNewBranch((prevState: INewBranch) => ({
+      ...prevState,
+      ["province"]: event.target.value.split(",")[1],
+    }));
+    getAllDistrict(event.target.value.split(",")[0]);
+  };
+
+  const handleChangeDistrict = (event: ChangeEvent<HTMLSelectElement>) => {
+    setNewBranch((prevState: INewBranch) => ({
+      ...prevState,
+      ["district"]: event.target.value.split(",")[1],
+    }));
+    getAllWard(event.target.value.split(",")[0]);
+  };
+
+  const handleChangeWard = (event: ChangeEvent<HTMLSelectElement>) => {
+    setNewBranch((prevState: INewBranch) => ({
+      ...prevState,
+      ["ward"]: event.target.value.split(",")[1],
+    }));
+  };
 
   useEffect(() => {
+    getAllProvince();
     if (props.type === "edit" && props.currentBranch) {
-      setProvinceSelect(props?.currentBranch?.province);
-      setDistrictSelect(props?.currentBranch?.district);
-      setWardSelect(props?.currentBranch?.ward);
-      setDetail(props?.currentBranch?.detail);
-      setPhone(parseInt(props?.currentBranch?.phoneNumber));
+      console.log(props.currentBranch);
+      setNewBranch((prevState: INewBranch) => ({
+        ...prevState,
+        ["province"]: props?.currentBranch?.province || "",
+      }));
+      setNewBranch((prevState: INewBranch) => ({
+        ...prevState,
+        ["district"]: props?.currentBranch?.district || "",
+      }));
+      setNewBranch((prevState: INewBranch) => ({
+        ...prevState,
+        ["ward"]: props?.currentBranch?.ward || "",
+      }));
+      setNewBranch((prevState: INewBranch) => ({
+        ...prevState,
+        ["detail"]: props?.currentBranch?.detail || "",
+      }));
+      setNewBranch((prevState: INewBranch) => ({
+        ...prevState,
+        phone: props?.currentBranch?.phoneNumber || 0,
+      }));
     }
   }, []);
+
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    key: string
+  ): void => {
+    const { value } = event.target;
+    setNewBranch((prevState: INewBranch) => ({
+      ...prevState,
+      [key]: value,
+    }));
+  };
 
   const handleClose = () => {
     props.setOpenCreateBranch(false);
@@ -38,21 +140,21 @@ function CreateBranch(props: ICreateBranch) {
     try {
       startLoading();
       if (
-        provinceSelect !== "" &&
-        districtSelect !== "" &&
-        wardsSelect !== "" &&
-        detail !== "" &&
-        phone !== 0
+        newBranch?.province !== "" &&
+        newBranch?.district !== "" &&
+        newBranch?.ward !== "" &&
+        newBranch?.detail !== "" &&
+        newBranch?.phone !== 0
       ) {
         if (props?.type !== "edit") {
           const data = await branchApi.addBranch(
-            provinceSelect,
-            districtSelect,
-            wardsSelect,
-            detail,
+            newBranch?.province,
+            newBranch?.district,
+            newBranch?.ward,
+            newBranch?.detail,
             1,
             1,
-            phone
+            newBranch?.phone
           );
           if (data.success) {
             toast.success(data?.message);
@@ -61,10 +163,10 @@ function CreateBranch(props: ICreateBranch) {
           }
         } else {
           const data = await branchApi.updateBranch(
-            provinceSelect,
-            districtSelect,
-            wardsSelect,
-            detail,
+            newBranch?.province,
+            newBranch?.district,
+            newBranch?.ward,
+            newBranch?.detail,
             props?.currentBranch?.id as string
           );
           if (data.success) {
@@ -110,14 +212,25 @@ function CreateBranch(props: ICreateBranch) {
               Province
             </label>
             <div className="col-span-8 sm:col-span-4">
-              <input
-                className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
-                type="text"
-                name="Province"
-                placeholder="Province"
-                onChange={(e) => setProvinceSelect(e.target.value)}
-                value={provinceSelect}
-              />
+              <select
+                className="mt-3 rounded-md w-full border-slate-400 hover:border-slate-900 focus:border-sky-600"
+                onChange={(e) => handleChangeProvinces(e)}
+                defaultValue={
+                  newBranch?.province === ""
+                    ? "Choose province"
+                    : newBranch?.province
+                }
+              >
+                <option disabled>Choose province</option>
+                {province?.map((dt) => (
+                  <option
+                    key={dt?.province_id}
+                    value={[dt.province_id, dt.province_name]}
+                  >
+                    {dt?.province_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -127,14 +240,21 @@ function CreateBranch(props: ICreateBranch) {
               District
             </label>
             <div className="col-span-8 sm:col-span-4">
-              <input
-                className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
-                type="text"
-                name="District"
-                placeholder="District"
-                onChange={(e) => setDistrictSelect(e.target.value)}
-                value={districtSelect}
-              />
+              <select
+                className="mt-3 rounded-md w-full border-slate-400 hover:border-slate-900 focus:border-sky-600"
+                onChange={(e) => handleChangeDistrict(e)}
+                defaultValue={"Choose district"}
+              >
+                <option disabled>Choose district</option>
+                {district?.map((dt, index) => (
+                  <option
+                    key={index}
+                    value={[dt?.district_id, dt?.district_name]}
+                  >
+                    {dt?.district_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -144,14 +264,18 @@ function CreateBranch(props: ICreateBranch) {
               Ward
             </label>
             <div className="col-span-8 sm:col-span-4">
-              <input
-                className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
-                type="text"
-                name="Ward"
-                placeholder="Ward"
-                onChange={(e) => setWardSelect(e.target.value)}
-                value={wardsSelect}
-              />
+              <select
+                className="mt-3 rounded-md w-full border-slate-400 hover:border-slate-900 focus:border-sky-600"
+                onChange={(e) => handleChangeWard(e)}
+                defaultValue={"Choose ward"}
+              >
+                <option disabled>Choose ward</option>
+                {ward?.map((dt, index) => (
+                  <option key={index} value={[dt?.ward_id, dt?.ward_name]}>
+                    {dt?.ward_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -165,8 +289,8 @@ function CreateBranch(props: ICreateBranch) {
                 className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
                 name="Village"
                 placeholder="Village"
-                onChange={(e) => setDetail(e.target.value)}
-                value={detail}
+                onChange={(e) => handleInputChange(e, "detail")}
+                value={newBranch?.detail}
               />
             </div>
           </div>
@@ -185,8 +309,8 @@ function CreateBranch(props: ICreateBranch) {
                   name="Phone"
                   type="number"
                   placeholder="Phone"
-                  onChange={(e) => setPhone(parseInt(e.target.value))}
-                  value={phone}
+                  onChange={(e) => handleInputChange(e, "phone")}
+                  value={newBranch?.phone}
                 />
               </div>
             </div>

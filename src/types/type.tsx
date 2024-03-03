@@ -40,7 +40,7 @@ export interface IBranch {
   detail: string;
   longitude: number;
   latitude: number;
-  phoneNumber: string;
+  phoneNumber: number;
   createdAt: string;
   updatedAt: string;
   orderBillList?: [];
