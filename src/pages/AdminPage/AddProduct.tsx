@@ -271,7 +271,7 @@ export default function AddProduct() {
 
   return (
     <>
-      {productEdit?.id ? (
+      {productEdit?.id !== "" ? (
         <div className="w-full h-auto min-h-full overflow-auto py-3 px-8 ">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center">

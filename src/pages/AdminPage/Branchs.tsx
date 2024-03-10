@@ -3,26 +3,27 @@ import { Delete } from "@/components/SVG/Delete.svg";
 import { Edit } from "@/components/SVG/Edit.svg";
 import TableAdmin from "@/components/TableAdmin/TableAdmin";
 import TableConfirmDelete from "@/components/TableAdmin/TableConfirmDelete";
-import { Drawer } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { IBranch } from "@/types/type";
-import CreateBranch from "@/components/Branch/CreateBranch";
 import * as branchApi from "@/api/adminApi/branchApi/branchApi";
+import { useNavigate } from "react-router-dom";
+import { configRouter } from "@/configs/router";
 
 interface IResponseBranch {
   timestamp: string;
   success: boolean;
   message: string;
-  data: IBranch[];
+  data: {
+    branchList: IBranch[];
+  };
 }
 
 export default function Branchs() {
   const [open, setOpen] = useState<boolean>(false);
-  const [openCreateBranch, setOpenCreateBranch] = useState<boolean>(false);
   const [branchs, setBranchs] = useState<IResponseBranch>();
   const [dataDelete, setDataDelete] = useState<string>("");
-  const [currentBranch, setCurrentBranch] = useState<IBranch | null>(null);
+  const nav = useNavigate();
 
   // Open confirm delete
   const handleDelete = (e: string) => {
@@ -45,22 +46,14 @@ export default function Branchs() {
     }
   };
 
-  // Drawer
-  const openDrawer = () => setOpenCreateBranch(true);
-  const closeDrawer = () => setOpenCreateBranch(false);
-
-  const handleAddCate = () => {
-    setOpenCreateBranch(true);
-    setCurrentBranch(null);
-  };
-
   const getAllBranch = async () => {
-    const data = await branchApi.getAllBranch();
+    const data = await branchApi.getAllBranch(1);
     setBranchs(data);
   };
+
   useEffect(() => {
     getAllBranch();
-  }, [openCreateBranch]);
+  }, []);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -87,7 +80,9 @@ export default function Branchs() {
                   <button
                     className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-green-500 border border-transparent w-full rounded-md h-12"
                     type="button"
-                    onClick={handleAddCate}
+                    onClick={() => {
+                      nav(configRouter.addBranchs);
+                    }}
                   >
                     <span className="mr-2">
                       <Add />
@@ -100,63 +95,50 @@ export default function Branchs() {
           </div>
         </div>
 
-        {/* Model create category */}
-        <Drawer
-          placeholder=""
-          placement="right"
-          open={openCreateBranch}
-          onClose={closeDrawer}
-          size={700}
-        >
-          <button
-            className="absolute focus:outline-none z-10 text-red-500 hover:bg-red-100 hover:text-gray-700 transition-colors duration-150 bg-white shadow-md mr-6 mt-6 right-0 left-auto w-10 h-10 rounded-full block text-center"
-            onClick={closeDrawer}
-          >
-            <svg
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mx-auto"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-          {openCreateBranch && (
-            <CreateBranch
-              type={currentBranch ? "edit" : "create"}
-              branchs={branchs?.data}
-              setOpenCreateBranch={setOpenCreateBranch}
-              currentBranch={currentBranch}
-            />
-          )}
-        </Drawer>
-
         {/* <TableCategorys /> */}
         <TableAdmin
-          fieldTable={["id", "address", "phone", "actions"]}
+          fieldTable={[
+            "id",
+            "Name",
+            "address",
+            "phone",
+            "Time",
+            "Status",
+            "actions",
+          ]}
           data=""
           isPaging={false}
           title="Category"
           scriptData={
             <tbody className="bg-white divide-y divide-gray-100  text-gray-800">
-              {branchs?.data?.map((branch, i) => (
+              {branchs?.data?.branchList?.map((branch, i) => (
                 <tr key={i}>
                   <>
                     <td className="px-4 py-2">
                       <span className="text-sm">{branch.id}</span>
                     </td>
                     <td className="px-4 py-2">
+                      <span className="text-sm">{branch.name}</span>
+                    </td>
+                    <td className="px-4 py-2">
                       <span className="text-sm">{branch.fullAddress}</span>
                     </td>
                     <td className="px-4 py-2">
                       <span className="text-sm">{branch.phoneNumber}</span>
+                    </td>
+                    <td className="px-4 py-2">
+                      <span className="text-sm">{branch.operatingTime}</span>
+                    </td>
+                    <td className="px-4 py-2">
+                      {branch.status !== "ACTIVE" ? (
+                        <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-red-600 bg-red-100 italic">
+                          Hidden
+                        </span>
+                      ) : (
+                        <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-green-600 bg-green-100">
+                          Active
+                        </span>
+                      )}
                     </td>
                   </>
 
@@ -165,8 +147,9 @@ export default function Branchs() {
                       <button
                         className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none"
                         onClick={() => {
-                          setCurrentBranch(branch);
-                          openDrawer();
+                          nav(
+                            configRouter.editBranchs.slice(0, -3) + branch.id
+                          );
                         }}
                       >
                         <p data-tip="true" data-for="edit" className="text-xl">

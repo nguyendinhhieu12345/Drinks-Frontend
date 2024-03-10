@@ -1,23 +1,9 @@
 import * as httpRequest from "../../../utils/httpRequest";
 
-export const addBranch = async (
-  province: string,
-  district: string,
-  ward: string,
-  detail: string,
-  longitude: number,
-  latitude: number,
-  phoneNumber: number
-) => {
+export const addBranch = async (newBranch: FormData) => {
   try {
-    const res = await httpRequest.post(`/branch`, {
-      province,
-      district,
-      ward,
-      detail,
-      longitude,
-      latitude,
-      phoneNumber,
+    const res = await httpRequest.post(`/branch`, newBranch, {
+      "Content-Type": "multipart/form-data",
     });
     return res;
   } catch (error) {
@@ -25,9 +11,9 @@ export const addBranch = async (
   }
 };
 
-export const getAllBranch = async () => {
+export const getAllBranch = async (page: number) => {
   try {
-    const res = await httpRequest.get(`/branch`);
+    const res = await httpRequest.get(`/branch?page=${page}&size=10`);
     return res;
   } catch (error) {
     return Promise.reject(error);
@@ -43,20 +29,20 @@ export const deleteBranch = async (branchId: string) => {
   }
 };
 
-export const updateBranch = async (
-  province: string,
-  district: string,
-  ward: string,
-  detail: string,
-  branchId: string
-) => {
+export const updateBranch = async (newBranch: FormData, branchId: string) => {
   try {
-    const res = await httpRequest.put(`/branch/${branchId}`, {
-      province,
-      district,
-      ward,
-      detail,
+    const res = await httpRequest.put(`/branch/${branchId}`, newBranch, {
+      "Content-Type": "multipart/form-data",
     });
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getBranchById = async (branchId: string) => {
+  try {
+    const res = await httpRequest.get(`/branch/${branchId}/detail`);
     return res;
   } catch (error) {
     return Promise.reject(error);

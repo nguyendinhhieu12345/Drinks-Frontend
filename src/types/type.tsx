@@ -34,16 +34,9 @@ export interface IProduct {
 
 export interface IBranch {
   id: string;
-  province: string;
-  district: string;
-  ward: string;
-  detail: string;
-  longitude: number;
-  latitude: number;
-  phoneNumber: number;
-  createdAt: string;
-  updatedAt: string;
-  orderBillList?: [];
-  employeeList?: [];
+  name: string;
+  status: string;
+  phoneNumber: string;
   fullAddress: string;
+  operatingTime: string;
 }
