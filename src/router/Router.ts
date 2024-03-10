@@ -144,8 +144,20 @@ const publicRoutes: IRouter[] = [
     role: null,
   },
   {
-    path: configRouter.addBranch,
+    path: configRouter.branchs,
     component: lazy(() => import("../pages/AdminPage/Branchs")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.addBranchs,
+    component: lazy(() => import("../components/Branch/CreateBranch")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.editBranchs,
+    component: lazy(() => import("../components/Branch/CreateBranch")),
     layout: AdminLayout,
     role: null,
   },

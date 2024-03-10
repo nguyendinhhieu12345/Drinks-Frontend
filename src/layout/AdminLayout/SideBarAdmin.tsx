@@ -74,7 +74,7 @@ const ITEM_ADMIN_SIDEBAR = [
   {
     title: "Branchs",
     icon: <Storefront size={25} />,
-    to: configRouter.addBranch,
+    to: configRouter.branchs,
   },
   {
     title: "Marketing",

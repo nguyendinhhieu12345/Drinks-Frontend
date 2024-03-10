@@ -1,9 +1,29 @@
-import * as httpRequest from "../../../utils/httpRequest";
+import axios from "axios";
 
-export const getAllAddress = async () => {
+export const getAllProvince = async () => {
   try {
-    const res = await httpRequest.get(
-      `https://provinces.open-api.vn/api/?depth=3`
+    const res = await axios.get(`https://vapi.vnappmob.com/api/province`);
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getAllDistrict = async (province_id: string) => {
+  try {
+    const res = await axios.get(
+      `https://vapi.vnappmob.com/api/province/district/${province_id}`
+    );
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getAllWard = async (district_id: string) => {
+  try {
+    const res = await axios.get(
+      `https://vapi.vnappmob.com/api/province/ward/${district_id}`
     );
     return res;
   } catch (error) {

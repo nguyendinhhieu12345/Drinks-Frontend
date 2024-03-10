@@ -8,29 +8,112 @@ import {
   DialogFooter,
   DialogHeader,
   Drawer,
+  Spinner,
   Switch,
 } from "@material-tailwind/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import * as branchApi from "@/api/adminApi/branchApi/branchApi";
+import * as employeeApi from "@/api/adminApi/employeeApi/employeeApi";
+import { IBranch } from "@/types/type";
+import { toast } from "react-toastify";
+import useLoading from "@/hooks/useLoading";
+
+interface INewStaff {
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  birthDay: string;
+  branchId: string;
+  gender: boolean;
+}
 
 export default function OurStaff() {
-  const [openCreateCategory, setOpenCreateCategory] = useState<boolean>(false);
+  const [openCreateStaff, setOpenCreateStaff] = useState<boolean>(false);
+  const [branchs, setBranchs] = useState<IBranch[]>([]);
+  const [newStaff, setNewStaff] = useState<INewStaff>({
+    username: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    birthDay: "",
+    branchId: "",
+    gender: true,
+  });
+  const { isLoading, startLoading, stopLoading } = useLoading();
 
-  const openDrawer = () => setOpenCreateCategory(true);
-  const closeDrawer = () => setOpenCreateCategory(false);
+  const openDrawer = async () => {
+    setOpenCreateStaff(true);
+    const data = await branchApi.getAllBranch();
+    setBranchs(data?.data);
+    setNewStaff((prevState: INewStaff) => ({
+      ...prevState,
+      ["branchId"]: data?.data[0]?.id,
+    }));
+  };
+  const closeDrawer = () => setOpenCreateStaff(false);
+
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    key: string
+  ): void => {
+    const { value } = event.target;
+    setNewStaff((prevState: INewStaff) => ({
+      ...prevState,
+      [key]: value,
+    }));
+  };
+
+  const handleAddStaff = async () => {
+    if (
+      newStaff?.username !== "" &&
+      newStaff?.firstName !== "" &&
+      newStaff?.lastName !== "" &&
+      newStaff?.birthDay !== "" &&
+      newStaff?.branchId !== "" &&
+      newStaff?.password !== ""
+    ) {
+      try {
+        startLoading();
+        const data = await employeeApi.addEmployee(
+          newStaff?.username,
+          newStaff?.password,
+          newStaff?.firstName,
+          newStaff?.lastName,
+          newStaff?.birthDay,
+          newStaff?.gender ? "MALE" : "FEMALE",
+          newStaff?.branchId
+        );
+        if (data.success) {
+          stopLoading();
+          toast.success(data.message);
+          setOpenCreateStaff(false);
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(err?.response?.data?.message, {
+          position: "bottom-left",
+        });
+      }
+    } else {
+      stopLoading();
+      toast.error("Please fill out all fields completely", {
+        position: "bottom-left",
+      });
+    }
+  };
 
   return (
     <div className="h-full overflow-y-auto">
       <div className="sm:container grid lg:px-6 sm:px-4 px-2 mx-auto">
-        <h1 className="mt-2 mb-4 text-lg font-bold text-gray-700 ">
-          Categorys
-        </h1>
+        <h1 className="mt-2 mb-4 text-lg font-bold text-gray-700 ">Staffs</h1>
 
-        {/* Model create category */}
+        {/* Model create Staff */}
         <Drawer
           placeholder=""
           placement="right"
-          open={openCreateCategory}
+          open={openCreateStaff}
           onClose={closeDrawer}
           size={700}
         >
@@ -65,7 +148,7 @@ export default function OurStaff() {
                 </div>
               </div>
             </div>
-            <div className="p-6 flex-grow scrollbar-hide w-full max-h-full pb-40">
+            <div className="p-6 flex-grow scrollbar-hide w-full max-h-full pb-40 overflow-y-auto">
               {/* Input Username */}
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
                 <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
@@ -77,7 +160,8 @@ export default function OurStaff() {
                     type="text"
                     name="name"
                     placeholder="Username"
-                    value=""
+                    value={newStaff?.username}
+                    onChange={(e) => handleInputChange(e, "username")}
                   />
                 </div>
               </div>
@@ -93,7 +177,8 @@ export default function OurStaff() {
                     type="text"
                     name="name"
                     placeholder="First name"
-                    value=""
+                    value={newStaff?.firstName}
+                    onChange={(e) => handleInputChange(e, "firstName")}
                   />
                 </div>
               </div>
@@ -107,9 +192,10 @@ export default function OurStaff() {
                   <input
                     className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
                     type="text"
-                    name="name"
                     placeholder="Last name"
-                    value=""
+                    name="name"
+                    value={newStaff?.lastName}
+                    onChange={(e) => handleInputChange(e, "lastName")}
                   />
                 </div>
               </div>
@@ -125,7 +211,8 @@ export default function OurStaff() {
                     type="password"
                     name="name"
                     placeholder="Password"
-                    // value=""
+                    value={newStaff?.password}
+                    onChange={(e) => handleInputChange(e, "password")}
                   />
                 </div>
               </div>
@@ -143,7 +230,36 @@ export default function OurStaff() {
                       type="date"
                       name="joiningDate"
                       placeholder="Joining Date"
+                      value={newStaff?.birthDay}
+                      onChange={(e) => handleInputChange(e, "birthDay")}
                     />
+                  </div>
+                </div>
+              </div>
+
+              {/* Input Branch */}
+              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
+                  Branch
+                </label>
+
+                <div className="col-span-8 sm:col-span-4">
+                  <div className="w-full text-center">
+                    <select
+                      className="w-full rounded-xl text-base"
+                      onChange={(e) => {
+                        setNewStaff((prevState: INewStaff) => ({
+                          ...prevState,
+                          ["branchId"]: e.target.value,
+                        }));
+                      }}
+                    >
+                      {branchs.map((branch, index) => (
+                        <option key={index} value={branch?.id}>
+                          {branch?.fullAddress}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -156,10 +272,16 @@ export default function OurStaff() {
                 <div className="col-span-8 sm:col-span-4 flex">
                   <p className="opacity-80  mr-2">Female</p>
                   <Switch
-                    crossOrigin
                     color="green"
-                    defaultChecked
                     label="Male"
+                    onChange={(e) => {
+                      setNewStaff((prevState: INewStaff) => ({
+                        ...prevState,
+                        ["gender"]: e.target.checked,
+                      }));
+                    }}
+                    checked={newStaff?.gender}
+                    crossOrigin={true.toString()}
                   />
                 </div>
               </div>
@@ -180,9 +302,16 @@ export default function OurStaff() {
                 <button
                   className="align-bottom inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 rounded-lg text-sm text-white bg-green-500 border border-transparent hover:bg-green-600 w-full"
                   type="submit"
-                  onClick={closeDrawer}
+                  onClick={handleAddStaff}
                 >
-                  <span>Add Staff</span>
+                  {isLoading ? (
+                    <p className="flex items-center justify-center">
+                      <span className="mr-2">Save</span>{" "}
+                      <Spinner className="h-4 w-4" />
+                    </p>
+                  ) : (
+                    <span>Add Staff</span>
+                  )}
                 </button>
               </div>
             </div>

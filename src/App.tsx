@@ -10,6 +10,8 @@ import RequireAuth from "./router/RequireAuth";
 import { AnimatePresence } from "framer-motion";
 import LoadingPage from "./components/LoadingPage/LoadingPage";
 import { User } from "./type";
+import "@goongmaps/goong-js/dist/goong-js.css";
+
 interface LayoutProps {
   children?: React.ReactNode;
 }

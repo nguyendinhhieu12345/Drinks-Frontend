@@ -19,7 +19,7 @@ export const getAllProduct = async (
 ) => {
   try {
     const res = await httpRequest.get(
-      `/product?page=${pageCurrent}&size=2${
+      `/product?page=${pageCurrent}&size=10${
         productStatus !== "" ? `&productStatus=${productStatus}` : ""
       }${key !== "" ? `&key=${key}` : ""}${
         categoryId !== "" ? `&categoryId=${categoryId}` : ""

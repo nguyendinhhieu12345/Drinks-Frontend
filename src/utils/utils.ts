@@ -39,18 +39,6 @@ export const calculateTimePassed = (time: number | string): string => {
   return "Just now";
 };
 
-export function insertArrayElements<T>(
-  arr: T[],
-  dragIndex: number,
-  hoverIndex: number
-): T[] {
-  const newLessonList = [...arr];
-  const draggedLesson = arr[dragIndex];
-  newLessonList.splice(dragIndex, 1); // xóa lesson đang drag khỏi list
-  newLessonList.splice(hoverIndex, 0, draggedLesson); // chèn lesson đang drag vào vị trí mới
-  return newLessonList;
-}
-
 export const isUrl = (str: string): boolean => {
   const pattern = new RegExp(
     "^(https?:\\/\\/)?" + // protocol
