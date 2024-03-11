@@ -92,7 +92,6 @@ export default function Products() {
     setOpen(!open);
     try {
       const data = await productApi.deleteProduct(productDeleteId);
-      console.log(data);
       if (data?.success) {
         toast.success(data?.message);
         getAllProduct("", 1, "", "");

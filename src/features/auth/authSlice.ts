@@ -87,6 +87,12 @@ export const authSlice = createSlice({
       state.currentUser = action.payload;
     });
 
+    builder.addCase(logoutThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.isError = true;
+      state.error = action.error.message;
+    });
+
     builder.addCase(logoutThunk.fulfilled, (state) => {
       state.loading = false;
       state.currentUser = null;

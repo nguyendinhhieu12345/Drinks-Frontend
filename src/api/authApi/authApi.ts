@@ -12,6 +12,16 @@ export const loginPass = async (params: Auth) => {
     return Promise.reject(error?.response?.data);
   }
 };
+
+export const logout = async () => {
+  try {
+    const res = await httpRequest.get("/auth/employee/logout");
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 export const signup = async (params: signupState) => {
   try {
     const res = await httpRequest.post("/user/register", {
@@ -29,15 +39,6 @@ export const signup = async (params: signupState) => {
 export const test = async () => {
   try {
     const res = await httpRequest.get("/user/listServerOfUser");
-    return res?.result;
-  } catch (error) {
-    return Promise.reject(error);
-  }
-};
-
-export const logout = async () => {
-  try {
-    const res = await httpRequest.post("/user/logout");
     return res?.result;
   } catch (error) {
     return Promise.reject(error);

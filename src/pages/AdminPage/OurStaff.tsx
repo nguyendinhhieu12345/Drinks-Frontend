@@ -1,32 +1,40 @@
 import { Add } from "@/components/SVG/Add.svg";
 import { Delete } from "@/components/SVG/Delete.svg";
 import { Edit } from "@/components/SVG/Edit.svg";
-import {
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-  Drawer,
-  Spinner,
-  Switch,
-} from "@material-tailwind/react";
-import { CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { ChangeEvent, useState } from "react";
+import { Drawer, Spinner, Switch } from "@material-tailwind/react";
+import { ChangeEvent, useEffect, useState } from "react";
 import * as branchApi from "@/api/adminApi/branchApi/branchApi";
 import * as employeeApi from "@/api/adminApi/employeeApi/employeeApi";
-import { IBranch } from "@/types/type";
+import { IBranch, IStaff } from "@/types/type";
 import { toast } from "react-toastify";
 import useLoading from "@/hooks/useLoading";
+import TableConfirmDelete from "@/components/TableAdmin/TableConfirmDelete";
+import TableAdmin from "@/components/TableAdmin/TableAdmin";
 
 interface INewStaff {
   username: string;
   firstName: string;
   lastName: string;
   password: string;
-  birthDay: string;
+  birthDate: string;
   branchId: string;
   gender: boolean;
+  email: string;
+  phoneNumber: string;
+  role: string;
+  isEdit?: boolean;
+  id?: string;
+  status?: string;
+}
+
+interface IEmployeeResponse {
+  timestamp: string;
+  success: boolean;
+  message: string;
+  data: {
+    totalPage: number;
+    employeeList: IStaff[];
+  };
 }
 
 export default function OurStaff() {
@@ -37,22 +45,53 @@ export default function OurStaff() {
     firstName: "",
     lastName: "",
     password: "",
-    birthDay: "",
+    birthDate: "",
     branchId: "",
     gender: true,
+    email: "",
+    phoneNumber: "",
+    role: "ROLE_USER",
+    isEdit: false,
+    status: "ACTIVE",
   });
+  const [employees, setEmployees] = useState<IEmployeeResponse>();
   const { isLoading, startLoading, stopLoading } = useLoading();
+  const [open, setOpen] = useState<boolean>(false);
+  const [employeeId, setEmployeeId] = useState<string>("");
+  const [keySearch, setKeySearch] = useState<{
+    key: string;
+    status: string;
+  }>({
+    key: "",
+    status: "ACTIVE",
+  });
 
   const openDrawer = async () => {
     setOpenCreateStaff(true);
-    const data = await branchApi.getAllBranch();
-    setBranchs(data?.data);
+    const data = await branchApi.getAllBranch(1);
+    setBranchs(data?.data?.branchList);
     setNewStaff((prevState: INewStaff) => ({
       ...prevState,
       ["branchId"]: data?.data[0]?.id,
     }));
   };
-  const closeDrawer = () => setOpenCreateStaff(false);
+  const closeDrawer = () => {
+    setOpenCreateStaff(false);
+    setNewStaff({
+      username: "",
+      firstName: "",
+      lastName: "",
+      password: "",
+      birthDate: "",
+      branchId: "",
+      gender: true,
+      email: "",
+      phoneNumber: "",
+      role: "ROLE_USER",
+      isEdit: false,
+      status: "ACTIVE",
+    });
+  };
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -70,25 +109,61 @@ export default function OurStaff() {
       newStaff?.username !== "" &&
       newStaff?.firstName !== "" &&
       newStaff?.lastName !== "" &&
-      newStaff?.birthDay !== "" &&
+      newStaff?.birthDate !== "" &&
       newStaff?.branchId !== "" &&
       newStaff?.password !== ""
     ) {
       try {
-        startLoading();
-        const data = await employeeApi.addEmployee(
-          newStaff?.username,
-          newStaff?.password,
-          newStaff?.firstName,
-          newStaff?.lastName,
-          newStaff?.birthDay,
-          newStaff?.gender ? "MALE" : "FEMALE",
-          newStaff?.branchId
-        );
-        if (data.success) {
-          stopLoading();
-          toast.success(data.message);
-          setOpenCreateStaff(false);
+        if (!newStaff?.isEdit) {
+          startLoading();
+          const data = await employeeApi.addEmployee(
+            newStaff?.username,
+            newStaff?.password,
+            newStaff?.firstName,
+            newStaff?.lastName,
+            newStaff?.birthDate,
+            newStaff?.gender ? "MALE" : "FEMALE",
+            newStaff?.branchId,
+            newStaff?.email,
+            newStaff?.phoneNumber,
+            newStaff?.role
+          );
+          if (data.success) {
+            stopLoading();
+            toast.success(data.message);
+            setOpenCreateStaff(false);
+            getAllEmployee("", 1, "");
+          }
+        } else {
+          startLoading();
+          const data = await employeeApi.updateEmployee(
+            newStaff?.firstName,
+            newStaff?.lastName,
+            newStaff?.birthDate,
+            newStaff?.gender ? "MALE" : "FEMALE",
+            newStaff?.status as string,
+            newStaff?.id as string
+          );
+          if (data.success) {
+            stopLoading();
+            toast.success(data.message);
+            setOpenCreateStaff(false);
+            getAllEmployee("", 1, "");
+            setNewStaff({
+              username: "",
+              firstName: "",
+              lastName: "",
+              password: "",
+              birthDate: "",
+              branchId: "",
+              gender: true,
+              email: "",
+              phoneNumber: "",
+              role: "ROLE_USER",
+              isEdit: false,
+              status: "ACTIVE",
+            });
+          }
         }
       } catch (err: any) {
         stopLoading();
@@ -102,6 +177,62 @@ export default function OurStaff() {
         position: "bottom-left",
       });
     }
+  };
+
+  const getAllEmployee = async (key: string, page: number, status: string) => {
+    const data = await employeeApi.getAllEmployee(key, page, status);
+    setEmployees(data);
+  };
+
+  useEffect(() => {
+    getAllEmployee("", 1, "");
+  }, []);
+
+  // Open confirm delete
+  const handleOpen = () => setOpen(!open);
+
+  const handleDelete = (e: string) => {
+    setOpen(!open);
+    setEmployeeId(e);
+  };
+
+  const handleDeleteEmployee = async () => {
+    setOpen(!open);
+    try {
+      const data = await employeeApi.deleteEmployee(employeeId);
+      if (data?.success) {
+        toast.success(data?.message);
+        getAllEmployee("", 1, "");
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message);
+    }
+  };
+
+  const handleSeachEmployee = async () => {
+    getAllEmployee(keySearch?.key, 1, keySearch?.status);
+  };
+
+  const handleResetEmployee = async () => {
+    setKeySearch((prev: any) => ({
+      ...prev,
+      status: "ACTIVE",
+    }));
+    getAllEmployee("", 1, "");
+  };
+
+  const handleRedirectEditEmployee = async (employeeId: string) => {
+    setOpenCreateStaff(true);
+    const data = await employeeApi.getEmployeeById(employeeId);
+    setNewStaff(data?.data);
+    setNewStaff((prev: INewStaff) => ({
+      ...prev,
+      isEdit: true,
+    }));
+    setNewStaff((prev: INewStaff) => ({
+      ...prev,
+      isEdit: true,
+    }));
   };
 
   return (
@@ -141,30 +272,35 @@ export default function OurStaff() {
             <div className="w-full relative p-6 border-b border-gray-100 bg-gray-50">
               <div className="flex md:flex-row flex-col justify-between mr-20">
                 <div>
-                  <h4 className="text-xl font-medium">Add Staff</h4>
+                  <h4 className="text-xl font-medium">
+                    {newStaff?.isEdit ? "Edit" : "Add"} Staff
+                  </h4>
                   <p className="mb-0 text-sm">
-                    Add your staff and necessary information from here
+                    {newStaff?.isEdit ? "Edit" : "Add"} your staff and necessary
+                    information from here
                   </p>
                 </div>
               </div>
             </div>
             <div className="p-6 flex-grow scrollbar-hide w-full max-h-full pb-40 overflow-y-auto">
               {/* Input Username */}
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
-                  Username
-                </label>
-                <div className="col-span-8 sm:col-span-4">
-                  <input
-                    className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
-                    type="text"
-                    name="name"
-                    placeholder="Username"
-                    value={newStaff?.username}
-                    onChange={(e) => handleInputChange(e, "username")}
-                  />
+              {!newStaff?.isEdit && (
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
+                    Username
+                  </label>
+                  <div className="col-span-8 sm:col-span-4">
+                    <input
+                      className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
+                      type="text"
+                      name="name"
+                      placeholder="Username"
+                      value={newStaff?.username}
+                      onChange={(e) => handleInputChange(e, "username")}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Input FName */}
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
@@ -201,21 +337,61 @@ export default function OurStaff() {
               </div>
 
               {/* Input Password */}
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
-                  Password
-                </label>
-                <div className="col-span-8 sm:col-span-4">
-                  <input
-                    className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
-                    type="password"
-                    name="name"
-                    placeholder="Password"
-                    value={newStaff?.password}
-                    onChange={(e) => handleInputChange(e, "password")}
-                  />
+              {!newStaff?.isEdit && (
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
+                    Password
+                  </label>
+                  <div className="col-span-8 sm:col-span-4">
+                    <input
+                      className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
+                      type="password"
+                      name="name"
+                      placeholder="Password"
+                      value={newStaff?.password}
+                      onChange={(e) => handleInputChange(e, "password")}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Input Email */}
+              {!newStaff?.isEdit && (
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
+                    Email
+                  </label>
+                  <div className="col-span-8 sm:col-span-4">
+                    <input
+                      className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
+                      type="text"
+                      name="name"
+                      placeholder="Email"
+                      value={newStaff?.email}
+                      onChange={(e) => handleInputChange(e, "email")}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Input Phone */}
+              {!newStaff?.isEdit && (
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <label className="block text-gray-800  col-span-4 sm:col-span-2 font-medium text-sm">
+                    Phone
+                  </label>
+                  <div className="col-span-8 sm:col-span-4">
+                    <input
+                      className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
+                      type="text"
+                      name="name"
+                      placeholder="Phone"
+                      value={newStaff?.phoneNumber}
+                      onChange={(e) => handleInputChange(e, "phoneNumber")}
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Input Birthday */}
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
@@ -230,39 +406,92 @@ export default function OurStaff() {
                       type="date"
                       name="joiningDate"
                       placeholder="Joining Date"
-                      value={newStaff?.birthDay}
-                      onChange={(e) => handleInputChange(e, "birthDay")}
+                      value={newStaff?.birthDate}
+                      onChange={(e) => handleInputChange(e, "birthDate")}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Input Branch */}
-              <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
-                  Branch
-                </label>
+              {!newStaff?.isEdit && (
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
+                    Branch
+                  </label>
 
-                <div className="col-span-8 sm:col-span-4">
-                  <div className="w-full text-center">
-                    <select
-                      className="w-full rounded-xl text-base"
-                      onChange={(e) => {
-                        setNewStaff((prevState: INewStaff) => ({
-                          ...prevState,
-                          ["branchId"]: e.target.value,
-                        }));
-                      }}
-                    >
-                      {branchs.map((branch, index) => (
-                        <option key={index} value={branch?.id}>
-                          {branch?.fullAddress}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="col-span-8 sm:col-span-4">
+                    <div className="w-full text-center">
+                      <select
+                        className="w-full rounded-xl text-base"
+                        onChange={(e) => {
+                          setNewStaff((prevState: INewStaff) => ({
+                            ...prevState,
+                            ["branchId"]: e.target.value,
+                          }));
+                        }}
+                      >
+                        {branchs.map((branch, index) => (
+                          <option key={index} value={branch?.id}>
+                            {branch?.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {!newStaff?.isEdit && (
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
+                    Role
+                  </label>
+                  <div className="col-span-8 sm:col-span-4">
+                    <div className="w-full text-center">
+                      <select
+                        className="w-full rounded-xl text-base"
+                        onChange={(e) => {
+                          setNewStaff((prevState: INewStaff) => ({
+                            ...prevState,
+                            ["role"]: e.target.value,
+                          }));
+                        }}
+                      >
+                        <option value="ROLE_USER">User</option>
+                        <option value="ROLE_ADMIN">Admin</option>
+                        <option value="ROLE_EMPLOYEE">Employee</option>
+                        <option value="ROLE_MANAGER">Manager</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {newStaff?.isEdit && (
+                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                  <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
+                    Status
+                  </label>
+                  <div className="col-span-8 sm:col-span-4">
+                    <div className="w-full text-center">
+                      <select
+                        className="w-full rounded-xl text-base"
+                        onChange={(e) => {
+                          setNewStaff((prevState: INewStaff) => ({
+                            ...prevState,
+                            ["status"]: e.target.value,
+                          }));
+                        }}
+                        value={newStaff?.status}
+                      >
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Choose status */}
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
@@ -310,7 +539,7 @@ export default function OurStaff() {
                       <Spinner className="h-4 w-4" />
                     </p>
                   ) : (
-                    <span>Add Staff</span>
+                    <span>{newStaff?.isEdit ? "Edit" : "Add"} Staff</span>
                   )}
                 </button>
               </div>
@@ -327,18 +556,21 @@ export default function OurStaff() {
                   className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white  focus:border-gray-200 border-gray-200"
                   type="search"
                   name="search"
-                  placeholder="Search by name/email/phone"
+                  placeholder="Search by username"
+                  onChange={(e) =>
+                    setKeySearch((prev: any) => ({
+                      ...prev,
+                      key: e.target.value,
+                    }))
+                  }
                 />
-                <button
-                  type="submit"
-                  className="absolute right-0 top-0 mt-5 mr-1"
-                ></button>
               </div>
               <div className="flex items-center gap-2 flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
                 <div className="w-full mx-1">
                   <button
                     className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 rounded-lg text-sm text-white bg-green-500 border border-transparent active:bg-green-600 hover:bg-green-600 h-12 w-full"
                     type="submit"
+                    onClick={handleSeachEmployee}
                   >
                     Filter
                   </button>
@@ -356,15 +588,24 @@ export default function OurStaff() {
                   </button>
                 </div>
                 <div className="w-full mx-1">
-                  <select className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5">
-                    <option value="Active">Active</option>
-                    <option value="UnActive">Un Active</option>
+                  <select
+                    className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5"
+                    onChange={(e) =>
+                      setKeySearch((prev: any) => ({
+                        ...prev,
+                        status: e.target.value,
+                      }))
+                    }
+                  >
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">InActive</option>
                   </select>
                 </div>
                 <div className="w-full mx-1">
                   <button
                     className="transition-colors duration-150 font-medium text-gray-600 focus:outline-none rounded-lg border bg-gray-200 border-gray-200 w-full mr-3 flex items-center justify-center cursor-pointer h-12 px-4 md:py-1 py-2 text-sm"
                     type="reset"
+                    onClick={handleResetEmployee}
                   >
                     <span className="text-black ">Reset</span>
                   </button>
@@ -374,175 +615,92 @@ export default function OurStaff() {
           </div>
         </div>
 
-        {/* Table category */}
-        <TableOurStaff />
+        {/* Table staff */}
+        <TableAdmin
+          fieldTable={[
+            "id",
+            "Full name",
+            "Username",
+            "BirthDay",
+            "Gender",
+            "Status",
+            "actions",
+          ]}
+          data={employees}
+          isPaging={true}
+          title="Product"
+          getAllProduct={getAllEmployee}
+          scriptData={
+            <tbody className="bg-white divide-y divide-gray-100  text-gray-800">
+              {employees?.data?.employeeList?.map((emp, i) => (
+                <tr key={i}>
+                  <td className="px-4 py-2">
+                    <span className="text-sm">{emp.id}</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-sm">
+                      {emp.firstName + " " + emp.lastName}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-sm">{emp.username}</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-sm">{emp.birthDate}</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-sm">{emp.gender}</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    {emp.status === "ACTIVE" && (
+                      <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-green-600 bg-green-100">
+                        {emp.status}
+                      </span>
+                    )}
+                    {emp.status === "INACTIVE" && (
+                      <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-red-600 bg-red-100 italic">
+                        {emp.status}
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-4 py-2">
+                    <div className="flex justify-end text-right">
+                      <button
+                        className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none"
+                        onClick={() => handleRedirectEditEmployee(emp?.id)}
+                      >
+                        <p data-tip="true" data-for="edit" className="text-xl">
+                          <Edit />
+                        </p>
+                      </button>
+                      <button
+                        className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
+                        onClick={() => handleDelete(emp.id)}
+                      >
+                        <p
+                          data-tip="true"
+                          data-for="delete"
+                          className="text-xl"
+                        >
+                          <Delete />
+                        </p>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          }
+        />
+        {/*  */}
+        <TableConfirmDelete
+          open={open}
+          handleOpen={handleOpen}
+          title="Staff"
+          handleDelete={handleDeleteEmployee}
+        />
       </div>
     </div>
   );
 }
-
-const TableOurStaff = () => {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const handleDelete = () => {
-    setOpen(!open);
-  };
-
-  const handleOpen = () => setOpen(!open);
-
-  return (
-    <div className="w-full overflow-hidden border border-gray-200 rounded-lg mb-8 rounded-b-lg">
-      {/* table */}
-      <div className="w-full overflow-x-auto">
-        <table className="w-full whitespace-nowrap">
-          <thead className="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-100">
-            <tr>
-              <td className="px-4 py-2">
-                <input id="selectAll" name="selectAll" type="checkbox" />
-              </td>
-              <td className="px-4 py-2">ID</td>
-              <td className="px-4 py-2">Username</td>
-              <td className="px-4 py-2">First name</td>
-              <td className="px-4 py-2">Last name</td>
-              <td className="px-4 py-2">Gender</td>
-              <td className="px-4 py-2">Status</td>
-              <td className="px-4 py-2 text-right">ACTIONS</td>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100  text-gray-800">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <tr key={i}>
-                <td className="px-4 py-2">
-                  <input
-                    id="644501ab7094a0000851284b"
-                    name="Premium T-Shirt"
-                    type="checkbox"
-                  />
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm">123456789</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm">Testing123</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm font-semibold">A</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm font-normal w-40 max-w-40 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                    Nguyen Van
-                  </span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-sm font-semibold">Male</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-green-600 bg-green-100">
-                    Enable
-                  </span>
-                </td>
-
-                <td className="px-4 py-2">
-                  <div className="flex justify-end text-right">
-                    <button className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none">
-                      <p data-tip="true" data-for="edit" className="text-xl">
-                        <Edit />
-                      </p>
-                    </button>
-                    <button
-                      className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
-                      onClick={handleDelete}
-                    >
-                      <p data-tip="true" data-for="delete" className="text-xl">
-                        <Delete />
-                      </p>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {/* paging */}
-      <div className="px-4 py-3 border-t border-gray-200  bg-white text-gray-500 ">
-        <div className="flex flex-col justify-between text-xs sm:flex-row text-gray-600 ">
-          <span className="flex items-center font-semibold tracking-wide uppercase">
-            Showing 1-10 of 500
-          </span>
-          <div className="flex mt-2 sm:mt-auto sm:justify-end">
-            <nav aria-label="Product Page Navigation">
-              <ul className="inline-flex items-center">
-                <li>
-                  <button
-                    className="inline-flex items-center justify-center leading-5 transition-colors duration-150 font-medium p-2 rounded-md text-gray-600 focus:outline-none border border-transparent hover:bg-gray-100"
-                    type="button"
-                    aria-label="Previous"
-                  >
-                    <CaretLeft size={12} />
-                  </button>
-                </li>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <li
-                    key={i}
-                    className={`${
-                      i === 0
-                        ? "bg-green-500 rounded-md"
-                        : "hover:bg-gray-100 rounded-md"
-                    }`}
-                  >
-                    <button
-                      className={`${
-                        i === 0 ? "bg-green-500 hover:bg-green-500" : ""
-                      }inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-3 py-1 rounded-md text-xs text-gray-600 border border-transparent `}
-                      type="button"
-                    >
-                      {i + 1}
-                    </button>
-                  </li>
-                ))}
-                <li>
-                  <button
-                    className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium p-2 rounded-md text-gray-600 focus:outline-none border border-transparent hover:bg-gray-100"
-                    type="button"
-                    aria-label="Next"
-                  >
-                    <CaretRight size={12} />
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </div>
-      {/* Confirm Delete */}
-      <Dialog placeholder="" open={open} handler={handleOpen}>
-        <DialogHeader placeholder="">Confirm delete Staff</DialogHeader>
-        <DialogBody placeholder="">
-          Are you sure you want to delete this staff? This action cannot be
-          undone.
-        </DialogBody>
-        <DialogFooter placeholder="">
-          <Button
-            placeholder=""
-            variant="text"
-            color="red"
-            onClick={handleOpen}
-            className="mr-1 cursor-pointer"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleOpen}
-            placeholder=""
-            variant="gradient"
-            color="green"
-            className="cursor-pointer"
-          >
-            Confirm
-          </Button>
-        </DialogFooter>
-      </Dialog>
-    </div>
-  );
-};

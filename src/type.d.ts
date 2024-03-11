@@ -9,20 +9,11 @@ export interface signupState {
   full_name: string;
 }
 export interface User {
-  userId: string;
-  username: string;
-  role: string | null;
-  full_name: string;
-  createdAt: string;
-  updatedAt: string;
-  avatar: string | FileList;
-  phone: string;
-  email: string;
-  accessToken: string;
-  user_id: string;
-  address?: string;
-  birthday?: string;
-  address: string;
-  birthday: string;
-  status?: string;
+  timestamp: string;
+  status: boolean;
+  message: string;
+  data: {
+    employeeId: string;
+    accessToken: string;
+  };
 }
