@@ -34,7 +34,7 @@ const getTimeNow = (): number => {
 // api call to get access token new
 const refetchToken = async () => {
   try {
-    const data = await httpRequest.post("user/refreshToken", {
+    const data = await httpRequest.post("auth/employee/refresh-token", {
       headers: {
         withCredentials: true,
       },
@@ -56,7 +56,7 @@ export const setupInterceptor = (store: Store, dispatch: AppDispatch): void => {
   // handle request call aceess token
   httpRequest.default.interceptors.request.use(
     async (config) => {
-      if (config.url?.includes("user/refreshToken")) {
+      if (config.url?.includes("auth/employee/refresh-token")) {
         return config;
       }
       if (config.url?.includes("user/login")) {
@@ -80,18 +80,22 @@ export const setupInterceptor = (store: Store, dispatch: AppDispatch): void => {
 
       const user: User = store.getState().authSlice?.currentUser;
       // store.dispatch(refetchTokenStore(accessToken));
-      if (user?.accessToken) {
-        const accessToken: IAccessToken = jwtDecode(user?.accessToken);
+      if (user?.data?.accessToken) {
+        const accessToken: IAccessToken = jwtDecode(user?.data?.accessToken);
         if (accessToken?.exp < getTimeNow()) {
           if (!isRefreshing) {
             isRefreshing = true;
             if (!refreshPromise) {
               refreshPromise = refetchToken();
             }
+            // call refresh token => sau dos set lai access token
             const data = await refreshPromise;
             const dataTemplate: User = {
               ...user,
-              accessToken: data.accessToken,
+              data: {
+                employeeId: user?.data?.employeeId,
+                accessToken: user?.data?.accessToken,
+              },
             };
             dispatch(refetchTokenStore(dataTemplate));
             config.headers.Authorization = "Bearer " + data.accessToken;
@@ -100,7 +104,7 @@ export const setupInterceptor = (store: Store, dispatch: AppDispatch): void => {
             return config;
           }
         }
-        config.headers.Authorization = "Bearer " + user.accessToken;
+        config.headers.Authorization = "Bearer " + user?.data?.accessToken;
       }
 
       isRefreshing = false;

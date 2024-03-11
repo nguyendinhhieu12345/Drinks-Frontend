@@ -40,3 +40,13 @@ export interface IBranch {
   fullAddress: string;
   operatingTime: string;
 }
+
+export interface IStaff {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  gender: boolean;
+  status: string;
+}

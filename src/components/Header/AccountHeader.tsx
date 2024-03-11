@@ -9,13 +9,26 @@ import ImageWithError from "../ImageError/ImageWithError";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { logoutThunk } from "@/features/auth/authSlice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { configRouter } from "@/configs/router";
 
 const AccountHeader = () => {
-  const dispatch = useDispatch<AppDispatch>()
-  
-  const handleLogout = async()=>{
-    await dispatch(logoutThunk())
-  }
+  const dispatch = useDispatch<AppDispatch>();
+  const nav = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const data = await dispatch(logoutThunk());
+      if (data?.type === "auth/logout/rejected") {
+        toast.error((data as { error: { message: string } }).error?.message);
+      } else {
+        nav(configRouter.login);
+      }
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
 
   return (
     <div>
@@ -39,7 +52,9 @@ const AccountHeader = () => {
             <MenuItem placeholder="">DashBoard</MenuItem>
             <MenuItem placeholder="">Profile</MenuItem>
             <hr className="my-3" />
-            <MenuItem placeholder="" onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem placeholder="" onClick={handleLogout}>
+              Logout
+            </MenuItem>
           </MenuList>
         </Menu>
       </div>

@@ -7,17 +7,23 @@ export const addEmployee = async (
   lastName: string,
   birthDate: string,
   gender: string,
-  branchId: string
+  branchId: string,
+  email: string,
+  phoneNumber: string,
+  role: string
 ) => {
   try {
-    const res = await httpRequest.post(`/auth/employee`, {
+    const convertBranchId = parseInt(branchId);
+    const res = await httpRequest.post(`/auth/employee?role=${role}`, {
       username,
       password,
       firstName,
       lastName,
       birthDate,
       gender,
-      branchId,
+      branchId: convertBranchId,
+      email,
+      phoneNumber,
     });
     return res;
   } catch (error) {
@@ -27,7 +33,7 @@ export const addEmployee = async (
 
 export const getAllEmployee = async (
   key?: string,
-  page?: string,
+  page?: number,
   status?: string
 ) => {
   try {
@@ -56,7 +62,7 @@ export const updateEmployee = async (
   lastName: string,
   birthDate: string,
   gender: string,
-  branchId: string,
+  status: string,
   employeeId: string
 ) => {
   try {
@@ -65,8 +71,17 @@ export const updateEmployee = async (
       lastName,
       birthDate,
       gender,
-      branchId,
+      status,
     });
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getEmployeeById = async (employeeId: string) => {
+  try {
+    const res = await httpRequest.get(`/employee/${employeeId}`);
     return res;
   } catch (error) {
     return Promise.reject(error);
