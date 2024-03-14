@@ -1,7 +1,10 @@
 import { ColumnDashboard } from "@/components/ColumnDashboard/ColumnDashboard";
 import { RowDashboard } from "@/components/ColumnDashboard/RowDashboard";
+// import { connected } from "@/features/socket/socketSlice";
+// import { AppDispatch } from "@/redux/store";
 import { ArrowRight, Files } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+// import { useDispatch } from "react-redux";
 import {
   AreaChart,
   Area,
@@ -11,6 +14,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Socket, io } from "socket.io-client";
+// import { io } from "socket.io-client";
 
 const data = [
   {
@@ -44,8 +49,30 @@ const data = [
 ];
 
 export default function DashboardAmin() {
+  // const socket = useSelector((state: SliceState) => state.socketSlice);
+  // const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     document.title = "Shopfee | dashboard admin";
+  }, []);
+
+  // useEffect(() => {
+  //   const socket = io("ws://localhost:8900");
+  //   if (!socket) {
+  //     dispatch(connected(socket));
+  //   }
+  //   console.log(socket);
+  // }, []);
+
+  useEffect(() => {
+    const socket: Socket = io("http://localhost:8900", {
+      withCredentials: true, // nếu cần
+    });
+    socket.on("connect", () => {
+      console.log("Connected to server");
+    });
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   return (

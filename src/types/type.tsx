@@ -1,7 +1,9 @@
 import { AuthState } from "@/features/auth/authSlice";
+import { SocketState } from "@/features/socket/socketSlice";
 
 export interface SliceState {
   authSlice: AuthState;
+  socketSlice: SocketState;
 }
 
 export interface IUser {
