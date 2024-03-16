@@ -5,8 +5,19 @@ import {
   Printer,
 } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
+import * as orderApi from "@/api/adminApi/orderApi/orderApi";
+import { useEffect } from "react";
 
 export default function Orders() {
+  const getAllOrder = async (key: string, page: number, status: string) => {
+    const data = await orderApi.getAllOrder(key, page, status);
+    console.log(data);
+  };
+
+  useEffect(() => {
+    getAllOrder("", 1, "");
+  }, []);
+
   return (
     <div className="h-full overflow-y-auto">
       <div className="sm:container grid lg:px-6 sm:px-4 px-2 mx-auto">

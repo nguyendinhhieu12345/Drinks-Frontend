@@ -1,70 +1,248 @@
-import { Carousel } from "@material-tailwind/react";
-import { FC, memo, useCallback, useEffect, useState } from "react";
+import { imageUrlToFile } from "@/utils/const";
+import { Carousel, Spinner } from "@material-tailwind/react";
+import { Gear } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-interface BannerLinks {
-  banner1: string;
-  banner2: string;
-  banner3: string;
+import * as bannerApi from "@/api/adminApi/bannerApi/bannerApi";
+import useLoading from "@/hooks/useLoading";
+import CustomBanner from "@/components/CustomPage/CustomBanner";
+
+export interface BannerLinks {
+  banner1: IBanner;
+  banner2: IBanner;
+  banner3: IBanner;
+}
+
+interface IBanner {
+  name: string;
+  image: File[];
+  isEdit: boolean;
+  status?: string;
+  isUpdate?: boolean;
+  id?: string;
 }
 
 export default function CustomPage() {
   const [bannerLinks, setBannerLinks] = useState<BannerLinks>({
-    banner1: "",
-    banner2: "",
-    banner3: "",
+    banner1: {
+      name: "Banner1",
+      image: [],
+      isEdit: false,
+    },
+    banner2: {
+      name: "Banner2",
+      image: [],
+      isEdit: false,
+    },
+    banner3: {
+      name: "Banner3",
+      image: [],
+      isEdit: false,
+    },
   });
+  const { isLoading, startLoading, stopLoading } = useLoading();
+
+  const handleSaveBanner = async () => {
+    console.log(bannerLinks);
+    startLoading();
+    if (bannerLinks?.banner1?.isEdit && !bannerLinks?.banner1?.isUpdate) {
+      let banner1 = new FormData();
+      banner1.append("name", bannerLinks?.banner1?.name);
+      bannerLinks?.banner1?.image.forEach((img) => {
+        banner1.append("image", img);
+      });
+      try {
+        const data = await bannerApi.addBanner(banner1);
+        if (data?.success) {
+          stopLoading();
+          toast.success("Add banner 1 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 1: " + err?.response?.data?.message
+        );
+      }
+    }
+    if (bannerLinks?.banner1?.isEdit && bannerLinks?.banner1?.isUpdate) {
+      let banner1 = new FormData();
+      banner1.append("name", bannerLinks?.banner1?.name);
+      bannerLinks?.banner1?.image.forEach((img) => {
+        banner1.append("image", img);
+      });
+      banner1.append("status", bannerLinks?.banner1?.status as string);
+      try {
+        const data = await bannerApi.updateBanner(
+          banner1,
+          bannerLinks?.banner1?.id as string
+        );
+        if (data?.success) {
+          stopLoading();
+          toast.success("Update banner 1 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 1: " + err?.response?.data?.message
+        );
+      }
+    }
+    if (bannerLinks?.banner2?.isEdit && !bannerLinks?.banner2?.isUpdate) {
+      let banner2 = new FormData();
+      banner2.append("name", bannerLinks?.banner2?.name);
+      bannerLinks?.banner2?.image.forEach((img) => {
+        banner2.append("image", img);
+      });
+      try {
+        const data = await bannerApi.addBanner(banner2);
+        if (data?.success) {
+          stopLoading();
+          toast.success("Add banner 2 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 2: " + err?.response?.data?.message
+        );
+      }
+    }
+    if (bannerLinks?.banner2?.isEdit && bannerLinks?.banner2?.isUpdate) {
+      let banner2 = new FormData();
+      banner2.append("name", bannerLinks?.banner2?.name);
+      bannerLinks?.banner2?.image.forEach((img) => {
+        banner2.append("image", img);
+      });
+      banner2.append("status", bannerLinks?.banner2?.status as string);
+      try {
+        const data = await bannerApi.updateBanner(
+          banner2,
+          bannerLinks?.banner2?.id as string
+        );
+        if (data?.success) {
+          stopLoading();
+          toast.success("Update banner 2 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 2: " + err?.response?.data?.message
+        );
+      }
+    }
+    if (bannerLinks?.banner3?.isEdit && !bannerLinks?.banner3?.isUpdate) {
+      let banner3 = new FormData();
+      banner3.append("name", bannerLinks?.banner3?.name);
+      bannerLinks?.banner3?.image.forEach((img) => {
+        banner3.append("image", img);
+      });
+      try {
+        const data = await bannerApi.addBanner(banner3);
+        if (data?.success) {
+          stopLoading();
+          toast.success("Add banner 3 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 3: " + err?.response?.data?.message
+        );
+      }
+    }
+    if (bannerLinks?.banner3?.isEdit && bannerLinks?.banner3?.isUpdate) {
+      let banner3 = new FormData();
+      banner3.append("name", bannerLinks?.banner3?.name);
+      bannerLinks?.banner3?.image.forEach((img) => {
+        banner3.append("image", img);
+      });
+      banner3.append("status", bannerLinks?.banner3?.status as string);
+      try {
+        const data = await bannerApi.updateBanner(
+          banner3,
+          bannerLinks?.banner3?.id as string
+        );
+        if (data?.success) {
+          stopLoading();
+          toast.success("Update banner 3 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 3: " + err?.response?.data?.message
+        );
+      }
+    }
+    stopLoading();
+  };
+
+  const handleImageAdd = async (imageUrl: string, positionBanner: number) => {
+    const file = await imageUrlToFile(imageUrl);
+    if (file) {
+      if (positionBanner === 1) {
+        setBannerLinks((prevState: BannerLinks) => ({
+          ...prevState,
+          ["banner1"]: {
+            ...prevState["banner1"],
+            image: [file],
+          },
+        }));
+      }
+      if (positionBanner === 2) {
+        setBannerLinks((prevState: BannerLinks) => ({
+          ...prevState,
+          ["banner2"]: {
+            ...prevState["banner2"],
+            image: [file],
+          },
+        }));
+      }
+      if (positionBanner === 3) {
+        setBannerLinks((prevState: BannerLinks) => ({
+          ...prevState,
+          ["banner3"]: {
+            ...prevState["banner3"],
+            image: [file],
+          },
+        }));
+      }
+    } else {
+      console.log("Failed to convert image URL to file");
+    }
+  };
 
   useEffect(() => {
-    setBannerLinks({
-      banner1:
-        "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80",
-      banner2:
-        "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80",
-      banner3:
-        "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-    });
-  }, []);
-
-  const handleBannerLinkChange = useCallback(
-    (
-      type: string,
-      bannerNumber: keyof BannerLinks,
-      newLink?: EventTarget & HTMLInputElement
-    ) => {
-      if (type === "edit") {
-        if (newLink && newLink.files && newLink.files.length > 0)
-          setBannerLinks((prevState) => ({
-            ...prevState,
-            [bannerNumber]: URL.createObjectURL(newLink?.files![0]),
-          }));
-      } else {
-        if (bannerNumber === "banner1") {
-          setBannerLinks((prevState) => ({
-            ...prevState,
-            [bannerNumber]:
-              "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80",
-          }));
-        } else if (bannerNumber === "banner2") {
-          setBannerLinks((prevState) => ({
-            ...prevState,
-            [bannerNumber]:
-              "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80",
-          }));
+    const getAllBanner = async () => {
+      const data = await bannerApi.getAllBanner();
+      if (data.success) {
+        if (data?.data?.length > 0) {
+          for (let index = 0; index < 3; index++) {
+            setBannerLinks((prevState: BannerLinks) => ({
+              ...prevState,
+              [`banner${index + 1}`]: {
+                ...prevState[`banner${index + 1}` as keyof BannerLinks],
+                name: data?.data[index]?.name,
+                status: data?.data[index]?.status,
+                id: data?.data[index]?.id,
+              },
+            }));
+            if (data?.data[index]?.imageUrl) {
+              handleImageAdd(data?.data[index]?.imageUrl, index + 1);
+            }
+          }
         } else {
-          setBannerLinks((prevState) => ({
-            ...prevState,
-            [bannerNumber]:
-              "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-          }));
+          for (let index = 0; index < 3; index++) {
+            setBannerLinks((prevState: BannerLinks) => ({
+              ...prevState,
+              [`banner${index + 1}`]: {
+                ...prevState[`banner${index + 1}` as keyof BannerLinks],
+                name: `Banner${index + 1}`,
+              },
+            }));
+          }
         }
       }
-    },
-    [bannerLinks]
-  );
-
-  const handleSaveBanner = () => {
-    toast.success("Update banner success");
-  };
+    };
+    getAllBanner();
+  }, []);
 
   return (
     <div className="w-full h-full overflow-y-auto">
@@ -75,65 +253,70 @@ export default function CustomPage() {
             className="py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg"
             onClick={handleSaveBanner}
           >
-            Save
+            {isLoading ? (
+              <p className="flex items-center justify-center">
+                <span className="mr-2">Save</span>{" "}
+                <Spinner className="h-4 w-4" />
+              </p>
+            ) : (
+              <span>Save</span>
+            )}
           </button>
         )}
       </div>
       <div className="w-full h-80">
-        <Carousel placeholder="" className="rounded-xl">
+        <Carousel placeholder="" className="rounded-xl ">
           <img
-            src={bannerLinks.banner1}
+            src={
+              bannerLinks?.banner1?.image[0]
+                ? URL.createObjectURL(bannerLinks?.banner1?.image[0])
+                : "https://th.bing.com/th/id/R.1f3718bdbfff9827e03255ef0e947fe5?rik=gThi4aT0ZGgcEA&pid=ImgRaw&r=0&sres=1&sresct=1"
+            }
             alt="image 1"
             className="h-full w-full object-cover"
           />
           <img
-            src={bannerLinks.banner2}
+            src={
+              bannerLinks?.banner2?.image[0]
+                ? URL.createObjectURL(bannerLinks?.banner2?.image[0])
+                : "https://th.bing.com/th/id/R.1f3718bdbfff9827e03255ef0e947fe5?rik=gThi4aT0ZGgcEA&pid=ImgRaw&r=0&sres=1&sresct=1"
+            }
             alt="image 2"
             className="h-full w-full object-cover"
           />
           <img
-            src={bannerLinks.banner3}
+            src={
+              bannerLinks?.banner3?.image[0]
+                ? URL.createObjectURL(bannerLinks?.banner3?.image[0])
+                : "https://th.bing.com/th/id/R.1f3718bdbfff9827e03255ef0e947fe5?rik=gThi4aT0ZGgcEA&pid=ImgRaw&r=0&sres=1&sresct=1"
+            }
             alt="image 3"
             className="h-full w-full object-cover"
           />
         </Carousel>
       </div>
       <div className="rounded-lg h-auto min-w-0 shadow-xs bg-white my-5 p-4">
-        <div className="inline-flex md:text-lg text-base text-gray-800 font-semibold mb-3">
-          <svg
-            stroke="currentColor"
-            fill="none"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mt-1 mr-2"
-            height="1em"
-            width="1em"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>{" "}
-          Edit your banner
+        <div className="flex items-center md:text-lg text-base text-gray-800 font-semibold mb-3">
+          <Gear size={23} />
+          <p className="ml-3">Edit your banner</p>
         </div>
         <hr className="md:mb-4 mb-3"></hr>
         <div className="xl:px-10 flex-grow scrollbar-hide w-full max-h-full pb-0">
           <div className="h-auto transition-all duration-500 ease-in-out visibility-visible opacity-100">
             <CustomBanner
-              title="Banner 1"
-              linkBanner={bannerLinks.banner1}
-              handleBannerLinkChange={handleBannerLinkChange}
+              bannerLinks={bannerLinks}
+              setBannerLinks={setBannerLinks}
+              positionBanner={1}
             />
             <CustomBanner
-              title="Banner 2"
-              linkBanner={bannerLinks.banner2}
-              handleBannerLinkChange={handleBannerLinkChange}
+              bannerLinks={bannerLinks}
+              setBannerLinks={setBannerLinks}
+              positionBanner={2}
             />
             <CustomBanner
-              title="Banner 3"
-              linkBanner={bannerLinks.banner3}
-              handleBannerLinkChange={handleBannerLinkChange}
+              bannerLinks={bannerLinks}
+              setBannerLinks={setBannerLinks}
+              positionBanner={3}
             />
           </div>
         </div>
@@ -141,108 +324,3 @@ export default function CustomPage() {
     </div>
   );
 }
-
-interface ICustomBanner {
-  title: string;
-  linkBanner: string;
-  handleBannerLinkChange: (
-    type: string,
-    bannerNumber: keyof BannerLinks,
-    newLink?: EventTarget & HTMLInputElement
-  ) => void;
-}
-
-const CustomBanner: FC<ICustomBanner> = memo((props) => {
-  return (
-    <div className="grid md:grid-cols-5 sm:grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 md:mb-6 mb-3 relative">
-      <label className="block md:text-sm md:col-span-1 sm:col-span-2 text-xs font-semibold text-gray-600  mb-1">
-        {props.title}
-      </label>
-      <div className="sm:col-span-4">
-        <div className="w-full text-center">
-          <div
-            className="border-2 border-gray-300  border-dashed rounded-md cursor-pointer px-6 pt-5 pb-6"
-            role="presentation"
-          >
-            <input
-              accept="image/*,.jpeg,.jpg,.png,.webp"
-              className="block"
-              type="file"
-              onChange={(e) =>
-                props.handleBannerLinkChange(
-                  "edit",
-                  props.title
-                    .toLowerCase()
-                    .replace(/\s/g, "") as keyof BannerLinks,
-                  e.target
-                )
-              }
-            />
-            <span className="mx-auto flex justify-center">
-              <svg
-                stroke="currentColor"
-                fill="none"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-3xl text-green-500"
-                height="1em"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <polyline points="16 16 12 12 8 16"></polyline>
-                <line x1="12" y1="12" x2="12" y2="21"></line>
-                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                <polyline points="16 16 12 12 8 16"></polyline>
-              </svg>
-            </span>
-            <p className="text-sm mt-2">Drag your images here</p>
-            <em className="text-xs text-gray-400">
-              (Only *.jpeg, *.webp and *.png images will be accepted)
-            </em>
-          </div>
-          <div className="text-green-500"></div>
-          <aside className="flex flex-row flex-wrap mt-4">
-            <div className="relative">
-              {" "}
-              <img
-                className="inline-flex border rounded-md border-gray-100 dark:border-gray-600 w-48 max-h-48 p-2"
-                src={props.linkBanner}
-                alt="product"
-              />
-              <button
-                type="button"
-                className="absolute top-0 right-0 text-red-500 focus:outline-none"
-                onClick={() =>
-                  props.handleBannerLinkChange(
-                    "remove",
-                    props.title
-                      .toLowerCase()
-                      .replace(/\s/g, "") as keyof BannerLinks
-                  )
-                }
-              >
-                <svg
-                  stroke="currentColor"
-                  fill="none"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="15" y1="9" x2="9" y2="15"></line>
-                  <line x1="9" y1="9" x2="15" y2="15"></line>
-                </svg>
-              </button>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </div>
-  );
-});
