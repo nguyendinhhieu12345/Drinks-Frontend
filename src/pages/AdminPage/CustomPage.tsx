@@ -1,12 +1,13 @@
-import InputEditTitle from "@/components/InputWrap/InputEditTitle";
-import { checkTypeImage } from "@/utils/const";
+import { imageUrlToFile } from "@/utils/const";
 import { Carousel, Spinner } from "@material-tailwind/react";
 import { Gear } from "@phosphor-icons/react";
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import * as bannerApi from "@/api/adminApi/bannerApi/bannerApi";
 import useLoading from "@/hooks/useLoading";
-interface BannerLinks {
+import CustomBanner from "@/components/CustomPage/CustomBanner";
+
+export interface BannerLinks {
   banner1: IBanner;
   banner2: IBanner;
   banner3: IBanner;
@@ -16,6 +17,9 @@ interface IBanner {
   name: string;
   image: File[];
   isEdit: boolean;
+  status?: string;
+  isUpdate?: boolean;
+  id?: string;
 }
 
 export default function CustomPage() {
@@ -39,8 +43,9 @@ export default function CustomPage() {
   const { isLoading, startLoading, stopLoading } = useLoading();
 
   const handleSaveBanner = async () => {
+    console.log(bannerLinks);
     startLoading();
-    if (bannerLinks?.banner1?.isEdit) {
+    if (bannerLinks?.banner1?.isEdit && !bannerLinks?.banner1?.isUpdate) {
       let banner1 = new FormData();
       banner1.append("name", bannerLinks?.banner1?.name);
       bannerLinks?.banner1?.image.forEach((img) => {
@@ -59,7 +64,30 @@ export default function CustomPage() {
         );
       }
     }
-    if (bannerLinks?.banner2?.isEdit) {
+    if (bannerLinks?.banner1?.isEdit && bannerLinks?.banner1?.isUpdate) {
+      let banner1 = new FormData();
+      banner1.append("name", bannerLinks?.banner1?.name);
+      bannerLinks?.banner1?.image.forEach((img) => {
+        banner1.append("image", img);
+      });
+      banner1.append("status", bannerLinks?.banner1?.status as string);
+      try {
+        const data = await bannerApi.updateBanner(
+          banner1,
+          bannerLinks?.banner1?.id as string
+        );
+        if (data?.success) {
+          stopLoading();
+          toast.success("Update banner 1 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 1: " + err?.response?.data?.message
+        );
+      }
+    }
+    if (bannerLinks?.banner2?.isEdit && !bannerLinks?.banner2?.isUpdate) {
       let banner2 = new FormData();
       banner2.append("name", bannerLinks?.banner2?.name);
       bannerLinks?.banner2?.image.forEach((img) => {
@@ -78,7 +106,30 @@ export default function CustomPage() {
         );
       }
     }
-    if (bannerLinks?.banner3?.isEdit) {
+    if (bannerLinks?.banner2?.isEdit && bannerLinks?.banner2?.isUpdate) {
+      let banner2 = new FormData();
+      banner2.append("name", bannerLinks?.banner2?.name);
+      bannerLinks?.banner2?.image.forEach((img) => {
+        banner2.append("image", img);
+      });
+      banner2.append("status", bannerLinks?.banner2?.status as string);
+      try {
+        const data = await bannerApi.updateBanner(
+          banner2,
+          bannerLinks?.banner2?.id as string
+        );
+        if (data?.success) {
+          stopLoading();
+          toast.success("Update banner 2 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 2: " + err?.response?.data?.message
+        );
+      }
+    }
+    if (bannerLinks?.banner3?.isEdit && !bannerLinks?.banner3?.isUpdate) {
       let banner3 = new FormData();
       banner3.append("name", bannerLinks?.banner3?.name);
       bannerLinks?.banner3?.image.forEach((img) => {
@@ -97,13 +148,98 @@ export default function CustomPage() {
         );
       }
     }
+    if (bannerLinks?.banner3?.isEdit && bannerLinks?.banner3?.isUpdate) {
+      let banner3 = new FormData();
+      banner3.append("name", bannerLinks?.banner3?.name);
+      bannerLinks?.banner3?.image.forEach((img) => {
+        banner3.append("image", img);
+      });
+      banner3.append("status", bannerLinks?.banner3?.status as string);
+      try {
+        const data = await bannerApi.updateBanner(
+          banner3,
+          bannerLinks?.banner3?.id as string
+        );
+        if (data?.success) {
+          stopLoading();
+          toast.success("Update banner 3 success");
+        }
+      } catch (err: any) {
+        stopLoading();
+        toast.error(
+          "Error when update banner 3: " + err?.response?.data?.message
+        );
+      }
+    }
     stopLoading();
+  };
+
+  const handleImageAdd = async (imageUrl: string, positionBanner: number) => {
+    const file = await imageUrlToFile(imageUrl);
+    if (file) {
+      if (positionBanner === 1) {
+        setBannerLinks((prevState: BannerLinks) => ({
+          ...prevState,
+          ["banner1"]: {
+            ...prevState["banner1"],
+            image: [file],
+          },
+        }));
+      }
+      if (positionBanner === 2) {
+        setBannerLinks((prevState: BannerLinks) => ({
+          ...prevState,
+          ["banner2"]: {
+            ...prevState["banner2"],
+            image: [file],
+          },
+        }));
+      }
+      if (positionBanner === 3) {
+        setBannerLinks((prevState: BannerLinks) => ({
+          ...prevState,
+          ["banner3"]: {
+            ...prevState["banner3"],
+            image: [file],
+          },
+        }));
+      }
+    } else {
+      console.log("Failed to convert image URL to file");
+    }
   };
 
   useEffect(() => {
     const getAllBanner = async () => {
       const data = await bannerApi.getAllBanner();
-      console.log(data);
+      if (data.success) {
+        if (data?.data?.length > 0) {
+          for (let index = 0; index < 3; index++) {
+            setBannerLinks((prevState: BannerLinks) => ({
+              ...prevState,
+              [`banner${index + 1}`]: {
+                ...prevState[`banner${index + 1}` as keyof BannerLinks],
+                name: data?.data[index]?.name,
+                status: data?.data[index]?.status,
+                id: data?.data[index]?.id,
+              },
+            }));
+            if (data?.data[index]?.imageUrl) {
+              handleImageAdd(data?.data[index]?.imageUrl, index + 1);
+            }
+          }
+        } else {
+          for (let index = 0; index < 3; index++) {
+            setBannerLinks((prevState: BannerLinks) => ({
+              ...prevState,
+              [`banner${index + 1}`]: {
+                ...prevState[`banner${index + 1}` as keyof BannerLinks],
+                name: `Banner${index + 1}`,
+              },
+            }));
+          }
+        }
+      }
     };
     getAllBanner();
   }, []);
@@ -129,10 +265,34 @@ export default function CustomPage() {
         )}
       </div>
       <div className="w-full h-80">
-        <Carousel placeholder="" className="rounded-xl">
-          <img src="" alt="image 1" className="h-full w-full object-cover" />
-          <img src="" alt="image 2" className="h-full w-full object-cover" />
-          <img src="" alt="image 3" className="h-full w-full object-cover" />
+        <Carousel placeholder="" className="rounded-xl ">
+          <img
+            src={
+              bannerLinks?.banner1?.image[0]
+                ? URL.createObjectURL(bannerLinks?.banner1?.image[0])
+                : "https://th.bing.com/th/id/R.1f3718bdbfff9827e03255ef0e947fe5?rik=gThi4aT0ZGgcEA&pid=ImgRaw&r=0&sres=1&sresct=1"
+            }
+            alt="image 1"
+            className="h-full w-full object-cover"
+          />
+          <img
+            src={
+              bannerLinks?.banner2?.image[0]
+                ? URL.createObjectURL(bannerLinks?.banner2?.image[0])
+                : "https://th.bing.com/th/id/R.1f3718bdbfff9827e03255ef0e947fe5?rik=gThi4aT0ZGgcEA&pid=ImgRaw&r=0&sres=1&sresct=1"
+            }
+            alt="image 2"
+            className="h-full w-full object-cover"
+          />
+          <img
+            src={
+              bannerLinks?.banner3?.image[0]
+                ? URL.createObjectURL(bannerLinks?.banner3?.image[0])
+                : "https://th.bing.com/th/id/R.1f3718bdbfff9827e03255ef0e947fe5?rik=gThi4aT0ZGgcEA&pid=ImgRaw&r=0&sres=1&sresct=1"
+            }
+            alt="image 3"
+            className="h-full w-full object-cover"
+          />
         </Carousel>
       </div>
       <div className="rounded-lg h-auto min-w-0 shadow-xs bg-white my-5 p-4">
@@ -164,128 +324,3 @@ export default function CustomPage() {
     </div>
   );
 }
-
-interface ICustomBanner {
-  bannerLinks: BannerLinks;
-  setBannerLinks: React.Dispatch<React.SetStateAction<BannerLinks>>;
-  positionBanner: number;
-}
-
-const CustomBanner: FC<ICustomBanner> = (props) => {
-  const returnData = () => {
-    if (props.positionBanner === 1) {
-      return {
-        ...props.bannerLinks.banner1,
-        key: "banner1",
-      };
-    } else if (props.positionBanner === 2) {
-      return {
-        ...props.bannerLinks.banner2,
-        key: "banner2",
-      };
-    } else {
-      return {
-        ...props.bannerLinks.banner3,
-        key: "banner3",
-      };
-    }
-  };
-
-  const handleInputImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      if (checkTypeImage(e.target.files)) {
-        const imagesArray = Array.from(e.target.files) as File[];
-        const bannerKey = returnData().key as keyof BannerLinks;
-        props.setBannerLinks((prevState: BannerLinks) => ({
-          ...prevState,
-          [bannerKey]: {
-            ...prevState[bannerKey],
-            image: imagesArray,
-            isEdit: true,
-          },
-        }));
-      } else {
-        toast.error("Only *.jpeg, *.jpg and *.png images will be accepted!", {
-          position: "bottom-left",
-        });
-      }
-    }
-  };
-
-  return (
-    <div className="grid md:grid-cols-5 sm:grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 md:mb-6 mb-3 relative">
-      <label className="block md:text-sm md:col-span-1 sm:col-span-2 text-xs font-semibold text-gray-600  mb-1">
-        <InputEditTitle
-          onSubmit={(e) => {
-            const bannerKey = returnData().key as keyof BannerLinks;
-            props.setBannerLinks((prevState: BannerLinks) => ({
-              ...prevState,
-              [bannerKey]: {
-                ...prevState[bannerKey],
-                isEdit: true,
-                name: e,
-              },
-            }));
-          }}
-          value={returnData().name}
-        />
-      </label>
-      <div className="sm:col-span-4">
-        <div className="w-full text-center">
-          <div
-            className="border-2 border-gray-300  border-dashed rounded-md cursor-pointer px-6 pt-5 pb-6"
-            role="presentation"
-          >
-            <input
-              accept="image/.jpeg,.jpg,.png"
-              type="file"
-              id={props.positionBanner.toString()}
-              className="hidden"
-              onChange={(e) => {
-                handleInputImage(e);
-              }}
-            />
-            <label
-              htmlFor={props.positionBanner.toString()}
-              className="cursor-pointer"
-            >
-              {returnData()?.image.length > 0 ? (
-                <img
-                  src={URL.createObjectURL(returnData()?.image[0])}
-                  alt="image-category"
-                  className="w-full h-60 object-contain"
-                />
-              ) : (
-                <>
-                  <span className="mx-auto flex justify-center">
-                    <svg
-                      stroke="currentColor"
-                      fill="none"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-3xl text-green-500"
-                      height="1em"
-                      width="1em"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <polyline points="16 16 12 12 8 16"></polyline>
-                      <line x1="12" y1="12" x2="12" y2="21"></line>
-                      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                      <polyline points="16 16 12 12 8 16"></polyline>
-                    </svg>
-                  </span>
-                  <p className="text-sm mt-2">Choose your images here</p>
-                  <em className="text-xs text-gray-400">
-                    (Only *.jpeg, *.jpg and *.png images will be accepted)
-                  </em>
-                </>
-              )}
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
