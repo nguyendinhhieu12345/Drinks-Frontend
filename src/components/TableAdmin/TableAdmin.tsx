@@ -16,6 +16,7 @@ interface ITableAdmin {
     productStatus: string,
     categoryId: string
   ) => Promise<void>;
+  getAllOrder?: (key: string, page: number, status: string) => Promise<void>;
 }
 
 function TableAdmin(props: ITableAdmin) {
@@ -23,6 +24,7 @@ function TableAdmin(props: ITableAdmin) {
 
   useEffect(() => {
     props.getAllProduct && props.getAllProduct("", pageActive, "", "");
+    props.getAllOrder && props.getAllOrder("", pageActive, "");
   }, [pageActive]);
 
   return (
