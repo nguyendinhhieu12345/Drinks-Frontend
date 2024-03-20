@@ -1,7 +1,122 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import * as orderApi from "@/api/adminApi/orderApi/orderApi";
+import { configRouter } from "@/configs/router";
+import { toast } from "react-toastify";
+import { ArrowLeft } from "@phosphor-icons/react";
+import { formatVND } from "@/utils/const";
+import PDFDocument from "@/components/Order/PDFDocument";
+
+interface Topping {
+  name: string;
+  price: number;
+}
+
+interface ItemDetail {
+  quantity: number;
+  toppingList: Topping[];
+  size: string;
+  price: number;
+  note: string;
+}
+
+interface Item {
+  productId: string;
+  name: string;
+  itemDetailList: ItemDetail[];
+}
+
+interface ShippingInformation {
+  detail: string;
+  longitude: number;
+  latitude: number;
+  note: string;
+  recipientName: string;
+  phoneNumber: string;
+}
+
+interface Transaction {
+  id: string;
+  status: string;
+  paymentType: string;
+  totalPaid: number;
+}
+
+interface Data {
+  id: string;
+  totalPayment: number;
+  shippingFee: number;
+  totalItemPrice: number;
+  orderType: string;
+  shippingInformation: ShippingInformation;
+  createdAt: string;
+  itemList: Item[];
+  transaction: Transaction;
+  branchAddress: string;
+}
+
+interface IResponseOrderDetail {
+  timestamp: string;
+  success: boolean;
+  message: string;
+  data: Data;
+}
+
 function OrderDetail() {
+  const [showPDF, setShowPDF] = useState(false);
+
+  const handlePrintInvoice = () => {
+    setShowPDF(true);
+  };
+
+  const handleDownloadInvoice = () => {
+    const fileName = "invoice.pdf"; // Đường dẫn đến file PDF đã tạo
+    fetch(fileName)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "invoice.pdf");
+        document.body.appendChild(link);
+        link.click();
+      });
+  };
+  const { id } = useParams();
+  const nav = useNavigate();
+  const [orderDetail, setOrderDetail] = useState<IResponseOrderDetail>();
+
+  useEffect(() => {
+    const getOrderDetail = async () => {
+      try {
+        const data = await orderApi.getOrderById(id as string);
+        if (data?.success) {
+          setOrderDetail(data);
+        }
+      } catch (err: any) {
+        toast.error(err?.response?.data?.message);
+        nav(configRouter.orders);
+      }
+    };
+    getOrderDetail();
+  }, []);
+
+  const handleRedirectOrders = () => {
+    nav(configRouter.orders);
+  };
+
   return (
     <div className="sm:container grid lg:px-6 sm:px-4 px-2 mx-auto">
-      <h1 className="my-6 text-lg font-bold text-gray-700 "> Invoice </h1>
+      <div className="flex items-center">
+        <button
+          onClick={handleRedirectOrders}
+          className="mr-3 cursor-pointer p-2 rounded-full hover:bg-gray-300"
+        >
+          <ArrowLeft />
+        </button>
+        <h1 className="my-6 text-lg font-bold text-gray-700"> Invoice </h1>
+      </div>
+
       <div className="bg-white mb-4 p-6 lg:p-8 rounded-xl shadow-sm overflow-hidden">
         <div>
           <div className="flex lg:flex-row md:flex-row flex-col lg:items-center justify-between pb-4 border-b border-gray-50 ">
@@ -13,7 +128,7 @@ function OrderDetail() {
                   {" "}
                   <span className="font-serif">
                     <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-yellow-600 bg-yellow-100 ">
-                      Precessing
+                      {orderDetail?.data?.orderType}
                     </span>
                   </span>
                 </span>
@@ -21,10 +136,7 @@ function OrderDetail() {
             </h1>
             <div className="lg:text-right text-left">
               <p className="text-sm text-gray-500  mt-2">
-                59 Station Rd, Purls Bridge, United Kingdom <br></br>019579034
-                <br></br>
-                <span> kachabazar@gmail.com </span> <br></br>
-                kachabazar-admin.vercel.app
+                {orderDetail?.data?.branchAddress} <br></br>
               </p>
             </div>
           </div>
@@ -33,23 +145,30 @@ function OrderDetail() {
               <span className="font-bold font-serif text-sm uppercase text-gray-600 block">
                 DATE
               </span>
-              <span className="text-sm text-gray-500  block">Dec 16, 2023</span>
+              <span className="text-sm text-gray-500  block">
+                {orderDetail?.data?.createdAt}
+              </span>
             </div>
             <div className="mb-3 md:mb-0 lg:mb-0 flex flex-col">
               <span className="font-bold font-serif text-sm uppercase text-gray-600  block">
                 INVOICE NO
               </span>
-              <span className="text-sm text-gray-500  block">#10656</span>
+              <span className="text-sm text-gray-500  block">
+                {orderDetail?.data?.id}
+              </span>
             </div>
             <div className="flex flex-col lg:text-right text-left">
               <span className="font-bold font-serif text-sm uppercase text-gray-600  block">
                 INVOICE TO
               </span>
-              <span className="text-sm text-gray-500  block">
-                Jjgujhh Gjghuu <br></br>ghjh@gjjk.khj{" "}
-                <span className="ml-2">5555555555</span>
-                <br></br>Fcghhcc<br></br>Ghhhbh, Ghjhhhh, Fuhhhhhg
-              </span>
+              <p className="text-sm text-gray-500  mt-2">
+                {orderDetail?.data?.shippingInformation?.detail} <br></br>
+                {orderDetail?.data?.shippingInformation?.phoneNumber}
+                <br></br>
+                <span>
+                  {orderDetail?.data?.shippingInformation?.recipientName}
+                </span>
+              </p>
             </div>
           </div>
         </div>
@@ -61,31 +180,45 @@ function OrderDetail() {
                   <tr>
                     <td className="px-4 py-2 text-center">SR.</td>
                     <td className="px-4 py-2 text-center">Product Title</td>
-                    <td className="px-4 py-2 text-center">QUANTITY</td>
-                    <td className="px-4 py-2 text-center">ITEM PRICE</td>
-                    <td className="px-4 py-2 text-center">AMOUNT</td>
+                    <td className="px-4 py-2 text-center">DETAIL</td>
                   </tr>
                 </thead>
                 <tbody className="text-gray-800  bg-white  divide-y divide-gray-100 text-serif text-sm my-2">
-                  <tr className="my-2">
-                    <td className="whitespace-nowrap font-normal text-gray-500 text-center my-2">
-                      1{" "}
-                    </td>
-                    <td className="whitespace-nowrap font-normal text-gray-500 text-center my-2">
-                      <span className="text-gray-700 font-semibold  text-xs text-center my-2">
-                        Calabaza Squash
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap font-bold text-center my-2">
-                      1{" "}
-                    </td>
-                    <td className="whitespace-nowrap font-bold text-center my-2">
-                      98.03
-                    </td>
-                    <td className="whitespace-nowrap font-bold text-red-500 text-center my-2">
-                      98.03
-                    </td>
-                  </tr>
+                  {orderDetail?.data?.itemList?.map((item, index) => (
+                    <tr className="my-2" key={index}>
+                      <td className="whitespace-nowrap font-normal text-gray-500 text-center my-2">
+                        {index + 1}
+                      </td>
+                      <td className="whitespace-nowrap font-normal text-gray-500 text-center my-2">
+                        <span className="text-gray-700 font-semibold  text-xs text-center my-2">
+                          {item?.name}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap font-bold text-center my-2">
+                        <ul>
+                          {item?.itemDetailList.map((item) => (
+                            <li>
+                              Size: {item?.size} - Quantity: {item?.quantity} -
+                              price: {formatVND(item?.price ? item?.price : 0)}{" "}
+                              <br></br>
+                              {item?.toppingList?.length > 0 &&
+                                "Topping list: "}
+                              {item?.toppingList?.length > 0 &&
+                                item?.toppingList?.map((topping) => (
+                                  <span>
+                                    {topping?.name} -{" "}
+                                    {formatVND(
+                                      topping?.price ? topping?.price : 0
+                                    )}
+                                    ,
+                                  </span>
+                                ))}
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -98,7 +231,7 @@ function OrderDetail() {
                 PAYMENT METHOD
               </span>
               <span className="text-sm text-gray-500  font-semibold font-serif block">
-                Cash
+                {orderDetail?.data?.transaction?.paymentType}
               </span>
             </div>
             <div className="mb-3 md:mb-0 lg:mb-0  flex flex-col sm:flex-wrap">
@@ -106,15 +239,23 @@ function OrderDetail() {
                 SHIPPING COST
               </span>
               <span className="text-sm text-gray-500  font-semibold font-serif block">
-                €60.00
+                {formatVND(
+                  orderDetail?.data?.shippingFee
+                    ? orderDetail?.data?.shippingFee
+                    : 0
+                )}
               </span>
             </div>
             <div className="mb-3 md:mb-0 lg:mb-0  flex flex-col sm:flex-wrap">
               <span className="mb-1 font-bold font-serif text-sm uppercase text-gray-600  block">
-                DISCOUNT
+                TOAL ITEM PRICE
               </span>
               <span className="text-sm text-gray-500  font-semibold font-serif block">
-                €0.00
+                {formatVND(
+                  orderDetail?.data?.totalItemPrice
+                    ? orderDetail?.data?.totalItemPrice
+                    : 0
+                )}
               </span>
             </div>
             <div className="flex flex-col sm:flex-wrap">
@@ -122,41 +263,46 @@ function OrderDetail() {
                 TOTAL AMOUNT
               </span>
               <span className="text-xl font-serif font-bold text-red-500  block">
-                €158.03
+                {formatVND(
+                  orderDetail?.data?.totalPayment
+                    ? orderDetail?.data?.totalPayment
+                    : 0
+                )}
               </span>
             </div>
           </div>
         </div>
       </div>
       <div className="mb-4 mt-3 flex justify-between">
-        <a
-          download="Invoice"
-          href="blob:https://dashtar-admin.netlify.app/7960d228-1573-4e2d-856d-5b4bc39a5cd6"
+        <button
+          onClick={handleDownloadInvoice}
+          className="flex items-center text-sm leading-5 transition-colors duration-150 font-medium focus:outline-none px-5 py-2 rounded-md text-white bg-green-500 border border-transparent w-auto cursor-pointer"
         >
-          <button className="flex items-center text-sm leading-5 transition-colors duration-150 font-medium focus:outline-none px-5 py-2 rounded-md text-white bg-green-500 border border-transparent w-auto cursor-pointer">
-            Download Invoice
-            <span className="ml-2 text-base">
-              <svg
-                stroke="currentColor"
-                fill="currentColor"
-                strokeWidth="0"
-                viewBox="0 0 512 512"
-                height="1em"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="32"
-                  d="M320 336h76c55 0 100-21.21 100-75.6s-53-73.47-96-75.6C391.11 99.74 329 48 256 48c-69 0-113.44 45.79-128 91.2-60 5.7-112 35.88-112 98.4S70 336 136 336h56m0 64.1l64 63.9 64-63.9M256 224v224.03"
-                ></path>
-              </svg>
-            </span>
-          </button>
-        </a>
-        <button className="flex items-center text-sm leading-5 transition-colors duration-150 font-medium focus:outline-none px-5 py-2 rounded-md text-white bg-green-500 border border-transparent w-auto">
+          Download Invoice
+          <span className="ml-2 text-base">
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              strokeWidth="0"
+              viewBox="0 0 512 512"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="32"
+                d="M320 336h76c55 0 100-21.21 100-75.6s-53-73.47-96-75.6C391.11 99.74 329 48 256 48c-69 0-113.44 45.79-128 91.2-60 5.7-112 35.88-112 98.4S70 336 136 336h56m0 64.1l64 63.9 64-63.9M256 224v224.03"
+              ></path>
+            </svg>
+          </span>
+        </button>
+        <button
+          onClick={handlePrintInvoice}
+          className="flex items-center text-sm leading-5 transition-colors duration-150 font-medium focus:outline-none px-5 py-2 rounded-md text-white bg-green-500 border border-transparent w-auto"
+        >
           Print Invoice
           <span className="ml-2">
             <svg
@@ -177,6 +323,7 @@ function OrderDetail() {
           </span>
         </button>
       </div>
+      {showPDF && <PDFDocument invoiceContent="sss" />}
     </div>
   );
 }

@@ -7,7 +7,7 @@ import {
   Percent,
   ShoppingCart,
   Storefront,
-  UserRectangle,
+  // UserRectangle,
   UsersThree,
 } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
@@ -86,11 +86,11 @@ const ITEM_ADMIN_SIDEBAR = [
     icon: <Gear size={25} />,
     to: configRouter.customPage,
   },
-  {
-    title: "Profile",
-    icon: <UserRectangle size={25} />,
-    to: configRouter.profileAdmin,
-  },
+  // {
+  //   title: "Profile",
+  //   icon: <UserRectangle size={25} />,
+  //   to: configRouter.profileAdmin,
+  // },
 ];
 const ItemSidebar = (props: {
   title: string;
