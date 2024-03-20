@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import TableAdmin from "@/components/TableAdmin/TableAdmin";
 import HeaderOrder from "@/components/Order/HeaderOrder";
 import FilterOrder from "@/components/Order/FilterOrder";
+import { formatVND } from "@/utils/const";
+import { configRouter } from "@/configs/router";
 
 interface IResponseOrders {
   timestamp: string;
@@ -33,8 +35,8 @@ export default function Orders() {
     setOrders(data);
   };
 
-  const handleRedirectOrderDetail = () => {
-    nav("/admin/orders/123");
+  const handleRedirectOrderDetail = (orderId: string) => {
+    nav(configRouter.orderDetail.slice(0, -3) + orderId);
   };
 
   useEffect(() => {
@@ -81,7 +83,7 @@ export default function Orders() {
                   </td>
                   <td className="px-4 py-2">
                     <span className="text-sm font-semibold">
-                      {order?.total}
+                      {formatVND(order?.total)}
                     </span>
                   </td>
                   <td className="px-4 py-2">
@@ -99,7 +101,7 @@ export default function Orders() {
                       </button>
                       <button
                         className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
-                        onClick={handleRedirectOrderDetail}
+                        onClick={() => handleRedirectOrderDetail(order?.id)}
                       >
                         <p
                           data-tip="true"
