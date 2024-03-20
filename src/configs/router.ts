@@ -25,4 +25,9 @@ export const configRouter = {
   branchs: "/admin/branchs",
   addBranchs: "/admin/add-branch",
   editBranchs: "/admin/edit-branch/:id",
+  // add type coupon
+  couponShipping: "/admin/add-coupons/shipping",
+  couponAmountOfProduct: "/admin/add-coupons/amount-off-product",
+  couponAmountOfOrder: "/admin/add-coupons/amount-off-order",
+  couponBuyXGetY: "/admin/add-coupons/buy-x-get-y",
 };
