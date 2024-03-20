@@ -161,5 +161,30 @@ const publicRoutes: IRouter[] = [
     layout: AdminLayout,
     role: null,
   },
+  // coupon type
+  {
+    path: configRouter.couponShipping,
+    component: lazy(() => import("../components/Coupon/Shipping/CouponShipping")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.couponAmountOfProduct,
+    component: lazy(() => import("../components/Coupon/AmountOffProduct/ConponAmountOffProduct")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.couponAmountOfOrder,
+    component: lazy(() => import("../components/Coupon/AmountOffOrder/CouponAmountOffOder")),
+    layout: AdminLayout,
+    role: null,
+  },
+  {
+    path: configRouter.couponBuyXGetY,
+    component: lazy(() => import("../components/Coupon/BuyXGetY/CouponBuyXGetY")),
+    layout: AdminLayout,
+    role: null,
+  },
 ];
 export { publicRoutes };

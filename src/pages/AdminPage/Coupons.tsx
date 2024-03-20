@@ -1,8 +1,7 @@
 import { Add } from "@/components/SVG/Add.svg";
 import { Delete } from "@/components/SVG/Delete.svg";
 import { Edit } from "@/components/SVG/Edit.svg";
-import { Export } from "@/components/SVG/Export.svg";
-import { Import } from "@/components/SVG/Import.svg";
+import { configRouter } from "@/configs/router";
 import {
   Button,
   Dialog,
@@ -10,11 +9,31 @@ import {
   DialogFooter,
   DialogHeader,
   Switch,
+  Typography
 } from "@material-tailwind/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Coupons() {
+  const [open, setOpen] = useState<boolean>(false);
+  const nav = useNavigate()
+
+  const handleRedirect = (type: string) => {
+    if (type === "Amount off product") {
+      nav(configRouter.couponAmountOfProduct)
+    }
+    else if (type === "Buy X get Y") {
+      nav(configRouter.couponBuyXGetY)
+    } else if (type === "Amount off order") {
+      nav(configRouter.couponAmountOfOrder)
+    }
+    else {
+      nav(configRouter.couponShipping)
+    }
+  }
+
+  const handleOpen = () => setOpen(!open);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -23,53 +42,59 @@ export default function Coupons() {
 
         {/* Add and delete */}
         <div className="rounded-lg min-w-0 shadow-xs overflow-hidden bg-white mb-5">
-          <div className="p-4">
-            <div className="md:pb-0 grid gap-4 lg:gap-6 xl:gap-6 xl:flex xl:items-center">
-              <div className="flex-grow-0 sm:flex-grow md:flex-grow lg:flex-grow xl:flex-grow">
-                <div className=" lg:flex md:flex flex-grow-0">
-                  <div className="flex">
-                    <div className="lg:flex-1 md:flex-1 mr-3 sm:flex-none">
-                      <button className="border flex justify-center items-center border-gray-300 hover:border-green-400 hover:text-green-400 cursor-pointer h-10 w-20 rounded-md focus:outline-none">
-                        <Export />
-                        <span className="text-xs">Export</span>
-                      </button>
-                    </div>
-                    <div className="lg:flex-1 md:flex-1 mr-3  sm:flex-none">
-                      <button className="border flex justify-center items-center h-10 w-20 hover:text-yellow-400  border-gray-300cursor-pointer  py-2 hover:border-yellow-400 rounded-md focus:outline-none">
-                        <Import />
-                        <span className="text-xs">Import</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                  <button
-                    className="inline-flex items-center justify-center leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-emerald-500 border border-transparent opacity-100 w-full rounded-md h-12 bg-red-600"
-                    type="button"
-                  >
-                    <span className="mr-2">
-                      <Delete />
-                    </span>
-                    Delete
-                  </button>
-                </div>
-                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                  <button
-                    className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-green-500 border border-transparent w-full rounded-md h-12"
-                    type="button"
-                  >
-                    <span className="mr-2">
-                      <Add />
-                    </span>
-                    Add Coupon
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div className="p-4 flex items-center justify-end">
+            <button
+              className="mr-2 inline-flex items-center justify-center leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-emerald-500 border border-transparent opacity-100 rounded-md h-12 bg-red-600"
+              type="button"
+            >
+              <span className="mr-2">
+                <Delete />
+              </span>
+              Delete
+            </button>
+            <button
+              className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-green-500 border border-transparent rounded-md h-12"
+              type="button"
+              onClick={handleOpen}
+            >
+              <span className="mr-2">
+                <Add />
+              </span>
+              Add Coupon
+            </button>
           </div>
         </div>
+
+        <Dialog placeholder="" open={open} handler={handleOpen}>
+          <DialogHeader placeholder="">
+            <Typography placeholder="" variant="h5" color="blue-gray">
+              Select discount type
+            </Typography>
+          </DialogHeader>
+          <DialogBody placeholder="" className="px-4 py-0">
+            <button className="text-start text-sm  border-y w-full py-2" onClick={() => handleRedirect("Amount off product")}>
+              <p className="font-normal text-black">Amount off product</p>
+              <p>Discount specific products or collections of products.</p>
+            </button>
+            <button className="text-start text-sm  border-y w-full py-2" onClick={() => handleRedirect("Buy X get Y")}>
+              <p className="font-normal text-black">Buy X get Y</p>
+              <p>Discount products based on a customer’s purchase.</p>
+            </button>
+            <button className="text-start text-sm  border-y w-full py-2" onClick={() => handleRedirect("Amount off order")}>
+              <p className="font-normal text-black">Amount off order</p>
+              <p>Discount the total order amount.</p>
+            </button>
+            <button className="text-start text-sm  border-y w-full py-2" onClick={() => handleRedirect("Shipping")}>
+              <p className="font-normal text-black">Shipping</p>
+              <p>Offer shipping on an order.</p>
+            </button>
+          </DialogBody>
+          <DialogFooter placeholder="" className="space-x-2">
+            <Button placeholder="" variant="text" color="blue-gray" onClick={handleOpen} className="border">
+              close
+            </Button>
+          </DialogFooter>
+        </Dialog>
 
         {/* Filter */}
         <div className="min-w-0 rounded-lg overflow-hidden bg-white shadow-xs rounded-t-lg rounded-0 mb-4">
@@ -221,16 +246,14 @@ const TableCoupons = () => {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <li
                     key={i}
-                    className={`${
-                      i === 0
-                        ? "bg-green-500 rounded-md"
-                        : "hover:bg-gray-100 rounded-md"
-                    }`}
+                    className={`${i === 0
+                      ? "bg-green-500 rounded-md"
+                      : "hover:bg-gray-100 rounded-md"
+                      }`}
                   >
                     <button
-                      className={`${
-                        i === 0 ? "bg-green-500 hover:bg-green-500" : ""
-                      }inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-3 py-1 rounded-md text-xs text-gray-600 border border-transparent `}
+                      className={`${i === 0 ? "bg-green-500 hover:bg-green-500" : ""
+                        }inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-3 py-1 rounded-md text-xs text-gray-600 border border-transparent `}
                       type="button"
                     >
                       {i + 1}
