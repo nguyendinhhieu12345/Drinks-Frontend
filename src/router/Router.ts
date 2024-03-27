@@ -186,5 +186,11 @@ const publicRoutes: IRouter[] = [
     layout: AdminLayout,
     role: null,
   },
+  {
+    path: configRouter.album,
+    component: lazy(() => import("../pages/AdminPage/Album")),
+    layout: AdminLayout,
+    role: null,
+  },
 ];
 export { publicRoutes };

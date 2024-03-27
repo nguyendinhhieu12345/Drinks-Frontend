@@ -25,6 +25,7 @@ export const configRouter = {
   branchs: "/admin/branchs",
   addBranchs: "/admin/add-branch",
   editBranchs: "/admin/edit-branch/:id",
+  album: "/admin/albums",
   // add type coupon
   couponShipping: "/admin/add-coupons/shipping",
   couponAmountOfProduct: "/admin/add-coupons/amount-off-product",
