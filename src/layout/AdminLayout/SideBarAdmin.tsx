@@ -2,6 +2,7 @@ import React from "react";
 import {
   Coffee,
   Gear,
+  Images,
   ListBullets,
   Megaphone,
   Percent,
@@ -86,11 +87,11 @@ const ITEM_ADMIN_SIDEBAR = [
     icon: <Gear size={25} />,
     to: configRouter.customPage,
   },
-  // {
-  //   title: "Profile",
-  //   icon: <UserRectangle size={25} />,
-  //   to: configRouter.profileAdmin,
-  // },
+  {
+    title: "Albums",
+    icon: <Images size={25} />,
+    to: configRouter.album,
+  },
 ];
 const ItemSidebar = (props: {
   title: string;
@@ -102,20 +103,18 @@ const ItemSidebar = (props: {
   return (
     <Link
       to={props.to}
-      className={`w-full px-2.5 py-2 ${
-        location.pathname === props.to
+      className={`w-full px-2.5 py-2 ${location.pathname === props.to
           ? "bg-blue-400 text-white font-semibold"
           : "text-gray-800 hover:bg-gray-200"
-      } rounded-lg select-none `}
+        } rounded-lg select-none `}
     >
       <div
         className={`w-60 flex items-center justify-start space-x-5 flex-nowrap overflow-hidden`}
       >
         {props.icon}
         <p
-          className={`${
-            !props.isOpen ? "hidden" : "block"
-          } text-base font-medium font-sans flex items-center justify-center `}
+          className={`${!props.isOpen ? "hidden" : "block"
+            } text-base font-medium font-sans flex items-center justify-center `}
         >
           {props.title}
         </p>
@@ -133,9 +132,8 @@ const SideBarAdmin = React.forwardRef<Ref, Props>(
       ${props.isOpen ? "w-80" : "w-15"}`}
       >
         <div
-          className={`absolute z-9999 w-full ${
-            props.isOpen ? "-translate-x-0 " : "-translate-x-60 "
-          } h-full overflow-auto z-50 bg-white top-0 left-0 xl:-translate-x-0
+          className={`absolute z-9999 w-full ${props.isOpen ? "-translate-x-0 " : "-translate-x-60 "
+            } h-full overflow-auto z-50 bg-white top-0 left-0 xl:-translate-x-0
           transition-all delay-200 flex flex-col px-2 py-4 gap-3 shadow-lg`}
           ref={ref}
         >

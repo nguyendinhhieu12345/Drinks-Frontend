@@ -17,6 +17,7 @@ interface ITableAdmin {
     categoryId: string
   ) => Promise<void>;
   getAllOrder?: (key: string, page: number, status: string) => Promise<void>;
+  getAllAlbum?: (album_type: string, sort_type: string, currentPage: number) => Promise<void>;
 }
 
 function TableAdmin(props: ITableAdmin) {
@@ -25,6 +26,7 @@ function TableAdmin(props: ITableAdmin) {
   useEffect(() => {
     props.getAllProduct && props.getAllProduct("", pageActive, "", "");
     props.getAllOrder && props.getAllOrder("", pageActive, "");
+    props.getAllAlbum && props.getAllAlbum("", "", pageActive);
   }, [pageActive]);
 
   return (
@@ -40,9 +42,8 @@ function TableAdmin(props: ITableAdmin) {
               {props.fieldTable.map((e, index) => (
                 <td
                   key={index}
-                  className={`px-4 py-2 ${
-                    index === props.fieldTable.length - 1 ? "text-right" : ""
-                  }`}
+                  className={`px-4 py-2 ${index === props.fieldTable.length - 1 ? "text-right" : ""
+                    }`}
                 >
                   {e}
                 </td>
