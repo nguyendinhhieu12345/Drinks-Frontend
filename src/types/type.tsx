@@ -52,3 +52,26 @@ export interface IStaff {
   gender: boolean;
   status: string;
 }
+
+export interface ICoupon {
+  code: string,
+  description: string,
+  usageConditionList?: {
+    type: string,
+    value?: number
+  }[],
+  combinationConditionList?: {
+    type: string
+  }[],
+  minPurchaseCondition?: {
+    value: string
+  },
+  targetObjectConditionList?: {
+    objectId: string;
+    value: number
+  }[],
+  unitReward: string,
+  valueReward: number,
+  startDate: string,
+  expirationDate: string
+}
