@@ -22,3 +22,21 @@ export const addCouponOrder = async (
         return Promise.reject(error);
     }
 };
+
+export const getAllCoupon = async () => {
+    try {
+        const res = await httpRequest.get(`/coupon`);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const deleteCoupon = async (couponId: string) => {
+    try {
+        const res = await httpRequest.deleted(`/coupon/${couponId}`);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
