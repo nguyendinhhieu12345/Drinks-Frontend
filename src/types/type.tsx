@@ -70,8 +70,13 @@ export interface ICoupon {
     objectId: string;
     value: number
   }[],
-  unitReward: string,
-  valueReward: number,
+  unitReward?: string,
+  valueReward?: number,
   startDate: string,
-  expirationDate: string
+  expirationDate: string,
+  productRewardList?: {
+    productId: string,
+    productSize: string;
+    quantity: number
+  }[]
 }

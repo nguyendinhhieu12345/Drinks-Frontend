@@ -186,7 +186,7 @@ export default function Coupons() {
                       )}
                     </td>
                     <td className="px-4 py-2">
-                      {!coupon.expired ? (
+                      {coupon.expired ? (
                         <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-red-600 bg-red-100 italic">
                           Expired
                         </span>

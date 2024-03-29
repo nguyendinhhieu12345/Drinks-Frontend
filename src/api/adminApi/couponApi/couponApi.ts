@@ -12,6 +12,28 @@ export const addCouponShipping = async (
     }
 };
 
+export const addCouponProduct = async (
+    couponProduct: ICoupon
+) => {
+    try {
+        const res = await httpRequest.post(`/coupon/amount-off-product`, couponProduct);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const addCouponBuyXGetY = async (
+    couponProduct: ICoupon
+) => {
+    try {
+        const res = await httpRequest.post(`/coupon/product-gift`, couponProduct);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
 export const addCouponOrder = async (
     couponOrder: ICoupon
 ) => {

@@ -19,10 +19,26 @@ export const getAllProduct = async (
 ) => {
   try {
     const res = await httpRequest.get(
-      `/product?page=${pageCurrent}&size=10${
-        productStatus !== "" ? `&productStatus=${productStatus}` : ""
-      }${key !== "" ? `&key=${key}` : ""}${
-        categoryId !== "" ? `&categoryId=${categoryId}` : ""
+      `/product?page=${pageCurrent}&size=10${productStatus !== "" ? `&productStatus=${productStatus}` : ""
+      }${key !== "" ? `&key=${key}` : ""}${categoryId !== "" ? `&categoryId=${categoryId}` : ""
+      } `
+    );
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const searchProduct = async (
+  key?: string,
+  pageCurrent?: number,
+  productStatus?: string,
+  categoryId?: string
+) => {
+  try {
+    const res = await httpRequest.get(
+      `/product?page=${pageCurrent}&size=9999${productStatus !== "" ? `&productStatus=${productStatus}` : ""
+      }${key !== "" ? `&key=${key}` : ""}${categoryId !== "" ? `&categoryId=${categoryId}` : ""
       } `
     );
     return res;

@@ -1,5 +1,5 @@
 import { configRouter } from "@/configs/router";
-import { ArrowLeft, ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as couponApi from "@/api/adminApi/couponApi/couponApi"
@@ -7,7 +7,7 @@ import { ICoupon } from "@/types/type";
 import { toast } from "react-toastify";
 import useLoading from "@/hooks/useLoading";
 import { Spinner } from "@material-tailwind/react";
-import assets from "@/assets";
+import ProductSelector from "./ProductSelector";
 
 function CouponAmountOffProduct() {
   const [couponData, setCouponData] = useState<ICoupon>({
@@ -29,7 +29,7 @@ function CouponAmountOffProduct() {
     try {
       startLoading()
       if (couponData?.code !== "" && couponData?.description !== "" && couponData?.unitReward !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0) {
-        const data = await couponApi.addCouponOrder(couponData as ICoupon)
+        const data = await couponApi.addCouponProduct(couponData as ICoupon)
         if (data?.success) {
           stopLoading()
           toast.success(data?.message)
@@ -98,7 +98,7 @@ function CouponAmountOffProduct() {
           >
             <ArrowLeft />
           </div>
-          <p className="text-lg font-semibold">Create order discount</p>
+          <p className="text-lg font-semibold">Create product discount</p>
         </div>
         <div>
           <button onClick={handleAddCouponShipping} className="px-4 py-2 bg-green-400 rounded-full text-white">
@@ -170,32 +170,7 @@ function CouponAmountOffProduct() {
                 />
               </div>
             </div>
-            <div className="mb-3">
-              <p className="mb-3 font-semibold text-sm">Customer gets - Customers must add the quantity of items specified below to their cart.</p>
-              <div className="flex items-center">
-                <div className="relative w-96">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3  cursor-pointer z-999999">
-                    <MagnifyingGlass />
-                  </div>
-                  <input
-                    type="text"
-                    className="block w-full pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 "
-                    placeholder="Enter product ..."
-                  />
-                </div>
-              </div>
-              <div>
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <div key={index} className="w-full h-auto min-h-10 border my-2 rounded-lg flex p-2">
-                    <img src={assets?.images?.shopfeeIcon} alt="img test" loading="lazy" className="w-10 h-10 object-cover border rounded-md" />
-                    <div className="text-sm ml-3">
-                      <p className="font-semibold">Coffe size M</p>
-                      <p className="text-xs">Coffe size M</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ProductSelector couponData={couponData} setCouponData={setCouponData} />
             {/* usageConditionList */}
             <div className="mb-3">
               <p className="mb-3 font-semibold text-sm">Maximum discount uses</p>
@@ -248,15 +223,15 @@ function CouponAmountOffProduct() {
               <div className="flex items-center justify-around mt-3">
                 <div className="flex items-center justify-center">
                   <input type="checkbox" className="rounded-md"
-                    onChange={() => handleCheckboxChange("PRODUCT")}
-                    checked={couponData.combinationConditionList?.some(item => item.type === "PRODUCT")}
+                    onChange={() => handleCheckboxChange("ORDER")}
+                    checked={couponData.combinationConditionList?.some(item => item.type === "ORDER")}
                   />
-                  <p className="text-sm ml-2">Product discounts</p>
+                  <p className="text-sm ml-2">Order discounts</p>
                 </div>
                 <div className="flex items-center justify-center" >
                   <input type="checkbox" className="rounded-md"
                     onChange={() => handleCheckboxChange("SHIPPING")}
-                    checked={couponData.combinationConditionList?.some(item => item.type === "ORDER")}
+                    checked={couponData.combinationConditionList?.some(item => item.type === "SHIPPING")}
                   />
                   <p className="text-sm ml-2">Shipping discounts</p>
                 </div>
