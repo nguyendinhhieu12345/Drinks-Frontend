@@ -63,10 +63,16 @@ function ProductSelector(props: IProductSelector) {
                         type="text"
                         className="block w-full pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Enter product ..."
-                        onChange={() => setModalOpen(true)}
+                        onChange={() => {
+                            setModalOpen(true)
+                            handleSearchProduct("")
+                        }}
                     />
                 </div>
-                <button className='px-4 py-1.5 rounded-lg shadow-sm border font-medium ml-5 hover:bg-gray-50' onClick={() => setModalOpen(true)}>Browse</button>
+                <button className='px-4 py-1.5 rounded-lg shadow-sm border font-medium ml-5 hover:bg-gray-50' onClick={() => {
+                    setModalOpen(true)
+                    handleSearchProduct("")
+                }}>Browse</button>
             </div>
             <Dialog placeholder="" open={modalOpen} handler={handleOpenModel}>
                 <DialogHeader placeholder="">Add Product</DialogHeader>

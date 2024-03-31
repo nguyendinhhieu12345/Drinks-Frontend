@@ -7,7 +7,7 @@ import * as productApi from "@/api/adminApi/productApi/productApi";
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import { ICategory, IProduct } from "@/types/type";
 import { toast } from "react-toastify";
-import { checkTypeImage, formatVND, imageUrlToFile } from "@/utils/const";
+import { checkTypeImage, formatVND, imageUrlToFile } from "@/utils/helper";
 import useLoading from "@/hooks/useLoading";
 import { Spinner } from "@material-tailwind/react";
 

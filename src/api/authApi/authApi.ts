@@ -15,7 +15,7 @@ export const loginPass = async (params: Auth) => {
 
 export const logout = async () => {
   try {
-    const res = await httpRequest.get("/auth/employee/logout");
+    const res = await httpRequest.post("/auth/employee/logout");
     return res;
   } catch (error) {
     return Promise.reject(error);

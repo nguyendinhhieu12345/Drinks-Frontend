@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 import * as branchApi from "@/api/adminApi/branchApi/branchApi";
-import { checkTypeImage, imageUrlToFile } from "@/utils/const";
+import { checkTypeImage, imageUrlToFile } from "@/utils/helper";
 
 interface IProvince {
   province_id: string;

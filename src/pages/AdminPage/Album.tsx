@@ -8,7 +8,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
-import { checkTypeImage } from "@/utils/const";
+import { checkTypeImage } from "@/utils/helper";
 import { toast } from "react-toastify";
 import * as albumApi from "@/api/adminApi/albumApi/albumApi"
 import useLoading from "@/hooks/useLoading";

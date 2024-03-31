@@ -10,7 +10,7 @@ import * as productApi from "@/api/adminApi/productApi/productApi";
 import TableConfirmDelete from "@/components/TableAdmin/TableConfirmDelete";
 import TableAdmin from "@/components/TableAdmin/TableAdmin";
 import { ICategory, IProduct } from "@/types/type";
-import { formatVND } from "@/utils/const";
+import { formatVND } from "@/utils/helper";
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import { toast } from "react-toastify";
 

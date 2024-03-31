@@ -1,4 +1,4 @@
-import { imageUrlToFile } from "@/utils/const";
+import { imageUrlToFile } from "@/utils/helper";
 import { Carousel, Spinner } from "@material-tailwind/react";
 import { Gear } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";

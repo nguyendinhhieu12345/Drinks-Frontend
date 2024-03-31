@@ -85,6 +85,7 @@ const Login = () => {
                 <p className="font-semibold text-base">Password</p>
                 <InputWrap
                   formField={{ name: "password" }}
+                  type="password"
                   className="border-2 border-gray-500 rounded-md w-90 h-10 pl-3 pr-3 hover:border-blue-500"
                 />
               </div>

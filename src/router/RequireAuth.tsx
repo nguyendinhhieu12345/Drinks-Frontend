@@ -14,7 +14,7 @@ export default function RequireAuth({ children, requiredRole, user }: Props) {
     if (user) {
       if (location.pathname === configRouter.login)
         return (
-          <Navigate to={configRouter.home} state={{ from: location }} replace />
+          <Navigate to={configRouter.dashboardAdmin} state={{ from: location }} replace />
         );
     }
     return children;
