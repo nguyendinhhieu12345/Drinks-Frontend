@@ -8,9 +8,8 @@ export const formatVND = (value: number): string => {
 export const convertTime = (value: number): string => {
   return value / 60 / 60 < 1
     ? `${value / 60} phút`
-    : `${Math.floor(value / 60 / 60)} giờ ${
-        value / 60 - Math.floor(value / 60) * 60
-      } phút`;
+    : `${Math.floor(value / 60 / 60)} giờ ${value / 60 - Math.floor(value / 60) * 60
+    } phút`;
 };
 
 export const convertTimeToTemplate = (seconds: number): string => {
@@ -70,3 +69,38 @@ export const imageUrlToFile = async (imageUrl: string): Promise<File | null> => 
     return null;
   }
 };
+
+export const getToday = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  let month = (now.getMonth() + 1).toString();
+  let day = now.getDate().toString();
+
+  // Đảm bảo rằng tháng và ngày luôn có hai chữ số
+  if (month.length === 1) {
+    month = '0' + month;
+  }
+  if (day.length === 1) {
+    day = '0' + day;
+  }
+
+  return `${year}-${month}-${day}`;
+}
+
+export const getOneWeekAgo = () => {
+  const now = new Date();
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const year = oneWeekAgo.getFullYear();
+  let month = (oneWeekAgo.getMonth() + 1).toString();
+  let day = oneWeekAgo.getDate().toString();
+
+  // Đảm bảo rằng tháng và ngày luôn có hai chữ số
+  if (month.length === 1) {
+    month = '0' + month;
+  }
+  if (day.length === 1) {
+    day = '0' + day;
+  }
+
+  return `${year}-${month}-${day}`;
+}

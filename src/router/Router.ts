@@ -1,9 +1,7 @@
 // layout
 import BlankLayout from "../layout/BlankLayout/blankLayout";
-// import DefaultLayout from "../layout/DefaultLayout/defaultLayout";
 import { configRouter } from "@/configs/router";
 import AdminLayout from "@/layout/AdminLayout/adminLayout";
-import DefaultLayout from "@/layout/DefaultLayout/defaultLayout";
 import { FC, lazy } from "react";
 // pages
 
@@ -44,24 +42,6 @@ const publicRoutes: IRouter[] = [
     layout: BlankLayout,
     role: null,
   },
-
-  {
-    path: configRouter.home,
-    component: lazy(() => import("../pages/DefaultPage/Home")),
-    layout: DefaultLayout,
-    role: null,
-  },
-
-  // customer router
-
-  // {
-  //   path: configRouter.course,
-  //   component: lazy(() => import("../pages/OverviewCourse")),
-  //   layout: DefaultLayout,
-  //   role: null,
-  // },
-
-  // employee router
 
   // admin router
   {

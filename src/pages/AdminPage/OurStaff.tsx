@@ -1,6 +1,6 @@
 import { Delete } from "@/components/SVG/Delete.svg";
 import { Edit } from "@/components/SVG/Edit.svg";
-import { Drawer } from "@material-tailwind/react";
+import { Drawer, Tooltip } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import * as employeeApi from "@/api/adminApi/employeeApi/employeeApi";
 import { IStaff } from "@/types/type";
@@ -10,6 +10,7 @@ import TableAdmin from "@/components/TableAdmin/TableAdmin";
 import ButtonCloseDrawer from "@/components/ButtonCloseDrawer/ButtonCloseDrawer";
 import AddStaff from "@/components/Staff/AddStaff";
 import FilterStaff from "@/components/Staff/FilterStaff";
+import { Key } from "@phosphor-icons/react";
 
 interface IEmployeeResponse {
   timestamp: string;
@@ -84,6 +85,17 @@ export default function OurStaff() {
       edit: employeeId,
     }));
   };
+
+  const handleResetPassword = async (employeeId: string) => {
+    try {
+      const data = await employeeApi.resetPassword(employeeId, "123456");
+      if (data?.success) {
+        toast.success(data?.message);
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message);
+    }
+  }
 
   return (
     <div className="h-full overflow-y-auto">
@@ -182,6 +194,14 @@ export default function OurStaff() {
                         >
                           <Delete />
                         </p>
+                      </button>
+                      <button
+                        className="p-2 cursor-pointer text-gray-600 hover:text-emerald-600 focus:outline-none"
+                        onClick={() => handleResetPassword(emp?.id)}
+                      >
+                        <Tooltip content="Reset pasword">
+                          <Key size={20} />
+                        </Tooltip>
                       </button>
                     </div>
                   </td>

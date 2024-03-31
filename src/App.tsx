@@ -1,5 +1,4 @@
-import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import DefaultLayout from "./layout/DefaultLayout/defaultLayout";
 import { setupInterceptor } from "./utils/interceptor";
 import { publicRoutes } from "./router/Router";
@@ -59,6 +58,10 @@ function App() {
               />
             );
           })}
+          <Route
+            path="*"
+            element={<Navigate to="/login" replace />}
+          />
         </Routes>
       </AnimatePresence>
     </div>

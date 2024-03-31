@@ -4,7 +4,7 @@ import * as orderApi from "@/api/adminApi/orderApi/orderApi";
 import { configRouter } from "@/configs/router";
 import { toast } from "react-toastify";
 import { ArrowLeft } from "@phosphor-icons/react";
-import { formatVND } from "@/utils/const";
+import { formatVND } from "@/utils/helper";
 import PDFDocument from "@/components/Order/PDFDocument";
 
 interface Topping {

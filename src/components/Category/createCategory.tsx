@@ -1,7 +1,7 @@
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import useLoading from "@/hooks/useLoading";
 import { ICategory } from "@/types/type";
-import { checkTypeImage, imageUrlToFile } from "@/utils/const";
+import { checkTypeImage, imageUrlToFile } from "@/utils/helper";
 import { Spinner, Switch } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

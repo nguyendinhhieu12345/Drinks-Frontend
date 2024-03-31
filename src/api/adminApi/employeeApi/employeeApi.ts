@@ -38,8 +38,7 @@ export const getAllEmployee = async (
 ) => {
   try {
     const res = await httpRequest.get(
-      `/employee?page=${page}&size=10${
-        status !== "" ? `&status=${status}` : ""
+      `/employee?page=${page}&size=10${status !== "" ? `&status=${status}` : ""
       }${key !== "" ? `&key=${key}` : ""}`
     );
     return res;
@@ -82,6 +81,17 @@ export const updateEmployee = async (
 export const getEmployeeById = async (employeeId: string) => {
   try {
     const res = await httpRequest.get(`/employee/${employeeId}`);
+    return res;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const resetPassword = async (employeeId: string, passwordChange: string) => {
+  try {
+    const res = await httpRequest.patch(`/auth/employee/${employeeId}/set-password`, {
+      password: passwordChange,
+    });
     return res;
   } catch (error) {
     return Promise.reject(error);

@@ -1,7 +1,7 @@
 import { FC } from "react";
 // import InputEditTitle from "../InputWrap/InputEditTitle";
 import { BannerLinks } from "@/pages/AdminPage/CustomPage";
-import { checkTypeImage } from "@/utils/const";
+import { checkTypeImage } from "@/utils/helper";
 import { toast } from "react-toastify";
 import { ToggleSwitch } from "flowbite-react";
 
