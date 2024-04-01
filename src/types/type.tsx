@@ -54,6 +54,7 @@ export interface IStaff {
 }
 
 export interface ICoupon {
+  id?: string;
   code: string,
   description: string,
   usageConditionList?: {

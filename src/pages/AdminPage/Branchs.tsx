@@ -110,7 +110,7 @@ export default function Branchs() {
           isPaging={false}
           title="Category"
           scriptData={
-            <tbody className="bg-white divide-y divide-gray-100  text-gray-800">
+            <tbody className="bg-white divide-y w-full divide-gray-100  text-gray-800">
               {branchs?.data?.branchList?.map((branch, i) => (
                 <tr key={i}>
                   <>
@@ -120,7 +120,7 @@ export default function Branchs() {
                     <td className="px-4 py-2">
                       <span className="text-sm">{branch.name}</span>
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 max-w-xs break-all overflow-hidden text-ellipsis">
                       <span className="text-sm">{branch.fullAddress}</span>
                     </td>
                     <td className="px-4 py-2">

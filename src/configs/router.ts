@@ -31,4 +31,9 @@ export const configRouter = {
   couponAmountOfProduct: "/admin/add-coupons/amount-off-product",
   couponAmountOfOrder: "/admin/add-coupons/amount-off-order",
   couponBuyXGetY: "/admin/add-coupons/buy-x-get-y",
+  // edit type coupon
+  couponShippingEdit: "/admin/edit-coupons/shipping/:id",
+  couponAmountOfProductEdit: "/admin/edit-coupons/amount-off-product/:id",
+  couponAmountOfOrderEdit: "/admin/edit-coupons/amount-off-order/:id",
+  couponBuyXGetYEdit: "/admin/edit-coupons/buy-x-get-y/:id",
 };
