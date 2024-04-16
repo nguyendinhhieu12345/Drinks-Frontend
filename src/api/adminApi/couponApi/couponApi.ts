@@ -12,6 +12,18 @@ export const addCouponShipping = async (
     }
 };
 
+export const updateCouponShipping = async (
+    couponShipping: ICoupon,
+    couponId: string
+) => {
+    try {
+        const res = await httpRequest.put(`/coupon/shipping/${couponId}`, couponShipping);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
 export const addCouponProduct = async (
     couponProduct: ICoupon
 ) => {
@@ -57,18 +69,6 @@ export const getAllCoupon = async () => {
 export const deleteCoupon = async (couponId: string) => {
     try {
         const res = await httpRequest.deleted(`/coupon/${couponId}`);
-        return res;
-    } catch (error) {
-        return Promise.reject(error);
-    }
-};
-
-export const editCouponShipping = async (
-    couponShipping: ICoupon,
-    couponId: string
-) => {
-    try {
-        const res = await httpRequest.put(`/coupon/shipping/${couponId}`, couponShipping);
         return res;
     } catch (error) {
         return Promise.reject(error);

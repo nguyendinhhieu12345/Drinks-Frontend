@@ -1,55 +1,54 @@
+import { logoutUser } from "@/api/authApi/authApi";
 import { configRouter } from "@/configs/router";
+import { resetStoreAuth } from "@/features/auth/authSlice";
+import { AppDispatch } from "@/redux/store";
 import { User } from "@/type";
+import { useDispatch } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
 interface Props {
-  children: JSX.Element;
-  requiredRole: string | null;
-  user?: User;
+    children: JSX.Element;
+    requiredRole: string | null;
+    user?: User;
 }
 
 export default function RequireAuth({ children, requiredRole, user }: Props) {
-  const location = useLocation();
-  // redirects to login if not login
-  if (requiredRole === null) {
-    if (user) {
-      if (location.pathname === configRouter.login)
-        return (
-          <Navigate to={configRouter.dashboardAdmin} state={{ from: location }} replace />
-        );
-    }
-    return children;
-  } else {
-    if (user) {
-      // redirects to home if not teacher
-      // if (requiredRole === "1") {
-      //   if (user?.role === "1") return children;
-      //   else
-      //     return (
-      //       <Navigate
-      //         to={configRouter.home}
-      //         state={{ from: location }}
-      //         replace
-      //       />
-      //     );
-      // }
-
-      // redirects to home if not admin
-      // if (requiredRole === "2") {
-      //   if (user?.role === "2") return children;
-      //   else
-      //     return (
-      //       <Navigate
-      //         to={configRouter.home}
-      //         state={{ from: location }}
-      //         replace
-      //       />
-      //     );
-      // }
-      return children;
+    const location = useLocation();
+    // redirects to login if not login
+    if (!requiredRole) {
+        console.log(user)
+        if (user) {
+            if (location.pathname === configRouter.login)
+                return (
+                    <Navigate to={configRouter.dashboardAdmin} state={{ from: location }} replace />
+                );
+        }
+        return children;
     } else {
-      return (
-        <Navigate to={configRouter.login} state={{ from: location }} replace />
-      );
+        if (user) {
+            if (requiredRole === "ROLE_ADMIN" || requiredRole === "ROLE_MANAGER") {
+                return children;
+            }
+
+            else {
+                localStorage.setItem("role", "")
+                const logoutAccountCurrent = async () => {
+                    const data = await logoutUser(localStorage.getItem("fcmTokenId") as string)
+                    console.log(data)
+                    if (data?.success) {
+                        const dispatch = useDispatch<AppDispatch>()
+                        localStorage.removeItem("profile")
+                        localStorage.setItem("role", "")
+                        await dispatch(resetStoreAuth())
+                        return <Navigate to={configRouter.login} state={{ from: location }} replace />
+                    }
+                }
+                logoutAccountCurrent()
+            }
+            return children;
+        } else {
+            return (
+                <Navigate to={configRouter.login} state={{ from: location }} replace />
+            );
+        }
     }
-  }
 }
