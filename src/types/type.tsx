@@ -67,7 +67,7 @@ export interface ICoupon {
   minPurchaseCondition?: {
     value: string
   },
-  targetObjectConditionList?: {
+  subjectConditionList?: {
     objectId: string;
     value: number
   }[],

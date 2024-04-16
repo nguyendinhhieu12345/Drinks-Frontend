@@ -72,6 +72,8 @@ export default function AddProduct() {
             setDescription(data?.data?.description);
             setCategoryId(data?.data?.categoryId);
             setStatus(data?.data?.status);
+            setTypeProduct(data?.data?.type);
+            setPriceProductCake(parseInt(data?.data?.price ? data?.data?.price : 0));
             handleImageAdd(data?.data?.imageUrl);
             data?.data?.sizeList?.map((size: any) => {
                 setListPriceSize((prev) => {
@@ -195,25 +197,6 @@ export default function AddProduct() {
         if (name.trim() !== "" && description.trim() !== "" && image.length > 0) {
             startLoading();
             let formData = new FormData();
-            // Thêm các trường dữ liệu vào FormData
-            listPriceSize.forEach((size, index) => {
-                formData.append(
-                    `sizeList[${index}].size`,
-                    size.size.toString().toUpperCase()
-                );
-                formData.append(`sizeList[${index}].price`, size.priceSize.toString());
-            });
-
-            listPriceTopping.forEach((topping, index) => {
-                formData.append(
-                    `toppingList[${index}].name`,
-                    topping.topping.toString()
-                );
-                formData.append(
-                    `toppingList[${index}].price`,
-                    topping.priceTopping.toString()
-                );
-            });
 
             formData.append("name", name);
             formData.append("status", status);
@@ -222,7 +205,30 @@ export default function AddProduct() {
             image.forEach((img) => {
                 formData.append("image", img);
             });
-            formData.append("price", priceProductCake.toString())
+            if (typeProduct === "CAKE") {
+                formData.append("price", priceProductCake.toString())
+            }
+            else {
+                // Thêm các trường dữ liệu vào FormData
+                listPriceSize.forEach((size, index) => {
+                    formData.append(
+                        `sizeList[${index}].size`,
+                        size.size.toString().toUpperCase()
+                    );
+                    formData.append(`sizeList[${index}].price`, size.priceSize.toString());
+                });
+
+                listPriceTopping.forEach((topping, index) => {
+                    formData.append(
+                        `toppingList[${index}].name`,
+                        topping.topping.toString()
+                    );
+                    formData.append(
+                        `toppingList[${index}].price`,
+                        topping.priceTopping.toString()
+                    );
+                });
+            }
             if (location.pathname.split("/")[2].split("-")[0] === "add") {
                 try {
                     const data = await productApi.addProduct(formData, typeProduct);
@@ -509,8 +515,8 @@ export default function AddProduct() {
                                 <div className="mb-2">
                                     <p className="mb-3 font-normal text-sm">Type</p>
                                     <div>
-                                        <Radio crossOrigin="true" name="type" label="Beverage" defaultChecked onChange={() => setTypeProduct("BEVERAGE")} />
-                                        <Radio crossOrigin="true" name="type" label="Cake" onChange={() => setTypeProduct("CAKE")} />
+                                        <Radio crossOrigin="true" name="type" label="Beverage" defaultChecked={typeProduct === "BEVERAGE" ? true : false} onChange={() => setTypeProduct("BEVERAGE")} />
+                                        <Radio crossOrigin="true" name="type" label="Cake" defaultChecked={typeProduct === "CAKE" ? true : false} onChange={() => setTypeProduct("CAKE")} />
                                     </div>
                                 </div>
                                 <div>

@@ -7,6 +7,7 @@ import { ICoupon } from "@/types/type";
 import { toast } from "react-toastify";
 import useLoading from "@/hooks/useLoading";
 import { Spinner } from "@material-tailwind/react";
+import { getToday } from "@/utils/helper";
 
 function CouponShipping() {
     const [couponData, setCouponData] = useState<ICoupon>({
@@ -14,7 +15,7 @@ function CouponShipping() {
         description: "",
         unitReward: "PERCENTAGE",
         valueReward: 0,
-        startDate: "",
+        startDate: getToday(),
         expirationDate: ""
     })
     const { isLoading, startLoading, stopLoading } = useLoading();
@@ -292,7 +293,8 @@ function CouponShipping() {
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date end"
-                                    value={couponData?.expirationDate.split("T00")[0]}
+                                    value={couponData?.expirationDate ? couponData?.expirationDate?.split("T00")[0] : ""}
+                                    min={getToday()}
                                 />
                             </div>
                         </div>

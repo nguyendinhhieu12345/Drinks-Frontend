@@ -16,7 +16,7 @@ function CouponAmountOffOder() {
         unitReward: "PERCENTAGE",
         valueReward: 0,
         startDate: getToday(),
-        expirationDate: getToday()
+        expirationDate: ""
     })
     const { isLoading, startLoading, stopLoading } = useLoading();
     const nav = useNavigate();
@@ -178,6 +178,7 @@ function CouponAmountOffOder() {
                             <p className="mb-3 font-semibold text-sm">Discount Value</p>
                             <div className="flex items-center">
                                 <select className="w-[70%] mr-2 text-base rounded-lg"
+                                    value={couponData?.unitReward}
                                     onChange={(e) => setCouponData((prev: any) => ({
                                         ...prev,
                                         unitReward: e.target.value
@@ -288,7 +289,8 @@ function CouponAmountOffOder() {
                                         ...prev,
                                         expirationDate: e.target.value
                                     }))}
-                                    value={couponData?.expirationDate.split("T00")[0]}
+                                    value={couponData?.expirationDate ? couponData?.expirationDate?.split("T00")[0] : ""}
+                                    min={getToday()}
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date end"
