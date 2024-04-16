@@ -1,12 +1,13 @@
 import { configRouter } from "@/configs/router";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import * as couponApi from "@/api/adminApi/couponApi/couponApi"
 import { ICoupon } from "@/types/type";
 import { toast } from "react-toastify";
 import useLoading from "@/hooks/useLoading";
 import { Spinner } from "@material-tailwind/react";
+import { getToday } from "@/utils/helper";
 
 function CouponShipping() {
     const [couponData, setCouponData] = useState<ICoupon>({
@@ -14,10 +15,11 @@ function CouponShipping() {
         description: "",
         unitReward: "PERCENTAGE",
         valueReward: 0,
-        startDate: "",
+        startDate: getToday(),
         expirationDate: ""
     })
     const { isLoading, startLoading, stopLoading } = useLoading();
+    const { id } = useParams()
 
     const nav = useNavigate();
     const handleRedirectCoupons = () => {
@@ -28,11 +30,22 @@ function CouponShipping() {
         try {
             startLoading()
             if (couponData?.code !== "" && couponData?.description !== "" && couponData?.unitReward !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0) {
-                const data = await couponApi.addCouponShipping(couponData as ICoupon)
-                if (data?.success) {
-                    stopLoading()
-                    toast.success(data?.message)
-                    handleRedirectCoupons()
+                if (!id) {
+                    const data = await couponApi.addCouponShipping(couponData as ICoupon)
+                    if (data?.success) {
+                        stopLoading()
+                        toast.success(data?.message)
+                        handleRedirectCoupons()
+                    }
+                }
+                else {
+                    const { id, ...orthers } = couponData
+                    const data = await couponApi.updateCouponShipping(orthers, id as string)
+                    if (data?.success) {
+                        stopLoading()
+                        toast.success(data?.message)
+                        handleRedirectCoupons()
+                    }
                 }
             }
             else {
@@ -86,6 +99,23 @@ function CouponShipping() {
         });
     }
 
+    useEffect(() => {
+        const getCouponDetail = async () => {
+            try {
+                const data = await couponApi.getCouponShipping(id as string)
+                if (data?.success) {
+                    console.log(data?.data)
+                    setCouponData(data?.data)
+                }
+            }
+            catch {
+                nav(configRouter.coupons)
+                toast.error("Coupon not found")
+            }
+        }
+        id && getCouponDetail()
+    }, [id])
+
     return (
         <div className="w-full h-auto min-h-full overflow-auto py-3 px-8 ">
             {/* Save */}
@@ -97,7 +127,7 @@ function CouponShipping() {
                     >
                         <ArrowLeft />
                     </div>
-                    <p className="text-lg font-semibold">Create shipping discount</p>
+                    <p className="text-lg font-semibold">{id ? "Edit" : "Create"} shipping discount</p>
                 </div>
                 <div>
                     <button onClick={handleAddCouponShipping} className="px-4 py-2 bg-green-400 rounded-full text-white">
@@ -127,6 +157,7 @@ function CouponShipping() {
                                 className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                 type="text"
                                 placeholder="Title"
+                                value={couponData?.code}
                             />
                         </div>
                         <div className="mb-2">
@@ -138,6 +169,7 @@ function CouponShipping() {
                                 }))}
                                 className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 min-h-20 h-40 max-h-60"
                                 placeholder="Desciption"
+                                value={couponData?.description}
                             />
                         </div>
                     </div>
@@ -146,7 +178,7 @@ function CouponShipping() {
                         <div className="mb-3">
                             <p className="mb-3 font-semibold text-sm">Discount Value</p>
                             <div className="flex items-center">
-                                <select className="w-[70%] mr-2 text-base rounded-lg"
+                                <select value={couponData?.unitReward} className="w-[70%] mr-2 text-base rounded-lg"
                                     onChange={(e) => setCouponData((prev: any) => ({
                                         ...prev,
                                         unitReward: e.target.value
@@ -163,6 +195,7 @@ function CouponShipping() {
                                         ...prev,
                                         valueReward: e.target.value
                                     }))}
+                                    value={couponData?.valueReward}
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="number"
                                     placeholder="Value discount"
@@ -182,25 +215,27 @@ function CouponShipping() {
                                             />
                                             <p className="text-sm ml-2">Limit number of times this discount can be used in total</p>
                                         </div>
-                                        {couponData.usageConditionList?.some(item => item.type === "QUANTITY") && <input
-                                            className="block w-1/2 border ml-10 px-1 text-sm rounded-md focus:bg-white border-gray-600"
-                                            type="number"
-                                            disabled={!couponData.usageConditionList?.some(item => item.type === "QUANTITY")}
-                                            onChange={(e) => {
-                                                setCouponData((prev: any) => ({
-                                                    ...prev,
-                                                    usageConditionList: prev.usageConditionList?.map((item: any) => {
-                                                        if (item.type === "QUANTITY") {
-                                                            return {
-                                                                ...item,
-                                                                value: parseInt(e.target.value)
-                                                            };
-                                                        }
-                                                        return item;
-                                                    }) || [{ type: "QUANTITY", value: parseInt(e.target.value) }]
-                                                }));
-                                            }}
-                                        />
+                                        {couponData.usageConditionList?.some(item => item.type === "QUANTITY") &&
+                                            <input
+                                                className="block w-1/2 border ml-10 px-1 text-sm rounded-md focus:bg-white border-gray-600"
+                                                type="number"
+                                                value={couponData?.usageConditionList?.filter(item => item.type === "QUANTITY")[0]?.value}
+                                                disabled={!couponData.usageConditionList?.some(item => item.type === "QUANTITY")}
+                                                onChange={(e) => {
+                                                    setCouponData((prev: any) => ({
+                                                        ...prev,
+                                                        usageConditionList: prev.usageConditionList?.map((item: any) => {
+                                                            if (item.type === "QUANTITY") {
+                                                                return {
+                                                                    ...item,
+                                                                    value: parseInt(e.target.value)
+                                                                };
+                                                            }
+                                                            return item;
+                                                        }) || [{ type: "QUANTITY", value: parseInt(e.target.value) }]
+                                                    }));
+                                                }}
+                                            />
                                         }
                                     </div>
                                     <div className="flex items-center justify-center">
@@ -247,6 +282,7 @@ function CouponShipping() {
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date start"
+                                    value={couponData?.startDate.split("T00")[0]}
                                 />
                                 <ArrowRight size={20} />
                                 <input
@@ -257,6 +293,8 @@ function CouponShipping() {
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date end"
+                                    value={couponData?.expirationDate ? couponData?.expirationDate?.split("T00")[0] : ""}
+                                    min={getToday()}
                                 />
                             </div>
                         </div>
@@ -270,6 +308,7 @@ function CouponShipping() {
                                         value: e.target.value
                                     }
                                 }))}
+                                value={couponData?.minPurchaseCondition?.value}
                                 type="number"
                                 className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 h-10"
                                 placeholder="Min price to apply discount"

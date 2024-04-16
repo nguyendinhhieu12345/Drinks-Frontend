@@ -54,6 +54,7 @@ export interface IStaff {
 }
 
 export interface ICoupon {
+  id?: string;
   code: string,
   description: string,
   usageConditionList?: {
@@ -66,7 +67,7 @@ export interface ICoupon {
   minPurchaseCondition?: {
     value: string
   },
-  targetObjectConditionList?: {
+  subjectConditionList?: {
     objectId: string;
     value: number
   }[],

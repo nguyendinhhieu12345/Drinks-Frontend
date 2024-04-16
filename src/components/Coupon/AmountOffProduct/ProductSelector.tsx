@@ -36,12 +36,12 @@ function ProductSelector(props: IProductSelector) {
     const handleCheckboxChange = (productId: string, checked: boolean) => {
         const updatedCouponData = { ...props.couponData };
         if (checked) {
-            updatedCouponData.targetObjectConditionList = [
-                ...(updatedCouponData.targetObjectConditionList || []),
+            updatedCouponData.subjectConditionList = [
+                ...(updatedCouponData.subjectConditionList || []),
                 { objectId: productId, value: 1 }
             ];
         } else {
-            updatedCouponData.targetObjectConditionList = (updatedCouponData.targetObjectConditionList || []).filter(obj => obj.objectId !== productId);
+            updatedCouponData.subjectConditionList = (updatedCouponData.subjectConditionList || []).filter(obj => obj.objectId !== productId);
         }
         props.setCouponData(updatedCouponData);
     };
@@ -93,8 +93,8 @@ function ProductSelector(props: IProductSelector) {
                             <div key={index} className="w-full h-auto min-h-10 border my-2 rounded-lg flex items-center p-2">
                                 <input
                                     type="checkbox"
-                                    checked={props.couponData.targetObjectConditionList?.some(obj => obj.objectId === product.id)}
-                                    onChange={() => handleCheckboxChange(product.id, !props.couponData.targetObjectConditionList?.some(obj => obj.objectId === product.id))}
+                                    checked={props.couponData.subjectConditionList?.some(obj => obj.objectId === product.id)}
+                                    onChange={() => handleCheckboxChange(product.id, !props.couponData.subjectConditionList?.some(obj => obj.objectId === product.id))}
                                 />
                                 <img src={product?.thumbnailUrl} alt="img test" loading="lazy" className="ml-3 w-12 h-12 object-cover border rounded-md" />
                                 <div className="text-sm ml-3">

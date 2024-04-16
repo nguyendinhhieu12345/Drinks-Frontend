@@ -10,7 +10,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import * as dashboardApi from "@/api/adminApi/dashboardApi/dashboardApi"
-import { getOneWeekAgo, getToday } from "@/utils/helper";
+import { getOneMonthAgo, getToday } from "@/utils/helper";
 
 const data = [
     {
@@ -60,7 +60,7 @@ const RevenueChart = () => {
         end_date: string;
         time_type: string;
     }>({
-        start_date: getOneWeekAgo(),
+        start_date: getOneMonthAgo(),
         end_date: getToday(),
         time_type: "day"
     })
@@ -126,7 +126,7 @@ const RevenueChart = () => {
                             <option value="month">Month</option>
                             <option value="year">Year</option>
                         </select>
-                        <button className="p-2 text-base mx-2 bg-blue-500 text-white rounded-lg">Appy</button>
+                        <button onClick={getOverviewRevenue} className="p-2 text-base mx-2 bg-blue-500 text-white rounded-lg">Appy</button>
                     </div>
                 </div>
                 <div className="w-full h-[350px] mt-5">
