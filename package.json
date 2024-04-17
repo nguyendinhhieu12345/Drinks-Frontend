@@ -43,7 +43,8 @@
     "surge": "^0.23.1",
     "usehooks-ts": "^3.0.2",
     "vite-plugin-eslint": "^1.8.1",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.3",
