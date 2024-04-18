@@ -1,7 +1,7 @@
 // import { Export } from "@phosphor-icons/react";
 import { Add } from "../SVG/Add.svg";
 // import { Delete } from "../SVG/Delete.svg";  
-import { Import } from "../SVG/Import.svg";
+// import { Import } from "../SVG/Import.svg";
 
 interface IOptionCategory {
     handleAddCate: () => void;
@@ -21,12 +21,12 @@ function OptionCategory(props: IOptionCategory) {
                                         <span className="text-xs">Export</span>
                                     </button>
                                 </div> */}
-                                <div className="lg:flex-1 md:flex-1 mr-3  sm:flex-none">
+                                {/* <div className="lg:flex-1 md:flex-1 mr-3  sm:flex-none">
                                     <button className="border flex justify-center items-center h-10 w-20 hover:text-yellow-400  border-gray-300cursor-pointer  py-2 hover:border-yellow-400 rounded-md focus:outline-none">
                                         <Import />
                                         <span className="text-xs">Import</span>
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>

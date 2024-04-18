@@ -2,7 +2,18 @@ import * as httpRequest from "../../../utils/httpRequest";
 
 export const addProduct = async (formData: FormData, type: string) => {
     try {
-        const res = await httpRequest.post(`/product?type=${type}`, formData, {
+        const res = await httpRequest.post(`/product?product_type=${type}`, formData, {
+            "Content-Type": "multipart/form-data",
+        });
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const addFileProduct = async (formData: FormData, type: string) => {
+    try {
+        const res = await httpRequest.post(`/product/import?product_type=${type}`, formData, {
             "Content-Type": "multipart/form-data",
         });
         return res;
@@ -56,9 +67,9 @@ export const deleteProduct = async (ProductId: string) => {
     }
 };
 
-export const updateProduct = async (formData: FormData, ProductId: string) => {
+export const updateProduct = async (formData: FormData, ProductId: string, type: string) => {
     try {
-        const res = await httpRequest.put(`/product/${ProductId}`, formData, {
+        const res = await httpRequest.put(`/product/${ProductId}?product_type=${type}`, formData, {
             "Content-Type": "multipart/form-data",
         });
         return res;

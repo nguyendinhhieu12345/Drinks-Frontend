@@ -248,7 +248,8 @@ export default function AddProduct() {
                 try {
                     const data = await productApi.updateProduct(
                         formData,
-                        productId?.id as string
+                        productId?.id as string,
+                        typeProduct
                     );
                     if (data?.success) {
                         stopLoading();
@@ -515,8 +516,8 @@ export default function AddProduct() {
                                 <div className="mb-2">
                                     <p className="mb-3 font-normal text-sm">Type</p>
                                     <div>
-                                        <Radio crossOrigin="true" name="type" label="Beverage" defaultChecked={typeProduct === "BEVERAGE" ? true : false} onChange={() => setTypeProduct("BEVERAGE")} />
-                                        <Radio crossOrigin="true" name="type" label="Cake" defaultChecked={typeProduct === "CAKE" ? true : false} onChange={() => setTypeProduct("CAKE")} />
+                                        <Radio crossOrigin="true" name="type" label="Beverage" checked={typeProduct === "BEVERAGE" ? true : false} onChange={() => setTypeProduct("BEVERAGE")} />
+                                        <Radio crossOrigin="true" name="type" label="Cake" checked={typeProduct === "CAKE" ? true : false} onChange={() => setTypeProduct("CAKE")} />
                                     </div>
                                 </div>
                                 <div>
