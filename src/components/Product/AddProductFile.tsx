@@ -33,7 +33,32 @@ function AddProductFile() {
                     const workbook = XLSX.read(data, { type: "binary" });
                     const sheetName = workbook.SheetNames[0];
                     const sheet = workbook.Sheets[sheetName];
-                    const parsedData = XLSX.utils.sheet_to_json(sheet);
+                    let parsedData: any = XLSX.utils.sheet_to_json(sheet);
+
+                    for (let i = 0; i < parsedData.length; i++) {
+                        if (type === "BEVERAGE") {
+                            if (!parsedData[i]["Product name"]) {
+                                parsedData[i]["Product name"] = "";
+                            }
+                            if (!parsedData[i]["Category code"]) {
+                                parsedData[i]["Category code"] = "";
+                            }
+                            if (!parsedData[i]["Status"]) {
+                                parsedData[i]["Status"] = "";
+                            }
+                            if (!parsedData[i]["description"]) {
+                                parsedData[i]["description"] = "";
+                            }
+                            parsedData[i] = {
+                                "Product name": parsedData[i]["Product name"],
+                                "Category code": parsedData[i]["Category code"],
+                                "Status": parsedData[i]["Status"],
+                                "description": parsedData[i]["description"],
+                                "image": "",
+                                ...parsedData[i]
+                            }
+                        }
+                    }
                     setData(parsedData);
                 }
             };
@@ -60,10 +85,12 @@ function AddProductFile() {
                 toast.success(data?.message)
                 setFile([])
                 setData([])
+                setOpen(prev => !prev)
             }
         } catch (err: any) {
             stopLoading();
             toast.error(err?.response?.data?.message);
+            setOpen(prev => !prev)
         }
     }
 
@@ -119,7 +146,7 @@ function AddProductFile() {
                                                                             return (
                                                                                 <td key={index}>
                                                                                     {index === Object.keys(data[0])?.findIndex(data => (data === "Image" || data === "image")) ?
-                                                                                        <><img src={value} alt="img product" className="w-10 h-10 object-contain" /></>
+                                                                                        <>{value && <img src={value} alt="img product" className="w-10 h-10 object-contain" />}</>
                                                                                         :
                                                                                         <>{value}</>
                                                                                     }
