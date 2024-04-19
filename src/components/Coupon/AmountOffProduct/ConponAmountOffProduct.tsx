@@ -48,7 +48,7 @@ function CouponAmountOffProduct() {
     const handleAddCouponShipping = async () => {
         try {
             startLoading()
-            if (couponData?.code !== "" && couponData?.description !== "" && couponData?.unitReward !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0) {
+            if (couponData?.code !== "" && couponData?.description !== "" && couponData?.unitReward !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0 ) {
                 if (!id) {
                     const data = await couponApi.addCouponProduct(couponData as ICoupon)
                     if (data?.success) {

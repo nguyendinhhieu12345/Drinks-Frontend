@@ -109,7 +109,7 @@ export default function Products() {
                 <div className="rounded-lg min-w-0 shadow-xs overflow-hidden bg-white mb-5">
                     <div className="p-4">
                         <div className="md:pb-0 grid gap-4 lg:gap-6 xl:gap-6 xl:flex xl:items-center">
-                            <AddProductFile />
+                            <AddProductFile getAllProduct={getAllProduct} />
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
                                     <button

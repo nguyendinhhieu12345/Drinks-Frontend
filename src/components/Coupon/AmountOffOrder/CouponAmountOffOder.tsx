@@ -263,7 +263,7 @@ function CouponAmountOffOder() {
                                 <div className="flex items-center justify-center" >
                                     <input type="checkbox" className="rounded-md"
                                         onChange={() => handleCheckboxChange("SHIPPING")}
-                                        checked={couponData.combinationConditionList?.some(item => item.type === "ORDER")}
+                                        checked={couponData.combinationConditionList?.some(item => item.type === "SHIPPING")}
                                     />
                                     <p className="text-sm ml-2">Shipping discounts</p>
                                 </div>
