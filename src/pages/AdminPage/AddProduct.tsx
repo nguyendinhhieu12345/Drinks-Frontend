@@ -525,6 +525,7 @@ export default function AddProduct() {
                                     <select
                                         className="w-full rounded-xl text-base"
                                         onChange={(e) => setStatus(e.target.value)}
+                                        value={status}
                                     >
                                         <option value="AVAILABLE">AVAILABLE</option>
                                         <option value="HIDDEN">HIDDEN</option>

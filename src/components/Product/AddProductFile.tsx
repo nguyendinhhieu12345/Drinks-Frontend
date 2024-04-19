@@ -15,7 +15,11 @@ import useLoading from "@/hooks/useLoading";
 import { toast } from "react-toastify";
 import * as productApi from "@/api/adminApi/productApi/productApi"
 
-function AddProductFile() {
+interface IAddProductFile {
+    getAllProduct: (key: string, page: number, productStatus: string, categoryId: string) => Promise<void>
+}
+
+function AddProductFile(props: IAddProductFile) {
     const [type, setType] = useState<string>("")
     const [open, setOpen] = useState<boolean>(false)
     const [data, setData] = useState<any[]>([]);
@@ -86,6 +90,7 @@ function AddProductFile() {
                 setFile([])
                 setData([])
                 setOpen(prev => !prev)
+                props?.getAllProduct("", 1, "", "")
             }
         } catch (err: any) {
             stopLoading();
@@ -222,7 +227,6 @@ function AddProductFile() {
                 </div>
             </div>
         </div>
-
     )
 }
 

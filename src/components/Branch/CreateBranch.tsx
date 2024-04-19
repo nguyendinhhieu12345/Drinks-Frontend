@@ -499,7 +499,7 @@ function CreateBranch() {
                             <select
                                 className="mt-3 rounded-md w-full border-slate-400 hover:border-slate-900 focus:border-sky-600"
                                 onChange={(e) => handleChangeDistrict(e)}
-                                value={"Choose district"}
+                                defaultValue={"Choose district"}
                             >
                                 <option disabled>
                                     {newBranch?.ward === ""
