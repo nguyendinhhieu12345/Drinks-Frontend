@@ -210,40 +210,40 @@ function CreateBranch() {
         nav(configRouter.branchs);
     };
 
-    const handleGetLatLong = async () => {
-        const API_KEY = "2tgHvZJswyFkLug62ynzpCrs8RlqMcmzFVtoUjEL";
-        const encodedAddress = encodeURIComponent(
-            newBranch.detail +
-            " " +
-            newBranch.ward +
-            " " +
-            newBranch.district +
-            " " +
-            newBranch.province
-        );
-        const url = `https://rsapi.goong.io/Geocode?address=${encodedAddress}&api_key=${API_KEY}`;
+    // const handleGetLatLong = async () => {
+    //     const API_KEY = "2tgHvZJswyFkLug62ynzpCrs8RlqMcmzFVtoUjEL";
+    //     const encodedAddress = encodeURIComponent(
+    //         newBranch.detail +
+    //         ", " +
+    //         newBranch.ward +
+    //         ", " +
+    //         newBranch.district +
+    //         ", " +
+    //         newBranch.province
+    //     );
+    //     const url = `https://rsapi.goong.io/Geocode?address=${encodedAddress}&api_key=${API_KEY}`;
 
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data.results && data.results.length > 0) {
-                const { lat, lng } = data.results[0].geometry?.location;
-                setNewBranch((prevState: INewBranch) => ({
-                    ...prevState,
-                    ["longitude"]: lng,
-                }));
-                setNewBranch((prevState: INewBranch) => ({
-                    ...prevState,
-                    ["latitude"]: lat,
-                }));
-            } else {
-                toast.error("Address not found");
-            }
-        } catch (error) {
-            console.error("Error geocoding:", error);
-            toast.error("Error geocoding");
-        }
-    };
+    //     try {
+    //         const response = await fetch(url);
+    //         const data = await response.json();
+    //         if (data.results && data.results.length > 0) {
+    //             const { lat, lng } = data.results[0].geometry?.location;
+    //             setNewBranch((prevState: INewBranch) => ({
+    //                 ...prevState,
+    //                 ["longitude"]: lng,
+    //             }));
+    //             setNewBranch((prevState: INewBranch) => ({
+    //                 ...prevState,
+    //                 ["latitude"]: lat,
+    //             }));
+    //         } else {
+    //             toast.error("Address not found");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error geocoding:", error);
+    //         toast.error("Error geocoding");
+    //     }
+    // };
 
     const handleUpdateBranchs = async () => {
         try {
@@ -257,15 +257,47 @@ function CreateBranch() {
                 newBranch.openTime.trim() !== "" &&
                 newBranch.closeTime.trim() !== ""
             ) {
-                handleGetLatLong();
                 let formData = new FormData();
+                const API_KEY = "2tgHvZJswyFkLug62ynzpCrs8RlqMcmzFVtoUjEL";
+                const encodedAddress = encodeURIComponent(
+                    newBranch.detail +
+                    ", " +
+                    newBranch.ward +
+                    ", " +
+                    newBranch.district +
+                    ", " +
+                    newBranch.province
+                );
+                const url = `https://rsapi.goong.io/Geocode?address=${encodedAddress}&api_key=${API_KEY}`;
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    if (data.results && data.results.length > 0) {
+                        const { lat, lng } = data.results[0].geometry?.location;
+                        formData.append("longitude", lng.toString() ?? 0);
+                        formData.append("latitude", lat.toString() ?? 0);
+                        setNewBranch((prevState: INewBranch) => ({
+                            ...prevState,
+                            ["longitude"]: lng,
+                        }));
+                        setNewBranch((prevState: INewBranch) => ({
+                            ...prevState,
+                            ["latitude"]: lat,
+                        }));
+                    } else {
+                        toast.error("Address not found");
+                    }
+                } catch (error) {
+                    console.error("Error geocoding:", error);
+                    toast.error("Error geocoding");
+                }
+
                 formData.append("name", newBranch.name);
                 formData.append("province", newBranch.province);
                 formData.append("district", newBranch.district);
                 formData.append("ward", newBranch.ward);
                 formData.append("detail", newBranch.detail);
-                formData.append("longitude", newBranch.longitude.toString());
-                formData.append("latitude", newBranch.latitude.toString());
                 formData.append("openTime", newBranch.openTime + ":00");
                 formData.append("closeTime", newBranch.closeTime + ":00");
                 formData.append("phoneNumber", newBranch.phoneNumber);
