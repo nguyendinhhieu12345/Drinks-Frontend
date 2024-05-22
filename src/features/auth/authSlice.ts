@@ -82,7 +82,7 @@ export const authSlice = createSlice({
             state.isError = true;
         });
 
-        builder.addCase(login.fulfilled, (state, action) => {
+        builder.addCase(login.fulfilled, (state, action) => {4
             state.loading = false;
             state.isError = false;
             state.error = undefined;

@@ -34,7 +34,7 @@ export default function AddProduct() {
     const [name, setName] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [categoryId, setCategoryId] = useState<string>("");
-    const [status, setStatus] = useState<string>("AVAILABLE");
+    const [status, setStatus] = useState<string>("ACTIVE");
     const { isLoading, startLoading, stopLoading } = useLoading();
     const [productEdit, setProductEdit] = useState<IProduct>();
     const [typeProduct, setTypeProduct] = useState<string>("BEVERAGE");
@@ -527,9 +527,8 @@ export default function AddProduct() {
                                         onChange={(e) => setStatus(e.target.value)}
                                         value={status}
                                     >
-                                        <option value="AVAILABLE">AVAILABLE</option>
-                                        <option value="HIDDEN">HIDDEN</option>
-                                        <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
+                                        <option value="ACTIVE">ACTIVE</option>
+                                        <option value="INACTIVE">IN ACTIVE</option>
                                     </select>
                                 </div>
                             </div>

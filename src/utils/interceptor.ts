@@ -109,7 +109,7 @@ export const setupInterceptor = (store: Store, dispatch: AppDispatch): void => {
             // logout system
             console.log("call: " + error)
             if (
-                error.response?.status === 403 &&
+                error.response?.status === 401 &&
                 error.config?.url?.includes("/auth/employee/refresh-token")
             ) {
                 console.log("test");

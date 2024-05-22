@@ -260,7 +260,7 @@ function CouponBuyXGetY() {
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date start"
-                                    value={couponData?.startDate?.split("T00")[0]}
+                                    value={new Date(couponData?.startDate).toISOString().slice(0, 10)}
                                 />
                                 <ArrowRight size={20} />
                                 <input
@@ -271,7 +271,7 @@ function CouponBuyXGetY() {
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date end"
-                                    value={couponData?.expirationDate ? couponData?.expirationDate?.split("T00")[0] : ""}
+                                    value={couponData?.expirationDate ? new Date(couponData?.expirationDate).toISOString().slice(0, 10) : ""}
                                     min={getToday()}
                                 />
                             </div>

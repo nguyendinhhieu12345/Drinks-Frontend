@@ -178,5 +178,17 @@ const publicRoutes: IRouter[] = [
         layout: AdminLayout,
         role: null,
     },
+    {
+        path: configRouter.profile,
+        component: lazy(() => import("../pages/AdminPage/ProfileAdmin")),
+        layout: AdminLayout,
+        role: null,
+    },
+    {
+        path: configRouter.users,
+        component: lazy(() => import("../pages/AdminPage/Users")),
+        layout: AdminLayout,
+        role: null,
+    },
 ];
 export { publicRoutes };

@@ -71,7 +71,7 @@ const DashboardOverviewOrders = () => {
                 icon={
                     <X size={32} />
                 }
-                title="Orders Delivered"
+                title="Orders Cancel"
                 total={overviewOrders?.success ? overviewOrders?.data?.canceledOrderQuantity as number : 0}
                 bgColor="green-100"
                 textColor="red-600"

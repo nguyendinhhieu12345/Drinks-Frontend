@@ -56,7 +56,8 @@ function CouponAmountOffOder() {
                     }
                 }
                 else {
-                    const data = await couponApi.editCouponOrder(couponData as ICoupon, couponData?.id as string)
+                    const { id, ...orther } = couponData
+                    const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
                     if (data?.success) {
                         stopLoading()
                         toast.success(data?.message)
@@ -278,7 +279,7 @@ function CouponAmountOffOder() {
                                         ...prev,
                                         startDate: e.target.value
                                     }))}
-                                    value={couponData?.startDate.split("T00")[0]}
+                                    value={new Date(couponData?.startDate).toISOString().slice(0, 10)}
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date start"
@@ -289,7 +290,7 @@ function CouponAmountOffOder() {
                                         ...prev,
                                         expirationDate: e.target.value
                                     }))}
-                                    value={couponData?.expirationDate ? couponData?.expirationDate?.split("T00")[0] : ""}
+                                    value={couponData?.expirationDate ? new Date(couponData?.expirationDate).toISOString().slice(0, 10) : ""}
                                     min={getToday()}
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
