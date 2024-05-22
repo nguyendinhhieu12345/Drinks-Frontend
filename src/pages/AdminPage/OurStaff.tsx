@@ -11,6 +11,9 @@ import ButtonCloseDrawer from "@/components/ButtonCloseDrawer/ButtonCloseDrawer"
 import AddStaff from "@/components/Staff/AddStaff";
 import FilterStaff from "@/components/Staff/FilterStaff";
 import { Key } from "@phosphor-icons/react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { User } from "@/type";
 
 interface IEmployeeResponse {
     timestamp: string;
@@ -33,6 +36,9 @@ export default function OurStaff() {
         edit: "",
         delete: "",
     });
+    const currentUser = useSelector<RootState, User>(
+        (state) => state.authSlice.currentUser as User
+    );
 
     const openDrawer = () => {
         setOpenCreateStaff(true);
@@ -175,7 +181,7 @@ export default function OurStaff() {
 
                                     <td className="px-4 py-2">
                                         <div className="flex justify-end text-right">
-                                            {emp.username !== "admin" &&
+                                            {emp?.id !== currentUser?.data?.employeeId &&
                                                 <>
                                                     <button
                                                         className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none"

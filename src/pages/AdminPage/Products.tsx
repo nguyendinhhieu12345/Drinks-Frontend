@@ -75,7 +75,7 @@ export default function Products() {
     };
 
     const handleResetProduct = async () => {
-        setStatus("AVAILABLE");
+        setStatus("ACTIVE");
         getAllProduct("", 1, "", "");
     };
 
@@ -162,9 +162,8 @@ export default function Products() {
                                     className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5"
                                     onChange={(e) => setStatus(e.target.value)}
                                 >
-                                    <option value="AVAILABLE">AVAILABLE</option>
-                                    <option value="HIDDEN">HIDDEN</option>
-                                    <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="INACTIVE">IN ACTIVE</option>
                                 </select>
                             </div>
                             <div className="flex items-center gap-2 flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
@@ -222,18 +221,13 @@ export default function Products() {
                                         />
                                     </td>
                                     <td className="px-4 py-2">
-                                        {prod.status === "AVAILABLE" && (
+                                        {prod.status === "ACTIVE" && (
                                             <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-green-600 bg-green-100">
                                                 {prod.status}
                                             </span>
                                         )}
-                                        {prod.status === "HIDDEN" && (
+                                        {prod.status === "INACTIVE" && (
                                             <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-red-600 bg-red-100 italic">
-                                                {prod.status}
-                                            </span>
-                                        )}
-                                        {prod.status === "OUT_OF_STOCK" && (
-                                            <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-gray-600 bg-gray-100 italic">
                                                 {prod.status}
                                             </span>
                                         )}

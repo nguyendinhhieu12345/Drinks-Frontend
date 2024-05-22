@@ -11,6 +11,7 @@ import { Auth } from "@/type";
 import { useDispatch } from "react-redux";
 import { login } from "@/features/auth/authSlice";
 import { AppDispatch } from "@/redux/store";
+import jwtDecode from "jwt-decode";
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
@@ -28,10 +29,13 @@ const Login = () => {
 
         if (loginSuccess.type === "auth/login/fulfilled") {
             toast.success("Login successful")
-            navigate(configRouter.dashboardAdmin)
-        } else {
-            console.log((loginSuccess as { error: { message: string } }).error?.message)
-            toast.error((loginSuccess as { error: { message: string } }).error?.message)
+            const accessToken: any = jwtDecode(loginSuccess?.payload?.data?.accessToken);
+            if (accessToken?.roles[0] === "ROLE_MANAGER") {
+                navigate(configRouter.products)
+            }
+            else {
+                navigate(configRouter.dashboardAdmin)
+            }
         }
         setLoading(false);
     };

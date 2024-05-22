@@ -1,16 +1,16 @@
 import { useState } from "react";
 
-interface IFilterOrder {
-    getAllOrder: (key: string, page: number, status: string) => Promise<void>;
+interface IFilterUser {
+    getAllUser: (key: string, page: number, status: string) => Promise<void>;
 }
 
-function FilterOrder(props: IFilterOrder) {
-    const [dateFilter, setDataFilter] = useState<{
+function FilterUser(props: IFilterUser) {
+    const [dataFilter, setDataFilter] = useState<{
         key: string;
         status: string;
     }>({
         key: "",
-        status: "CREATED",
+        status: "ACTIVE",
     });
     return (
         <div className="min-w-0 rounded-lg overflow-hidden bg-white shadow-xs rounded-t-lg rounded-0 mb-4">
@@ -40,7 +40,7 @@ function FilterOrder(props: IFilterOrder) {
                                 className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 rounded-lg text-sm text-white bg-green-500 border border-transparent active:bg-green-600 hover:bg-green-600 h-12 w-full"
                                 type="submit"
                                 onClick={() =>
-                                    props?.getAllOrder(dateFilter?.key, 1, dateFilter?.status)
+                                    props?.getAllUser(dataFilter?.key, 1, dataFilter?.status)
                                 }
                             >
                                 Filter
@@ -56,27 +56,15 @@ function FilterOrder(props: IFilterOrder) {
                                     }));
                                 }}
                             >
-                                <option value="CREATED">CREATED</option>
-                                <option value="ACCEPTED">ACCEPTED</option>
-                                <option value="CANCELLATION_REQUEST">
-                                    CANCELLATION_REQUEST
-                                </option>
-                                <option value="CANCELLATION_REQUEST_REFUSED">
-                                    CANCELLATION_REQUEST_REFUSED
-                                </option>
-                                <option value="CANCELLATION_REQUEST_ACCEPTED">
-                                    CANCELLATION_REQUEST_ACCEPTED
-                                </option>
-                                <option value="DELIVERING">DELIVERING</option>
-                                <option value="CANCELED">CANCELED</option>
-                                <option value="SUCCEED">SUCCEED</option>
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="BLOCKED">BLOCKED</option>
                             </select>
                         </div>
                         <div className="w-full mx-1">
                             <button
                                 className="transition-colors duration-150 font-medium text-gray-600 focus:outline-none rounded-lg border bg-gray-200 border-gray-200 w-full mr-3 flex items-center justify-center cursor-pointer h-12 px-4 md:py-1 py-2 text-sm"
                                 type="reset"
-                                onClick={() => props?.getAllOrder("", 1, "")}
+                                onClick={() => props?.getAllUser("", 1, "")}
                             >
                                 <span className="text-black ">Reset</span>
                             </button>
@@ -88,4 +76,4 @@ function FilterOrder(props: IFilterOrder) {
     );
 }
 
-export default FilterOrder;
+export default FilterUser;

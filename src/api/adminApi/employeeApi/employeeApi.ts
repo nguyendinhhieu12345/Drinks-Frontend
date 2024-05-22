@@ -13,7 +13,6 @@ export const addEmployee = async (
     role: string
 ) => {
     try {
-        const convertBranchId = parseInt(branchId);
         const res = await httpRequest.post(`/auth/employee?role=${role}`, {
             username,
             password,
@@ -21,7 +20,7 @@ export const addEmployee = async (
             lastName,
             birthDate,
             gender,
-            branchId: convertBranchId,
+            branchId,
             email,
             phoneNumber,
         });

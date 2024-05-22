@@ -61,13 +61,17 @@ function AddStaff(props: IAddStaff) {
     };
 
     const handleAddStaff = async () => {
+        console.log(newStaff)
         if (
+            newStaff && newStaff?.username && newStaff?.firstName && newStaff?.lastName && newStaff?.birthDate &&
+            newStaff?.branchId && newStaff?.phoneNumber && newStaff?.email &&
             newStaff?.username !== "" &&
             newStaff?.firstName !== "" &&
             newStaff?.lastName !== "" &&
             newStaff?.birthDate !== "" &&
             newStaff?.branchId !== "" &&
-            newStaff?.password !== ""
+            newStaff?.phoneNumber !== "" &&
+            newStaff?.email !== ""
         ) {
             try {
                 if (!newStaff?.isEdit) {
@@ -251,43 +255,45 @@ function AddStaff(props: IAddStaff) {
                 <InputWrap
                     type="date"
                     placeholder="Birthday"
-                    value={newStaff?.birthDate}
+                    value={new Date(newStaff?.birthDate ? newStaff?.birthDate : getToday()).toISOString().slice(0, 10)}
                     handleInputChange={(e) => handleInputChange(e, "birthDate")}
                     title="Birthday"
                     keyName="birthDate"
                 />
 
                 {/* Input Branch */}
-                <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                    <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
-                        Branch
-                    </label>
-
-                    <div className="col-span-8 sm:col-span-4">
-                        <div className="w-full text-center">
-                            <select
-                                value={branchs?.filter((branch) => branch.id === newStaff?.branchId)
-                                    .length > 0
-                                    ? branchs.filter((branch) => branch.id === newStaff?.branchId)[0]
-                                        ?.id
-                                    : newStaff?.branchId}
-                                className="w-full rounded-xl text-base"
-                                onChange={(e) => {
-                                    setNewStaff((prevState: INewStaff) => ({
-                                        ...prevState,
-                                        ["branchId"]: e.target.value,
-                                    }));
-                                }}
-                            >
-                                {branchs.map((branch, index) => (
-                                    <option key={index} value={branch?.id}>
-                                        {branch?.name}
-                                    </option>
-                                ))}
-                            </select>
+                {newStaff?.role !== "ROLE_ADMIN" &&
+                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                        <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
+                            Branch
+                        </label>
+                
+                        <div className="col-span-8 sm:col-span-4">
+                            <div className="w-full text-center">
+                                <select
+                                    value={branchs?.filter((branch) => branch.id === newStaff?.branchId)
+                                        .length > 0
+                                        ? branchs.filter((branch) => branch.id === newStaff?.branchId)[0]
+                                            ?.id
+                                        : newStaff?.branchId}
+                                    className="w-full rounded-xl text-base"
+                                    onChange={(e) => {
+                                        setNewStaff((prevState: INewStaff) => ({
+                                            ...prevState,
+                                            ["branchId"]: e.target.value,
+                                        }));
+                                    }}
+                                >
+                                    {branchs.map((branch, index) => (
+                                        <option key={index} value={branch?.id}>
+                                            {branch?.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
 
                 {!newStaff?.isEdit && (
                     <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
@@ -305,10 +311,10 @@ function AddStaff(props: IAddStaff) {
                                         }));
                                     }}
                                 >
-                                    <option value="ROLE_USER">User</option>
+                                    {/* <option value="ROLE_USER">User</option> */}
                                     <option value="ROLE_ADMIN">Admin</option>
                                     <option value="ROLE_WAITER">Employee</option>
-                                    <option value="ROLE_SHIPPER">Shipper</option>
+                                    {/* <option value="ROLE_SHIPPER">Shipper</option> */}
                                     <option value="ROLE_MANAGER">Manager</option>
                                 </select>
                             </div>

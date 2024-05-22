@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { Auth, signupState } from "../../type";
 import * as httpRequest from "../../utils/httpRequest";
 
@@ -9,7 +10,13 @@ export const loginPass = async (params: Auth) => {
         });
         return res;
     } catch (error: any) {
-        return Promise.reject(error?.response?.data);
+        if (error?.response?.data?.error?.errorCode === 13) {
+            error?.response?.data?.devResponse?.details?.map((err: any) => (
+                toast.error(err?.field + " " + err?.validate)
+            ))
+        }
+        toast.error(error?.response?.data?.error?.errorMessage)
+        return Promise.reject(error);
     }
 };
 

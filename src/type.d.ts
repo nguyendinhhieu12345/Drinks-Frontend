@@ -10,7 +10,7 @@ export interface signupState {
 }
 export interface User {
   timestamp: string;
-  status: boolean;
+  success: boolean;
   message: string;
   data: {
     employeeId: string;
