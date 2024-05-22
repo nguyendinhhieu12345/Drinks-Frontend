@@ -15,5 +15,6 @@ export interface User {
   data: {
     employeeId: string;
     accessToken: string;
+    branchId?: string
   };
 }

@@ -12,6 +12,9 @@ import { formatVND } from "@/utils/helper";
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import { toast } from "react-toastify";
 import AddProductFile from "@/components/Product/AddProductFile";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { User } from "@/type";
 
 interface IProductsResponse {
     timestamp: string;
@@ -23,6 +26,8 @@ interface IProductsResponse {
     };
 }
 
+const columnTable = ["id", "name", "Min price", "Image", "Status", "Status Branch", "actions"]
+
 export default function Products() {
     const [products, setProducts] = useState<IProductsResponse>();
     const [status, setStatus] = useState<string>("");
@@ -31,6 +36,9 @@ export default function Products() {
     const [search, setSearch] = useState<string>("");
     const [open, setOpen] = useState<boolean>(false);
     const [productDeleteId, setProductDeleteId] = useState<string>("");
+    const useCurrentUser = useSelector<RootState, User>(
+        (state) => state.authSlice.currentUser as User
+    );
 
     const nav = useNavigate();
 
@@ -46,13 +54,25 @@ export default function Products() {
         productStatus: string,
         categoryId: string
     ) => {
-        const data = await productApi.getAllProduct(
-            key,
-            page,
-            productStatus,
-            categoryId
-        );
-        setProducts(data);
+        if (useCurrentUser && useCurrentUser?.success && useCurrentUser?.data?.branchId) {
+            const data = await productApi.getAllProduct(
+                key,
+                page,
+                productStatus,
+                categoryId,
+                useCurrentUser?.data?.branchId
+            );
+            setProducts(data);
+        }
+        else {
+            const data = await productApi.getAllProduct(
+                key,
+                page,
+                productStatus,
+                categoryId
+            );
+            setProducts(data);
+        }
     };
 
     useEffect(() => {
@@ -192,7 +212,7 @@ export default function Products() {
 
                 {/* Table product */}
                 <TableAdmin
-                    fieldTable={["id", "name", "Min price", "Image", "Status", "actions"]}
+                    fieldTable={!useCurrentUser?.data?.branchId ? columnTable?.filter(prev => prev !== "Status Branch") : columnTable}
                     data={products}
                     isPaging={true}
                     title="Product"
@@ -232,6 +252,22 @@ export default function Products() {
                                             </span>
                                         )}
                                     </td>
+
+                                    {
+                                        useCurrentUser?.data?.branchId &&
+                                        <td className="px-4 py-2">
+                                            {prod.branchProductStatus === "AVAILABLE" && (
+                                                <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-green-600 bg-green-100">
+                                                    {prod.branchProductStatus}
+                                                </span>
+                                            )}
+                                            {prod.branchProductStatus === "UNAVAILABLE" && (
+                                                <span className="inline-flex px-2 text-xs font-medium leading-5 rounded-full text-red-600 bg-red-100 italic">
+                                                    {prod.branchProductStatus}
+                                                </span>
+                                            )}
+                                        </td>
+                                    }
 
                                     <td className="px-4 py-2">
                                         <div className="flex justify-end text-right">

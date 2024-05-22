@@ -10,6 +10,9 @@ import { toast } from "react-toastify";
 import { checkTypeImage, formatVND, imageUrlToFile } from "@/utils/helper";
 import useLoading from "@/hooks/useLoading";
 import { Radio, Spinner } from "@material-tailwind/react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { User } from "@/type";
 
 interface IPriceProductSize {
     size: string;
@@ -35,10 +38,14 @@ export default function AddProduct() {
     const [description, setDescription] = useState<string>("");
     const [categoryId, setCategoryId] = useState<string>("");
     const [status, setStatus] = useState<string>("ACTIVE");
+    const [statusBranch, setStatusBranch] = useState<string>("AVAILABLE");
     const { isLoading, startLoading, stopLoading } = useLoading();
     const [productEdit, setProductEdit] = useState<IProduct>();
     const [typeProduct, setTypeProduct] = useState<string>("BEVERAGE");
     const [priceProductCake, setPriceProductCake] = useState<number>(0);
+    const useCurrentUser = useSelector<RootState, User>(
+        (state) => state.authSlice.currentUser as User
+    );
 
     const nav = useNavigate();
     const location = useLocation();
@@ -194,78 +201,100 @@ export default function AddProduct() {
     };
 
     const handleAddProduct = async () => {
-        if (name.trim() !== "" && description.trim() !== "" && image.length > 0) {
-            startLoading();
-            let formData = new FormData();
-
-            formData.append("name", name);
-            formData.append("status", status);
-            formData.append("description", description);
-            formData.append("categoryId", categoryId);
-            image.forEach((img) => {
-                formData.append("image", img);
-            });
-            if (typeProduct === "CAKE") {
-                formData.append("price", priceProductCake.toString())
-            }
-            else {
-                // Thêm các trường dữ liệu vào FormData
-                listPriceSize.forEach((size, index) => {
-                    formData.append(
-                        `sizeList[${index}].size`,
-                        size.size.toString().toUpperCase()
-                    );
-                    formData.append(`sizeList[${index}].price`, size.priceSize.toString());
-                });
-
-                listPriceTopping.forEach((topping, index) => {
-                    formData.append(
-                        `toppingList[${index}].name`,
-                        topping.topping.toString()
-                    );
-                    formData.append(
-                        `toppingList[${index}].price`,
-                        topping.priceTopping.toString()
-                    );
-                });
-            }
-            if (location.pathname.split("/")[2].split("-")[0] === "add") {
-                try {
-                    const data = await productApi.addProduct(formData, typeProduct);
-                    if (data?.success) {
-                        stopLoading();
-                        toast.success(data?.message);
-                        nav(configRouter.products);
-                    } else {
-                        stopLoading();
-                        toast.error(data?.message);
-                    }
-                } catch (err: any) {
+        if (useCurrentUser && useCurrentUser?.success && useCurrentUser?.data?.branchId) {
+            try {
+                const data = await productApi.updateStatusBranchProduct(
+                    productId?.id as string,
+                    useCurrentUser?.data?.branchId,
+                    statusBranch
+                );
+                if (data?.success) {
                     stopLoading();
-                    toast.error(err?.response?.data?.message);
+                    toast.success(data?.message);
+                    nav(configRouter.products);
+                } else {
+                    stopLoading();
+                    toast.error(data?.message);
+                }
+            } catch (err: any) {
+                stopLoading();
+                toast.error(err?.response?.data?.error?.errorMessage);
+            }
+        }
+        else {
+            if (name.trim() !== "" && description.trim() !== "" && image.length > 0) {
+                startLoading();
+                let formData = new FormData();
+
+                formData.append("name", name);
+                formData.append("status", status);
+                formData.append("description", description);
+                formData.append("categoryId", categoryId);
+                image.forEach((img) => {
+                    formData.append("image", img);
+                });
+                if (typeProduct === "CAKE") {
+                    formData.append("price", priceProductCake.toString())
+                }
+                else {
+                    // Thêm các trường dữ liệu vào FormData
+                    listPriceSize.forEach((size, index) => {
+                        formData.append(
+                            `sizeList[${index}].size`,
+                            size.size.toString().toUpperCase()
+                        );
+                        formData.append(`sizeList[${index}].price`, size.priceSize.toString());
+                    });
+
+                    listPriceTopping.forEach((topping, index) => {
+                        formData.append(
+                            `toppingList[${index}].name`,
+                            topping.topping.toString()
+                        );
+                        formData.append(
+                            `toppingList[${index}].price`,
+                            topping.priceTopping.toString()
+                        );
+                    });
+                }
+                if (location.pathname.split("/")[2].split("-")[0] === "add") {
+                    try {
+                        const data = await productApi.addProduct(formData, typeProduct);
+                        if (data?.success) {
+                            stopLoading();
+                            toast.success(data?.message);
+                            nav(configRouter.products);
+                        } else {
+                            stopLoading();
+                            toast.error(data?.message);
+                        }
+                    } catch (err: any) {
+                        stopLoading();
+                        toast.error(err?.response?.data?.message);
+                    }
+                } else {
+                    try {
+                        const data = await productApi.updateProduct(
+                            formData,
+                            productId?.id as string,
+                            typeProduct
+                        );
+                        if (data?.success) {
+                            stopLoading();
+                            toast.success(data?.message);
+                            nav(configRouter.products);
+                        } else {
+                            stopLoading();
+                            toast.error(data?.message);
+                        }
+                    } catch (err: any) {
+                        stopLoading();
+                        toast.error(err?.response?.data?.message);
+                    }
                 }
             } else {
-                try {
-                    const data = await productApi.updateProduct(
-                        formData,
-                        productId?.id as string,
-                        typeProduct
-                    );
-                    if (data?.success) {
-                        stopLoading();
-                        toast.success(data?.message);
-                        nav(configRouter.products);
-                    } else {
-                        stopLoading();
-                        toast.error(data?.message);
-                    }
-                } catch (err: any) {
-                    stopLoading();
-                    toast.error(err?.response?.data?.message);
-                }
+                toast.error("Please fill out all fields completely");
             }
-        } else {
-            toast.error("Please fill out all fields completely");
         }
     };
 
@@ -317,13 +346,15 @@ export default function AddProduct() {
                         </div>
                     </div>
                     <div className="w-full h-auto flex">
-                        <div className="w-[70%] flex flex-col">
+                        {/* Setting*/}
+                        <div className={`w-[70%] flex flex-col`}>
                             {/* Enter information product */}
                             <div className="w-full h-auto bg-white rounded-xl p-3">
                                 <div className="mb-3">
                                     <p className="mb-3 font-normal text-sm">Title</p>
                                     <input
                                         className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
+                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                         type="text"
                                         placeholder="Product name"
                                         onChange={(e) => setName(e.target.value)}
@@ -335,6 +366,7 @@ export default function AddProduct() {
                                     <textarea
                                         className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 min-h-20 h-40 max-h-60"
                                         placeholder="Desciption"
+                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                         onChange={(e) => setDescription(e.target.value)}
                                         value={description}
                                     />
@@ -343,6 +375,7 @@ export default function AddProduct() {
                                     <p className="mb-3 font-normal text-sm">Category</p>
                                     <select
                                         className="w-full rounded-xl text-base"
+                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                         value={
                                             category?.filter((cate) => cate.id === categoryId)
                                                 .length > 0
@@ -367,9 +400,10 @@ export default function AddProduct() {
                                     Thumnail Product
                                 </label>
                                 <div className="w-full">
-                                    <div className="w-full text-center">
+                                    <div aria-disabled={useCurrentUser?.data?.branchId ? true : false} className="w-full text-center">
                                         <div className="border-2 border-gray-300 border-dashed rounded-md cursor-pointer px-6 pt-5 pb-6">
                                             <input
+                                                disabled={useCurrentUser?.data?.branchId ? true : false}
                                                 accept="image/.jpeg,.jpg,.png"
                                                 type="file"
                                                 id="file"
@@ -431,6 +465,7 @@ export default function AddProduct() {
                                         <>
                                             <div className="mb-3 px-3 w-full">
                                                 <input
+                                                    disabled={useCurrentUser?.data?.branchId ? true : false}
                                                     className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                                     type="number"
                                                     placeholder="Price"
@@ -445,6 +480,7 @@ export default function AddProduct() {
                                                 <div className="mb-3 w-[48%]">
                                                     <p className="mb-3 font-normal text-sm">Size</p>
                                                     <select
+                                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                                         className="w-full rounded-xl text-base"
                                                         onChange={(e) => {
                                                             setSize(e.target.value);
@@ -461,6 +497,7 @@ export default function AddProduct() {
                                                         Price <span className="text-xs">(đ)</span>
                                                     </p>
                                                     <input
+                                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                                         className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                                         type="number"
                                                         placeholder="Product price"
@@ -478,6 +515,7 @@ export default function AddProduct() {
                                                 <div className="mb-3 w-[48%]">
                                                     <p className="mb-3 font-normal text-sm">Topping</p>
                                                     <input
+                                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                                         className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                                         type="text"
                                                         placeholder="Topping"
@@ -494,6 +532,7 @@ export default function AddProduct() {
                                                         Price <span className="text-xs">(đ)</span>
                                                     </p>
                                                     <input
+                                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                                         className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                                         type="number"
                                                         placeholder="Product price"
@@ -510,19 +549,22 @@ export default function AddProduct() {
                                         </>}
                             </div>
                         </div>
+
+                        {/* status and overview */}
                         <div className="w-[30%] flex flex-col ml-4">
                             {/* Set status */}
                             <div className="w-full h-auto bg-white rounded-xl p-3">
                                 <div className="mb-2">
                                     <p className="mb-3 font-normal text-sm">Type</p>
                                     <div>
-                                        <Radio crossOrigin="true" name="type" label="Beverage" checked={typeProduct === "BEVERAGE" ? true : false} onChange={() => setTypeProduct("BEVERAGE")} />
-                                        <Radio crossOrigin="true" name="type" label="Cake" checked={typeProduct === "CAKE" ? true : false} onChange={() => setTypeProduct("CAKE")} />
+                                        <Radio disabled={useCurrentUser?.data?.branchId ? true : false} crossOrigin="true" name="type" label="Beverage" checked={typeProduct === "BEVERAGE" ? true : false} onChange={() => setTypeProduct("BEVERAGE")} />
+                                        <Radio disabled={useCurrentUser?.data?.branchId ? true : false} crossOrigin="true" name="type" label="Cake" checked={typeProduct === "CAKE" ? true : false} onChange={() => setTypeProduct("CAKE")} />
                                     </div>
                                 </div>
                                 <div>
                                     <p className="mb-3 font-normal text-sm">Status</p>
                                     <select
+                                        disabled={useCurrentUser?.data?.branchId ? true : false}
                                         className="w-full rounded-xl text-base"
                                         onChange={(e) => setStatus(e.target.value)}
                                         value={status}
@@ -531,6 +573,20 @@ export default function AddProduct() {
                                         <option value="INACTIVE">IN ACTIVE</option>
                                     </select>
                                 </div>
+                                {
+                                    (useCurrentUser && useCurrentUser?.success && useCurrentUser?.data?.branchId) &&
+                                    <div>
+                                        <p className="my-3 font-normal text-sm">Status Branch</p>
+                                        <select
+                                            className="w-full rounded-xl text-base"
+                                            onChange={(e) => setStatusBranch(e.target.value)}
+                                            value={statusBranch}
+                                        >
+                                            <option value="AVAILABLE">AVAILABLE</option>
+                                            <option value="UNAVAILABLE">UN AVAILABLE</option>
+                                        </select>
+                                    </div>
+                                }
                             </div>
 
                             {/* Overview */}
