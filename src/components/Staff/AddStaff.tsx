@@ -7,6 +7,9 @@ import { toast } from "react-toastify";
 import { Spinner, Switch } from "@material-tailwind/react";
 import InputWrap from "../InputWrap/InputWrap";
 import { getToday } from "@/utils/helper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { User } from "@/type";
 
 interface INewStaff {
     username: string;
@@ -44,10 +47,13 @@ function AddStaff(props: IAddStaff) {
         gender: true,
         email: "",
         phoneNumber: "",
-        role: "ROLE_USER",
+        role: "ROLE_ADMIN",
         isEdit: false,
         status: "ACTIVE",
     });
+    const currentUser = useSelector<RootState, User>(
+        (state) => state.authSlice.currentUser as User
+    );
 
     const handleInputChange = (
         event: ChangeEvent<HTMLInputElement>,
@@ -104,7 +110,6 @@ function AddStaff(props: IAddStaff) {
                         newStaff?.id as string,
                         newStaff?.email,
                         newStaff?.phoneNumber,
-                        newStaff?.branchId
                     );
                     if (data.success) {
                         stopLoading();
@@ -165,6 +170,13 @@ function AddStaff(props: IAddStaff) {
             setNewStaff((prevState: INewStaff) => ({
                 ...prevState,
                 isEdit: true,
+            }));
+        }
+        if (currentUser?.data?.branchId) {
+            setNewStaff((prevState: INewStaff) => ({
+                ...prevState,
+                branchId: currentUser?.data?.branchId as string,
+                role: "ROLE_WAITER"
             }));
         }
         getAllBranch();
@@ -232,7 +244,7 @@ function AddStaff(props: IAddStaff) {
 
                 {/* Input Email */}
                 <InputWrap
-                    type="text"
+                    type="email"
                     placeholder="Email"
                     value={newStaff?.email}
                     handleInputChange={(e) => handleInputChange(e, "email")}
@@ -261,13 +273,42 @@ function AddStaff(props: IAddStaff) {
                     keyName="birthDate"
                 />
 
+                {!newStaff?.isEdit && (
+                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                        <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
+                            Role
+                        </label>
+                        <div className="col-span-8 sm:col-span-4">
+                            <div className="w-full text-center">
+                                <select
+                                    className="w-full rounded-xl text-base"
+                                    value={currentUser?.data?.branchId ? "ROLE_WAITER" : newStaff?.role}
+                                    disabled={currentUser?.data?.branchId ? true : false}
+                                    onChange={(e) => {
+                                        setNewStaff((prevState: INewStaff) => ({
+                                            ...prevState,
+                                            ["role"]: e.target.value,
+                                        }));
+                                    }}
+                                >
+                                    {/* <option value="ROLE_USER">User</option> */}
+                                    <option value="ROLE_ADMIN">Admin</option>
+                                    <option value="ROLE_MANAGER">Manager</option>
+                                    <option value="ROLE_WAITER">Employee</option>
+                                    {/* <option value="ROLE_SHIPPER">Shipper</option> */}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Input Branch */}
                 {newStaff?.role !== "ROLE_ADMIN" &&
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
+                    <div className={`${(newStaff?.isEdit || currentUser?.data?.branchId) ? "hidden" : ""} grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6`}>
                         <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
                             Branch
                         </label>
-                
+
                         <div className="col-span-8 sm:col-span-4">
                             <div className="w-full text-center">
                                 <select
@@ -294,33 +335,6 @@ function AddStaff(props: IAddStaff) {
                         </div>
                     </div>
                 }
-
-                {!newStaff?.isEdit && (
-                    <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">
-                        <label className="block text-sm text-gray-800 col-span-4 sm:col-span-2 font-medium">
-                            Role
-                        </label>
-                        <div className="col-span-8 sm:col-span-4">
-                            <div className="w-full text-center">
-                                <select
-                                    className="w-full rounded-xl text-base"
-                                    onChange={(e) => {
-                                        setNewStaff((prevState: INewStaff) => ({
-                                            ...prevState,
-                                            ["role"]: e.target.value,
-                                        }));
-                                    }}
-                                >
-                                    {/* <option value="ROLE_USER">User</option> */}
-                                    <option value="ROLE_ADMIN">Admin</option>
-                                    <option value="ROLE_WAITER">Employee</option>
-                                    {/* <option value="ROLE_SHIPPER">Shipper</option> */}
-                                    <option value="ROLE_MANAGER">Manager</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {newStaff?.isEdit && (
                     <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">

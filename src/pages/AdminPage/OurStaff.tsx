@@ -54,9 +54,19 @@ export default function OurStaff() {
         setEmployees(data);
     };
 
+    const getAllEmployeeByBranchId = async (key: string, page: number, status: string) => {
+        const data = await employeeApi.getAllEmployeeByBranchId(key, page, status, currentUser?.data?.branchId);
+        setEmployees(data);
+    };
+
     useEffect(() => {
         if (!openCreateStaff) {
-            getAllEmployee("", 1, "");
+            if (currentUser?.data?.branchId) {
+                getAllEmployeeByBranchId("", 1, "")
+            }
+            else {
+                getAllEmployee("", 1, "");
+            }
         }
     }, [openCreateStaff]);
 
@@ -77,7 +87,12 @@ export default function OurStaff() {
             const data = await employeeApi.deleteEmployee(employeeId?.delete);
             if (data?.success) {
                 toast.success(data?.message);
-                getAllEmployee("", 1, "");
+                if (currentUser?.data?.branchId) {
+                    getAllEmployeeByBranchId("", 1, "")
+                }
+                else {
+                    getAllEmployee("", 1, "");
+                }
             }
         } catch (err: any) {
             toast.error(err?.response?.data?.message);
@@ -128,7 +143,7 @@ export default function OurStaff() {
                 )}
 
                 {/* Filter */}
-                <FilterStaff openDrawer={openDrawer} getAllEmployee={getAllEmployee} />
+                <FilterStaff openDrawer={openDrawer} getAllEmployee={getAllEmployee} getAllEmployeeByBranchId={getAllEmployeeByBranchId} />
 
                 {/* Table staff */}
                 <TableAdmin

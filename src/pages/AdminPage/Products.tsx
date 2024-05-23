@@ -279,18 +279,21 @@ export default function Products() {
                                                     <Edit />
                                                 </p>
                                             </button>
-                                            <button
-                                                className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
-                                                onClick={() => handleDelete(prod.id)}
-                                            >
-                                                <p
-                                                    data-tip="true"
-                                                    data-for="delete"
-                                                    className="text-xl"
+                                            {
+                                                !useCurrentUser?.data?.branchId &&
+                                                <button
+                                                    className="p-2 cursor-pointer text-gray-400 hover:text-red-600 focus:outline-none"
+                                                    onClick={() => handleDelete(prod.id)}
                                                 >
-                                                    <Delete />
-                                                </p>
-                                            </button>
+                                                    <p
+                                                        data-tip="true"
+                                                        data-for="delete"
+                                                        className="text-xl"
+                                                    >
+                                                        <Delete />
+                                                    </p>
+                                                </button>
+                                            }
                                         </div>
                                     </td>
                                 </tr>

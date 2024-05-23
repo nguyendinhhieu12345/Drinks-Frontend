@@ -46,6 +46,23 @@ export const getAllEmployee = async (
     }
 };
 
+export const getAllEmployeeByBranchId = async (
+    key?: string,
+    page?: number,
+    status?: string,
+    branchId?: string
+) => {
+    try {
+        const res = await httpRequest.get(
+            `/employee/branch/${branchId}?page=${page}&size=10${status !== "" ? `&status=${status}` : ""
+            }${key !== "" ? `&key=${key}` : ""}`
+        );
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
 export const deleteEmployee = async (employeeId: string) => {
     try {
         const res = await httpRequest.deleted(`/employee/${employeeId}`);
@@ -64,7 +81,6 @@ export const updateEmployee = async (
     employeeId: string,
     email: string,
     phoneNumber: string,
-    branchId: string
 ) => {
     try {
         const res = await httpRequest.put(`/employee/${employeeId}`, {
@@ -75,7 +91,6 @@ export const updateEmployee = async (
             status,
             email,
             phoneNumber,
-            branchId
         });
         return res;
     } catch (error) {
