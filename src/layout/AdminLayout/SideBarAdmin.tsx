@@ -49,7 +49,8 @@ const ITEM_ADMIN_SIDEBAR = [
                 <rect x="3" y="14" width="7" height="7"></rect>
             </svg>
         ),
-        to: configRouter.dashboardAdmin
+        to: configRouter.dashboardAdmin,
+        isActive: true
     },
     {
         title: "Products",

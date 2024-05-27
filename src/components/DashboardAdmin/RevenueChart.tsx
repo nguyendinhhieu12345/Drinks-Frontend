@@ -11,6 +11,9 @@ import {
 } from "recharts";
 import * as dashboardApi from "@/api/adminApi/dashboardApi/dashboardApi"
 import { getOneMonthAgo, getToday } from "@/utils/helper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { User } from "@/type";
 
 const data = [
     {
@@ -54,7 +57,7 @@ interface IDashboardChartRevenue {
     }
 }
 
-const RevenueChart = () => {
+const RevenueChart = (props: { branchSelect: string }) => {
     const [dataGet, setDataGet] = useState<{
         start_date: string;
         end_date: string;
@@ -66,17 +69,36 @@ const RevenueChart = () => {
     })
 
     const [chartRevenue, setChartRevenue] = useState<IDashboardChartRevenue>()
+    const useCurrentUser = useSelector<RootState, User>(
+        (state) => state.authSlice.currentUser as User
+    );
 
     const getOverviewRevenue = async () => {
-        const data = await dashboardApi.statisticChartRevenue(dataGet?.start_date, dataGet?.end_date, dataGet?.time_type)
-        if (data?.success) {
-            setChartRevenue(data)
+        if (useCurrentUser && useCurrentUser?.success && useCurrentUser?.data?.branchId) {
+            const data = await dashboardApi.statisticChartRevenue(dataGet?.start_date, dataGet?.end_date, dataGet?.time_type, useCurrentUser?.data?.branchId)
+            if (data?.success) {
+                setChartRevenue(data)
+            }
+        }
+        else {
+            if (!props?.branchSelect) {
+                const data = await dashboardApi.statisticChartRevenue(dataGet?.start_date, dataGet?.end_date, dataGet?.time_type)
+                if (data?.success) {
+                    setChartRevenue(data)
+                }
+            }
+            else {
+                const data = await dashboardApi.statisticChartRevenue(dataGet?.start_date, dataGet?.end_date, dataGet?.time_type, props?.branchSelect)
+                if (data?.success) {
+                    setChartRevenue(data)
+                }
+            }
         }
     }
 
     useEffect(() => {
         getOverviewRevenue()
-    }, [])
+    }, [props?.branchSelect])
 
     return (
         <div className="w-full h-auto flex flex-col lg:flex-row justify-center items-center mt-4">

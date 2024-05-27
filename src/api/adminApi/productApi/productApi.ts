@@ -96,3 +96,21 @@ export const getProductById = async (productId: string) => {
         return Promise.reject(error);
     }
 };
+
+export const getReviewProduct = async (productId: string, currentPage: number, size: number) => {
+    try {
+        const res = await httpRequest.get(`/review/product/${productId}?page=${currentPage}&size=${size}`);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getStatisticProduct = async (productId: string) => {
+    try {
+        const res = await httpRequest.get(`/review/statistic/product/${productId}`);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};

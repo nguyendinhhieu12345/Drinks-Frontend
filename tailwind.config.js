@@ -21,7 +21,8 @@ export default withMT({
         90: "360px",
         15: "60px",
         25: "100px",
-        30: "120px"
+        30: "120px",
+        142: "450px",
       },
       zIndex: {
         99: "99",
@@ -30,7 +31,8 @@ export default withMT({
       },
       height: {
         25: "100px",
-        30: "120px"
+        30: "120px",
+        142: "450px",
       }
     },
     screens: {
