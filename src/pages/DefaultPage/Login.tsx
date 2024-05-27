@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { HandWaving } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,6 @@ import { Auth } from "@/type";
 import { useDispatch } from "react-redux";
 import { login } from "@/features/auth/authSlice";
 import { AppDispatch } from "@/redux/store";
-import jwtDecode from "jwt-decode";
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
@@ -28,14 +26,7 @@ const Login = () => {
         const loginSuccess = await dispatch(login(auth));
 
         if (loginSuccess.type === "auth/login/fulfilled") {
-            toast.success("Login successful")
-            const accessToken: any = jwtDecode(loginSuccess?.payload?.data?.accessToken);
-            if (accessToken?.roles[0] === "ROLE_MANAGER") {
-                navigate(configRouter.products)
-            }
-            else {
-                navigate(configRouter.dashboardAdmin)
-            }
+            navigate(configRouter.dashboardAdmin)
         }
         setLoading(false);
     };

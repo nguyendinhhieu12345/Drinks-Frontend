@@ -10,7 +10,7 @@ import * as branchApi from "@/api/adminApi/branchApi/branchApi";
 import { useNavigate } from "react-router-dom";
 import { configRouter } from "@/configs/router";
 
-interface IResponseBranch {
+export interface IResponseBranch {
     timestamp: string;
     success: boolean;
     message: string;

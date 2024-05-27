@@ -15,6 +15,7 @@ import AddProductFile from "@/components/Product/AddProductFile";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
+import { Rating, Tooltip } from "@material-tailwind/react";
 
 interface IProductsResponse {
     timestamp: string;
@@ -26,7 +27,7 @@ interface IProductsResponse {
     };
 }
 
-const columnTable = ["id", "name", "Min price", "Image", "Status", "Status Branch", "actions"]
+const columnTable = ["id", "name", "Min price", "Image", "Status", "Status Branch", "Reviews", "actions"]
 
 export default function Products() {
     const [products, setProducts] = useState<IProductsResponse>();
@@ -119,6 +120,10 @@ export default function Products() {
             toast.error(err.message);
         }
     };
+
+    const handleGetAllReviews = (productId: string) => {
+        nav(configRouter?.reviewProduct.slice(0, -3) + productId)
+    }
 
     return (
         <div className="h-full overflow-y-auto">
@@ -268,6 +273,14 @@ export default function Products() {
                                             )}
                                         </td>
                                     }
+
+                                    <td className="px-4 py-2">
+                                        <Tooltip content="Click see all reviews">
+                                            <button onClick={() => handleGetAllReviews(prod?.id)} className="text-sm font-semibold">
+                                                <Rating placeholder="" value={prod?.ratingSummary?.star} readonly ratedColor="amber" className="w-2 h-2 my-1" />
+                                            </button>
+                                        </Tooltip>
+                                    </td>
 
                                     <td className="px-4 py-2">
                                         <div className="flex justify-end text-right">

@@ -88,6 +88,12 @@ const publicRoutes: IRouter[] = [
         role: null,
     },
     {
+        path: configRouter.editMarketting,
+        component: lazy(() => import("../pages/AdminPage/AddCampaign")),
+        layout: AdminLayout,
+        role: null,
+    },
+    {
         path: configRouter.addProduct,
         component: lazy(() => import("../pages/AdminPage/AddProduct")),
         layout: AdminLayout,
@@ -187,6 +193,12 @@ const publicRoutes: IRouter[] = [
     {
         path: configRouter.users,
         component: lazy(() => import("../pages/AdminPage/Users")),
+        layout: AdminLayout,
+        role: null,
+    },
+    {
+        path: configRouter.reviewProduct,
+        component: lazy(() => import("../pages/AdminPage/ReviewsProduct")),
         layout: AdminLayout,
         role: null,
     },
