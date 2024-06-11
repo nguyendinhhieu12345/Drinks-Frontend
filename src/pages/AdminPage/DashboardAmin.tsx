@@ -7,6 +7,7 @@ import * as branchApi from "@/api/adminApi/branchApi/branchApi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
+import OpenAppButton from "./openApp";
 
 export interface IOverview {
     typeSelect: string;
@@ -63,6 +64,7 @@ export default function DashboardAmin() {
             <DashboardOverviewRevenue typeSelect={typeSelect} setTypeSelect={setTypeSelect} branchSelect={branchSelect} />
             <DashboardOverviewOrders typeSelect={typeSelect} setTypeSelect={setTypeSelect} branchSelect={branchSelect} />
             <RevenueChart branchSelect={branchSelect} />
+            <OpenAppButton />
         </div>
     );
 }

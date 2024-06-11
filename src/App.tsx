@@ -4,12 +4,13 @@ import { setupInterceptor } from "./utils/interceptor";
 import { publicRoutes } from "./router/Router";
 import { AppDispatch, RootState, store } from "./redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import RequireAuth from "./router/RequireAuth";
 import { AnimatePresence } from "framer-motion";
 import LoadingPage from "./components/LoadingPage/LoadingPage";
 import { User } from "./type";
 import "@goongmaps/goong-js/dist/goong-js.css";
+import { Socket, io } from "socket.io-client";
 
 interface LayoutProps {
     children?: React.ReactNode;
@@ -23,6 +24,15 @@ function App() {
     const useCurrentUser = useSelector<RootState, User>(
         (state) => state.authSlice.currentUser as User
     );
+
+    useEffect(() => {
+        const socket: Socket = io("http://localhost:8900", {
+            withCredentials: true,
+        });
+        socket.on("connect", () => {
+            console.log("Connected to server");
+        });
+    }, []);
 
     return (
         // <Router>
