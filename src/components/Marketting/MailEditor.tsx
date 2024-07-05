@@ -46,7 +46,7 @@ const EmailEditor: React.FC = () => {
     };
 
     const handleAddProduct = async () => {
-        if (dataBlog?.content !== "" && dataBlog?.title !== "" && dataBlog?.summary !== "" && dataBlog?.status !== "" && dataBlog?.image?.length > 0) {
+        if (dataBlog?.content.trim() !== "" && dataBlog?.title.trim() !== "" && dataBlog?.summary.trim() !== "" && dataBlog?.status.trim() !== "" && dataBlog?.image?.length > 0) {
             startLoading();
             let formData = new FormData();
             formData.append("title", dataBlog?.title);

@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import * as httpRequest from "./httpRequest";
 import jwtDecode from "jwt-decode";
 import { Store } from "@reduxjs/toolkit";
-import { logoutThunk, refetchTokenStore } from "@/features/auth/authSlice";
+import { logoutThunk, refetchTokenStore, resetStoreAuth } from "@/features/auth/authSlice";
 import { User } from "@/type";
 import { AppDispatch } from "@/redux/store";
 import { redirect } from "react-router-dom";
@@ -107,15 +107,23 @@ export const setupInterceptor = (store: Store, dispatch: AppDispatch): void => {
         (response) => response,
         async (error: AxiosError) => {
             // logout system
-            console.log("call: " + error)
+            console.log(error)
             if (
                 error.response?.status === 401 &&
                 error.config?.url?.includes("/auth/employee/refresh-token")
             ) {
-                console.log("test");
-                await dispatch(logoutThunk());
+                dispatch(resetStoreAuth())
                 redirect("/login");
-                toast.error("Phiên đăng nhập đã hết hạn");
+                const data = await dispatch(logoutThunk());
+                if (data?.type === "auth/logout/fulfilled") {
+                    redirect("/login");
+                    toast.error("The login session has expired!");
+                }
+                else {
+                    toast.error(
+                        (data as { error: { message: string } }).error?.message
+                    );
+                }
             }
             return Promise.reject(error);
         }

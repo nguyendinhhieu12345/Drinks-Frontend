@@ -1,4 +1,3 @@
-import { Add } from "@/components/SVG/Add.svg";
 import { Delete } from "@/components/SVG/Delete.svg";
 import { Edit } from "@/components/SVG/Edit.svg";
 import { configRouter } from "@/configs/router";
@@ -11,11 +10,12 @@ import { ICategory, IProduct } from "@/types/type";
 import { formatVND } from "@/utils/helper";
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import { toast } from "react-toastify";
-import AddProductFile from "@/components/Product/AddProductFile";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
 import { Rating, Tooltip } from "@material-tailwind/react";
+import AddAndDelete from "@/components/Product/AddAndDelete";
+import FilterProduct from "@/components/Product/FilterProduct";
 
 interface IProductsResponse {
     timestamp: string;
@@ -117,7 +117,7 @@ export default function Products() {
                 getAllProduct("", 1, "", "");
             }
         } catch (err: any) {
-            toast.error(err.message);
+            toast.error(err?.response?.data?.error?.errorMessage);
         }
     };
 
@@ -131,89 +131,17 @@ export default function Products() {
                 <h1 className="mt-2 mb-4 text-lg font-bold text-gray-700 ">Products</h1>
 
                 {/* Add and delete */}
-                <div className="rounded-lg min-w-0 shadow-xs overflow-hidden bg-white mb-5">
-                    <div className="p-4">
-                        <div className="md:pb-0 grid gap-4 lg:gap-6 xl:gap-6 xl:flex xl:items-center">
-                            <AddProductFile getAllProduct={getAllProduct} />
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                                    <button
-                                        className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-green-500 border border-transparent w-full rounded-md h-12"
-                                        type="button"
-                                        onClick={handleRedirectAddProduct}
-                                    >
-                                        <span className="mr-2">
-                                            <Add />
-                                        </span>
-                                        Add Product
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <AddAndDelete getAllProduct={getAllProduct} handleRedirectAddProduct={handleRedirectAddProduct} />
 
                 {/* Filter */}
-                <div className="min-w-0 rounded-lg overflow-hidden bg-white shadow-xs rounded-t-lg rounded-0 mb-4">
-                    <div className="py-2 px-4">
-                        <div className="py-3 grid gap-4 lg:gap-6 xl:gap-6 md:flex xl:flex">
-                            <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                                <input
-                                    className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white  focus:border-gray-200 border-gray-200"
-                                    type="search"
-                                    name="search"
-                                    placeholder="Search Product"
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                                <button
-                                    type="submit"
-                                    className="absolute right-0 top-0 mt-5 mr-1"
-                                ></button>
-                            </div>
-                            <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                                <select
-                                    onChange={(e) => setCategoryId(e.target.value)}
-                                    className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5"
-                                >
-                                    {category?.map((cate, index) => (
-                                        <option key={index} value={cate.id}>
-                                            {cate.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                                <select
-                                    className="block w-full h-12 border bg-gray-100 px-2 py-1 text-sm focus:outline-none rounded-md focus:bg-white  focus:border-gray-200 border-gray-200 focus:shadow-none leading-5"
-                                    onChange={(e) => setStatus(e.target.value)}
-                                >
-                                    <option value="ACTIVE">ACTIVE</option>
-                                    <option value="INACTIVE">IN ACTIVE</option>
-                                </select>
-                            </div>
-                            <div className="flex items-center gap-2 flex-grow-0 md:flex-grow lg:flex-grow xl:flex-grow">
-                                <div className="w-full mx-1">
-                                    <button
-                                        className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 rounded-lg text-sm text-white bg-green-500 border border-transparent active:bg-green-600 hover:bg-green-600 h-12 w-full"
-                                        type="submit"
-                                        onClick={handleSeachProduct}
-                                    >
-                                        Filter
-                                    </button>
-                                </div>
-                                <div className="w-full mx-1">
-                                    <button
-                                        className="transition-colors duration-150 font-medium text-gray-600 focus:outline-none rounded-lg border bg-gray-200 border-gray-200 w-full mr-3 flex items-center justify-center cursor-pointer h-12 px-4 md:py-1 py-2 text-sm"
-                                        type="reset"
-                                        onClick={handleResetProduct}
-                                    >
-                                        <span className="text-black ">Reset</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <FilterProduct
+                    setSearch={setSearch}
+                    setCategoryId={setCategoryId}
+                    category={category}
+                    handleResetProduct={handleResetProduct}
+                    handleSeachProduct={handleSeachProduct}
+                    setStatus={setStatus}
+                />
 
                 {/* Table product */}
                 <TableAdmin

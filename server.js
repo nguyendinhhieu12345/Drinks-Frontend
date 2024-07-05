@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 
 const io = new Server(8900, {
     cors: {
-        origin: "http://localhost:5000",
+        origin: "http://localhost:3001",
         credentials: true
     },
 });
@@ -10,7 +10,10 @@ const io = new Server(8900, {
 io.on("connection", (socket) => {
     console.log("A user connected");
 
-    socket.emit("message", "Welcome to the server!");
+    socket.on('message', (msg) => {
+        console.log('Message received: ' + msg);
+        socket.broadcast.emit('message', msg);
+    });
 
     socket.on("disconnect", () => {
         console.log("User disconnected");

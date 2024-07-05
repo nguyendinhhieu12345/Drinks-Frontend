@@ -6,7 +6,7 @@ import useLoading from "@/hooks/useLoading";
 import { toast } from "react-toastify";
 import { Spinner, Switch } from "@material-tailwind/react";
 import InputWrap from "../InputWrap/InputWrap";
-import { getToday } from "@/utils/helper";
+import { getToday, isEmail, isPhone } from "@/utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
@@ -67,17 +67,17 @@ function AddStaff(props: IAddStaff) {
     };
 
     const handleAddStaff = async () => {
-        console.log(newStaff)
         if (
-            newStaff && newStaff?.username && newStaff?.firstName && newStaff?.lastName && newStaff?.birthDate &&
-            newStaff?.branchId && newStaff?.phoneNumber && newStaff?.email &&
-            newStaff?.username !== "" &&
-            newStaff?.firstName !== "" &&
-            newStaff?.lastName !== "" &&
-            newStaff?.birthDate !== "" &&
-            newStaff?.branchId !== "" &&
-            newStaff?.phoneNumber !== "" &&
-            newStaff?.email !== ""
+            newStaff && newStaff?.username && newStaff?.firstName && newStaff?.lastName && newStaff?.birthDate && newStaff?.phoneNumber && newStaff?.email &&
+            newStaff?.username.trim() !== "" &&
+            newStaff?.firstName.trim() !== "" &&
+            newStaff?.lastName.trim() !== "" &&
+            newStaff?.birthDate.trim() !== "" &&
+            newStaff?.branchId.trim() !== "" &&
+            newStaff?.phoneNumber.trim() !== "" &&
+            newStaff?.email.trim() !== "" &&
+            isPhone(newStaff?.phoneNumber) &&   
+            isEmail(newStaff?.email)
         ) {
             try {
                 if (!newStaff?.isEdit) {
@@ -133,9 +133,18 @@ function AddStaff(props: IAddStaff) {
                 }
             } catch (err: any) {
                 stopLoading();
-                toast.error(err?.response?.data?.message, {
-                    position: "bottom-left",
-                });
+                if (err?.response?.data?.error?.errorCode === 13) {
+                    err?.response?.data?.devResponse?.details?.map((err: any) => (
+                        toast.error(err?.field + " " + err?.validate, {
+                            position: "bottom-left",
+                        })
+                    ))
+                }
+                else {
+                    toast.error(err?.response?.data?.error?.errorMessage, {
+                        position: "bottom-left",
+                    })
+                }
             }
         } else {
             stopLoading();
@@ -146,7 +155,7 @@ function AddStaff(props: IAddStaff) {
     };
 
     const getAllBranch = async () => {
-        const data = await branchApi.getAllBranch(1);
+        const data = await branchApi.getAllBranch(1, 100);
         setBranchs(data?.data?.branchList);
         setNewStaff((prevState: INewStaff) => ({
             ...prevState,

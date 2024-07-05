@@ -7,7 +7,7 @@ import * as branchApi from "@/api/adminApi/branchApi/branchApi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
-import OpenAppButton from "./openApp";
+import Example from "@/components/DashboardAdmin/Testchart";
 
 export interface IOverview {
     typeSelect: string;
@@ -25,7 +25,7 @@ export default function DashboardAmin() {
     );
 
     const getAllBranch = async () => {
-        const data = await branchApi.getAllBranch(1);
+        const data = await branchApi.getAllBranch(1, 100);
         if (data?.success) {
             setBranchs(data);
         }
@@ -64,7 +64,7 @@ export default function DashboardAmin() {
             <DashboardOverviewRevenue typeSelect={typeSelect} setTypeSelect={setTypeSelect} branchSelect={branchSelect} />
             <DashboardOverviewOrders typeSelect={typeSelect} setTypeSelect={setTypeSelect} branchSelect={branchSelect} />
             <RevenueChart branchSelect={branchSelect} />
-            <OpenAppButton />
+            <Example />
         </div>
     );
 }

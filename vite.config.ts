@@ -30,8 +30,8 @@ export default defineConfig({
         },
     },
     server: {
-        port: 5000,
-        open: "http://localhost:5000/login",
+        port: 3001,
+        // open: "http://localhost:5000/login",
     },
     optimizeDeps: {
         include: ["ckeditor5/build/ckeditor"],
@@ -42,5 +42,8 @@ export default defineConfig({
         commonjsOptions: {
             exclude: ["ckeditor5/build/ckeditor"],
         },
+        rollupOptions: {
+            external: ["ckeditor5/build/ckeditor"]
+        }
     },
 });

@@ -1,6 +1,5 @@
 import { Delete } from "@/components/SVG/Delete.svg";
 import { configRouter } from "@/configs/router";
-import { ArrowLeft } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as productApi from "@/api/adminApi/productApi/productApi";
@@ -9,10 +8,11 @@ import { ICategory, IProduct } from "@/types/type";
 import { toast } from "react-toastify";
 import { checkTypeImage, formatVND, imageUrlToFile } from "@/utils/helper";
 import useLoading from "@/hooks/useLoading";
-import { Radio, Spinner } from "@material-tailwind/react";
+import { Radio } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
+import HeaderAddProduct from "@/components/Product/HeaderAddProduct";
 
 interface IPriceProductSize {
     size: string;
@@ -73,7 +73,6 @@ export default function AddProduct() {
     const getProductById = async () => {
         const data = await productApi.getProductById(productId?.id as string);
         if (data?.success) {
-            console.log(data);
             setProductEdit(data?.data);
             setName(data?.data?.name);
             setDescription(data?.data?.description);
@@ -264,13 +263,10 @@ export default function AddProduct() {
                             stopLoading();
                             toast.success(data?.message);
                             nav(configRouter.products);
-                        } else {
-                            stopLoading();
-                            toast.error(data?.message);
                         }
                     } catch (err: any) {
                         stopLoading();
-                        toast.error(err?.response?.data?.message);
+                        toast.error(err?.response?.data?.devResponse?.message);
                     }
                 } else {
                     try {
@@ -283,13 +279,10 @@ export default function AddProduct() {
                             stopLoading();
                             toast.success(data?.message);
                             nav(configRouter.products);
-                        } else {
-                            stopLoading();
-                            toast.error(data?.message);
                         }
                     } catch (err: any) {
                         stopLoading();
-                        toast.error(err?.response?.data?.message);
+                        toast.error(err?.response?.data?.devResponse?.message);
                     }
                 }
             } else {
@@ -314,37 +307,7 @@ export default function AddProduct() {
         <>
             {productEdit?.id !== "" ? (
                 <div className="w-full h-auto min-h-full overflow-auto py-3 px-8 ">
-                    <div className="mb-3 flex items-center justify-between">
-                        <div className="flex items-center">
-                            <div
-                                className="mr-3 cursor-pointer p-2 hover:bg-gray-300 rounded-full"
-                                onClick={handleRedirectProducts}
-                            >
-                                <ArrowLeft />
-                            </div>
-                            <p className="text-lg font-semibold">
-                                {location.pathname.split("/")[2].split("-")[0] === "add"
-                                    ? "Add"
-                                    : "Edit"}{" "}
-                                Product
-                            </p>
-                        </div>
-                        <div>
-                            <button
-                                className="px-4 py-2 bg-green-400 rounded-full text-white"
-                                onClick={handleAddProduct}
-                            >
-                                {isLoading ? (
-                                    <p className="flex items-center justify-center">
-                                        <span className="mr-2">Save</span>{" "}
-                                        <Spinner className="h-4 w-4" />
-                                    </p>
-                                ) : (
-                                    <span>Save</span>
-                                )}
-                            </button>
-                        </div>
-                    </div>
+                    <HeaderAddProduct isLoading={isLoading} handleAddProduct={handleAddProduct} handleRedirectProducts={handleRedirectProducts} />
                     <div className="w-full h-auto flex">
                         {/* Setting*/}
                         <div className={`w-[70%] flex flex-col`}>
@@ -508,6 +471,8 @@ export default function AddProduct() {
                                                             setPricingSize(e.target.value);
                                                         }}
                                                         onKeyDown={handleAddPriceProductSize}
+                                                        min={0}
+                                                        step={1000}
                                                     />
                                                 </div>
                                             </div>
@@ -539,6 +504,8 @@ export default function AddProduct() {
                                                         id="priceTopping"
                                                         name="priceTopping"
                                                         value={pricingTopping}
+                                                        min={0}
+                                                        step={1000}
                                                         onChange={(e) => {
                                                             setPricingTopping(e.target.value);
                                                         }}

@@ -100,6 +100,15 @@ const RevenueChart = (props: { branchSelect: string }) => {
         getOverviewRevenue()
     }, [props?.branchSelect])
 
+    const formatCurrency = (value: number) => {
+        return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    };
+
+    const formatDate = (dateString: string) => {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}-${year}`;
+    };
+
     return (
         <div className="w-full h-auto flex flex-col lg:flex-row justify-center items-center mt-4">
             <div className="my-4 mx-1 md:p-5 bg-white w-full lg:w-full rounded-lg">
@@ -156,16 +165,16 @@ const RevenueChart = (props: { branchSelect: string }) => {
                         <AreaChart
                             data={chartRevenue?.success ? chartRevenue?.data?.revenueList : data}
                             margin={{
-                                top: 10,
+                                top: 5,
                                 right: 30,
-                                left: 0,
-                                bottom: 0,
+                                left: 30,
+                                bottom: 5,
                             }}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="timePoint" />
-                            <YAxis label={{ value: 'VND', angle: -90, position: 'insideLeft' }} />
-                            <Tooltip />
+                            <XAxis dataKey="timePoint" tickFormatter={formatDate} />
+                            <YAxis tickFormatter={formatCurrency} />
+                            <Tooltip formatter={(value: number) => formatCurrency(value)} labelFormatter={(label: string) => formatDate(label)} />
                             <Area
                                 type="monotone"
                                 dataKey="revenue"

@@ -3,19 +3,27 @@ import shopfeeIcon from "./images/shopfee_icon.png";
 import facebookLogo from "./images/facebook-logo.svg";
 import googleLogo from "./images/google-logo.svg";
 import noAvatar from "./images/noavatar.png";
+import processing_icon from "./images/processing_icon.svg"
+import home_icon from "./images/home_icon.svg"
+import delivery_icon from "./images/delivery_icon.svg"
+import succeed_icon from "./images/succeed_icon.svg"
 
 const assets = {
-  images: {
-    imageLogin: imageLogin,
-    shopfeeIcon: shopfeeIcon,
-    facebookLogo: facebookLogo,
-    googleLogo: googleLogo,
-    noAvatar: noAvatar,
-  },
-  audios: {},
+    images: {
+        imageLogin: imageLogin,
+        shopfeeIcon: shopfeeIcon,
+        facebookLogo: facebookLogo,
+        googleLogo: googleLogo,
+        noAvatar: noAvatar,
+        processing_icon: processing_icon,
+        home_icon: home_icon,
+        delivery_icon: delivery_icon,
+        succeed_icon: succeed_icon,
+    },
+    audios: {},
 
-  icons: {},
-  fonts: {},
+    icons: {},
+    fonts: {},
 };
 
 export default assets;

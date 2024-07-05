@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { User } from "@/type";
 import { toast } from "react-toastify";
 import useLoading from "@/hooks/useLoading";
+import { isPhone } from "@/utils/helper";
 
 interface IProfileAdmin {
     username: string,
@@ -71,7 +72,7 @@ export default function ProfileAdmin() {
                 }
             }
             else {
-                if (profileAdmin?.birthDate && profileAdmin?.birthDate.trim() !== "" && profileAdmin?.phoneNumber && profileAdmin?.phoneNumber.trim() !== "" && profileAdmin?.gender && profileAdmin?.gender.trim() !== "") {
+                if (profileAdmin?.birthDate && profileAdmin?.birthDate.trim() !== "" && profileAdmin?.phoneNumber && profileAdmin?.phoneNumber.trim() !== "" && profileAdmin?.gender && profileAdmin?.gender.trim() !== "" && isPhone(profileAdmin?.phoneNumber.trim())) {
                     startLoading()
                     const data = await profileApi.updateProfileAdminById(useCurrentUser?.data?.employeeId as string, profileAdmin?.birthDate as string, profileAdmin?.gender as string, profileAdmin?.phoneNumber as string)
                     if (data?.success) {
@@ -92,7 +93,9 @@ export default function ProfileAdmin() {
                     toast.error(err?.field + " " + err?.validate)
                 ))
             }
-            toast.error(error?.response?.data?.error?.errorMessage)
+            else {
+                toast.error(error?.response?.data?.error?.errorMessage)
+            }
         }
     }
 

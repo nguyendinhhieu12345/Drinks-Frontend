@@ -37,8 +37,8 @@ export default function Marketing() {
 
     const handleOpen = () => setOpen(!open);
 
-    const getAllMarketing = async () => {
-        const data = await marketingApi.getAllBlog(1);
+    const getAllMarketing = async (pageActive: number) => {
+        const data = await marketingApi.getAllBlog(pageActive);
         if (data?.success)
             setBlogs(data);
     };
@@ -49,7 +49,7 @@ export default function Marketing() {
             const data = await marketingApi.deleteBlog(dataDelete);
             if (data?.success) {
                 toast.success(data?.message);
-                getAllMarketing();
+                getAllMarketing(1);
             }
         } catch (err: any) {
             toast.error(err?.response?.data?.error?.errorMessage);
@@ -62,14 +62,14 @@ export default function Marketing() {
     };
 
     useEffect(() => {
-        getAllMarketing();
+        getAllMarketing(1);
     }, []);
 
     return (
         <div className="h-full overflow-y-auto">
             <div className="sm:container grid lg:px-6 sm:px-4 px-2 mx-auto">
                 <h1 className="mt-2 mb-4 text-lg font-bold text-gray-700 ">
-                    Marketing
+                    Blogs
                 </h1>
 
                 {/* Add and delete */}
@@ -86,7 +86,7 @@ export default function Marketing() {
                                         <span className="mr-2">
                                             <Add />
                                         </span>
-                                        Add campaign
+                                        Add Blog
                                     </button>
                                 </div>
                             </div>
@@ -96,8 +96,9 @@ export default function Marketing() {
 
                 <TableAdmin
                     fieldTable={["id", "title", "image", "actions"]}
-                    data=""
-                    isPaging={false}
+                    data={blogs}
+                    isPaging={true}
+                    getAllMarketing={getAllMarketing}
                     title="Blog"
                     scriptData={
                         <tbody className="bg-white divide-y divide-gray-100  text-gray-800">

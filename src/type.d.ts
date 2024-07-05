@@ -18,3 +18,9 @@ export interface User {
     branchId?: string
   };
 }
+
+export interface BaseResponseApi {
+  timestamp: string;
+  success: boolean;
+  message: string;
+}

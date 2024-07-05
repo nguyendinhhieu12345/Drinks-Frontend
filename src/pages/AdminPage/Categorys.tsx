@@ -43,7 +43,7 @@ export default function Categorys() {
                 getAllCategory();
             }
         } catch (err: any) {
-            toast.error(err.message);
+            toast.error(err?.response?.data?.error?.errorMessage);
         }
     };
 

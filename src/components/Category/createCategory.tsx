@@ -55,50 +55,47 @@ function CreateCategory(props: ICreateCategory) {
     };
 
     const handleAddCategory = async () => {
-        startLoading();
-        if (image.length > 0 && name.trim() !== "") {
-            image.forEach((img) => {
-                newCategory.append("image", img);
-            });
-            newCategory.append("name", name);
-            newCategory.append("status", status ? "VISIBLE" : "HIDDEN");
-            if (props?.type === "create") {
-                const data = await categoryApi.addCategory(newCategory);
-                if (data?.success) {
-                    toast.success(data?.message, {
-                        position: "bottom-left",
-                    });
-                    props.setOpenCreateCategory(false);
-                    setName("");
-                    setImage([]);
-                    stopLoading();
+        try {
+            startLoading();
+            if (image.length > 0 && name.trim() !== "") {
+                image.forEach((img) => {
+                    newCategory.append("image", img);
+                });
+                newCategory.append("name", name);
+                newCategory.append("status", status ? "VISIBLE" : "HIDDEN");
+                if (props?.type === "create") {
+                    const data = await categoryApi.addCategory(newCategory);
+                    if (data?.success) {
+                        toast.success(data?.message);
+                        props.setOpenCreateCategory(false);
+                        setName("");
+                        setImage([]);
+                        stopLoading();
+                    }
                 } else {
-                    stopLoading();
-                    console.log(data);
+                    const data = await categoryApi.updateCategory(
+                        newCategory,
+                        props?.currentCategory?.id as string
+                    );
+                    if (data?.success) {
+                        toast.success(data?.message);
+                        props.setOpenCreateCategory(false);
+                        setName("");
+                        setImage([]);
+                        stopLoading();
+                    }
                 }
             } else {
-                const data = await categoryApi.updateCategory(
-                    newCategory,
-                    props?.currentCategory?.id as string
-                );
-                if (data?.success) {
-                    toast.success(data?.message, {
-                        position: "bottom-left",
-                    });
-                    props.setOpenCreateCategory(false);
-                    setName("");
-                    setImage([]);
-                    stopLoading();
-                } else {
-                    stopLoading();
-                    console.log(data);
-                }
+                stopLoading();
+                toast.error("Please fill out all fields completely!", {
+                    position: "bottom-left",
+                });
             }
-        } else {
+        } catch (error: any) {
             stopLoading();
-            toast.error("Please fill out all fields completely!", {
+            toast.error(error?.response?.data?.devResponse?.message, {
                 position: "bottom-left",
-            });
+            })
         }
     };
 
