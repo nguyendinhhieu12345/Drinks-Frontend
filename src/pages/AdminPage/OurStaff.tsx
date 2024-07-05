@@ -95,7 +95,7 @@ export default function OurStaff() {
                 }
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.message);
+            toast.error(err?.response?.data?.error?.errorMessage);
         }
     };
 
@@ -114,7 +114,7 @@ export default function OurStaff() {
                 toast.success(data?.message);
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.message);
+            toast.error(err?.response?.data?.error?.errorMessage);
         }
     }
 

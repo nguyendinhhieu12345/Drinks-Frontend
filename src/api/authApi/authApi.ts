@@ -24,7 +24,13 @@ export const logout = async () => {
     try {
         const res = await httpRequest.post("/auth/employee/logout");
         return res;
-    } catch (error) {
+    } catch (error: any) {
+        if (error?.response?.data?.error?.errorCode === 13) {
+            error?.response?.data?.devResponse?.details?.map((err: any) => (
+                toast.error(err?.field + " " + err?.validate)
+            ))
+        }
+        toast.error(error?.response?.data?.error?.errorMessage)
         return Promise.reject(error);
     }
 };

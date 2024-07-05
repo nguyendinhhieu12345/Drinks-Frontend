@@ -122,3 +122,19 @@ export const getOneMonthAgo = () => {
 
     return `${year}-${month}-${day}`;
 }
+
+export const isPhone = (str: string) => {
+    if (str.length === 10)
+        return /^[0-9]+$/.test(str);
+    else
+        return false
+}
+
+export const isEmail = (str: string) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailRegex.test(str);
+}
+
+export const messageToast = {
+    fillInput: "Please fill in all the fields completely and in the correct format!"
+}

@@ -46,7 +46,7 @@ function CouponAmountOffOder() {
     const handleAddCouponShipping = async () => {
         try {
             startLoading()
-            if (couponData?.code !== "" && couponData?.description !== "" && couponData?.unitReward !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0) {
+            if (couponData?.code.trim() !== "" && couponData?.description.trim() !== "" && couponData?.unitReward?.trim() !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0) {
                 if (!id) {
                     const data = await couponApi.addCouponOrder(couponData as ICoupon)
                     if (data?.success) {
@@ -70,9 +70,20 @@ function CouponAmountOffOder() {
                 toast.error("Please fill out all fields completely")
             }
         }
-        catch (err: any) {
+        catch (error: any) {
             stopLoading()
-            toast.error(err?.response?.data?.message)
+            if (error?.response?.data?.error?.errorCode === 13) {
+                if (error?.response?.data?.devResponse?.details) {
+                    error?.response?.data?.devResponse?.details?.map((err: any) => (
+                        toast.error(err?.field + " " + err?.validate)
+                    ))
+                } else {
+                    toast.error(error?.response?.data?.devResponse?.message)
+                }
+            }
+            else {
+                toast.error(error?.response?.data?.error?.errorMessage)
+            }
         }
     }
 
@@ -200,6 +211,7 @@ function CouponAmountOffOder() {
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="number"
                                     placeholder="Value discount"
+                                    min={0}
                                 />
                             </div>
                         </div>
@@ -219,6 +231,7 @@ function CouponAmountOffOder() {
                                         {couponData.usageConditionList?.some(item => item.type === "QUANTITY") && <input
                                             className="block w-1/2 border ml-10 px-1 text-sm rounded-md focus:bg-white border-gray-600"
                                             type="number"
+                                            min={0}
                                             value={couponData?.usageConditionList?.filter(item => item.type === "QUANTITY")[0]?.value}
                                             disabled={!couponData.usageConditionList?.some(item => item.type === "QUANTITY")}
                                             onChange={(e) => {
@@ -283,6 +296,7 @@ function CouponAmountOffOder() {
                                     className="block w-[30%] h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                     type="date"
                                     placeholder="Date start"
+                                    min={getToday()}
                                 />
                                 <ArrowRight size={20} />
                                 <input
@@ -308,6 +322,8 @@ function CouponAmountOffOder() {
                                         value: e.target.value
                                     }
                                 }))}
+                                min={0}
+                                step={1000}
                                 value={couponData?.minPurchaseCondition?.value}
                                 type="number"
                                 className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 h-10"

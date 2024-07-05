@@ -91,7 +91,7 @@ const ITEM_ADMIN_SIDEBAR = [
         to: configRouter.branchs,
     },
     {
-        title: "Marketing",
+        title: "Blogs",
         icon: <Megaphone size={25} />,
         to: configRouter.marketing,
     },

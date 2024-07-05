@@ -11,9 +11,9 @@ export const addBranch = async (newBranch: FormData) => {
   }
 };
 
-export const getAllBranch = async (page: number) => {
+export const getAllBranch = async (page: number, size: number) => {
   try {
-    const res = await httpRequest.get(`/branch?page=${page}&size=10`);
+    const res = await httpRequest.get(`/branch?page=${page}&size=${size}`);
     return res;
   } catch (error) {
     return Promise.reject(error);

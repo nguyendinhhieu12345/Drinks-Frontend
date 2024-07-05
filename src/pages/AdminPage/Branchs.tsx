@@ -39,20 +39,20 @@ export default function Branchs() {
             console.log(data);
             if (data?.success) {
                 toast.success(data?.message);
-                getAllBranch();
+                getAllBranch(1);
             }
         } catch (err: any) {
             toast.error(err.message);
         }
     };
 
-    const getAllBranch = async () => {
-        const data = await branchApi.getAllBranch(1);
+    const getAllBranch = async (pageActive: number) => {
+        const data = await branchApi.getAllBranch(pageActive, 10);
         setBranchs(data);
     };
 
     useEffect(() => {
-        getAllBranch();
+        getAllBranch(1);
     }, []);
 
     return (
@@ -95,9 +95,10 @@ export default function Branchs() {
                         "Status",
                         "actions",
                     ]}
-                    data=""
-                    isPaging={false}
+                    data={branchs}
+                    isPaging={true}
                     title="Category"
+                    getAllBranch={getAllBranch}
                     scriptData={
                         <tbody className="bg-white divide-y w-full divide-gray-100  text-gray-800">
                             {branchs?.data?.branchList?.map((branch, i) => (

@@ -60,21 +60,9 @@ function GiftSelector(props: IGiftSelector) {
     }, [])
 
     return (
-        <div className="flex flex-col items-start">
-            <p className="my-3 font-semibold text-sm">Customer get</p>
+        <div className="flex flex-row justify-between w-full items-center mb-5">
+            <p className="my-3 font-semibold text-sm min-w-28">Customer get</p>
             <div className='flex w-full items-center'>
-                <div className="relative w-full">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 cursor-pointer z-999999">
-                        {/* MagnifyingGlass component */}
-                        <span>&#128269;</span>
-                    </div>
-                    <input
-                        type="text"
-                        className="block w-full pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Enter product ..."
-                        onChange={() => setModalOpen(true)}
-                    />
-                </div>
                 <button className='px-4 py-1.5 rounded-lg shadow-sm border font-medium ml-5 hover:bg-gray-50' onClick={() => setModalOpen(true)}>Browse</button>
             </div>
             <Dialog placeholder="" open={modalOpen} handler={handleOpenModel}>
@@ -108,15 +96,6 @@ function GiftSelector(props: IGiftSelector) {
                     </div>
                 </DialogBody>
                 <DialogFooter placeholder="">
-                    <Button
-                        placeholder=""
-                        variant="text"
-                        color="red"
-                        onClick={() => setModalOpen(false)}
-                        className="mr-1"
-                    >
-                        <span>Cancel</span>
-                    </Button>
                     <Button placeholder="" variant="gradient" color="green" onClick={handleModalConfirm}>
                         <span>Confirm</span>
                     </Button>

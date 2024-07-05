@@ -117,7 +117,7 @@ export default function Coupons() {
                 open: false,
                 couponId: ""
             })
-            toast.error(err?.response?.data?.message)
+            toast.error(err?.response?.data?.error?.message)
         }
     }
 
@@ -129,15 +129,6 @@ export default function Coupons() {
                 {/* Add and delete */}
                 <div className="rounded-lg min-w-0 shadow-xs overflow-hidden bg-white mb-5">
                     <div className="p-4 flex items-center justify-end">
-                        <button
-                            className="mr-2 inline-flex items-center justify-center leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-emerald-500 border border-transparent opacity-100 rounded-md h-12 bg-red-600"
-                            type="button"
-                        >
-                            <span className="mr-2">
-                                <Delete />
-                            </span>
-                            Delete
-                        </button>
                         <button
                             className="inline-flex items-center justify-center cursor-pointer leading-5 transition-colors duration-150 font-medium focus:outline-none px-4 py-2 text-sm text-white bg-green-500 border border-transparent rounded-md h-12"
                             type="button"

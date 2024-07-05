@@ -2,7 +2,7 @@ const HeaderOrder = () => {
     return (
         <div className="flex items-start justify-between mb-4">
             <h1 className="mt-2 mb-4 text-lg font-bold text-gray-700 ">Orders</h1>
-            <div className="mx-1">
+            {/* <div className="mx-1">
                 <button
                     type="button"
                     className="flex items-center justify-center text-sm leading-5 h-12 w-full text-center transition-colors duration-150 font-medium px-6 py-2 rounded-md text-white bg-green-500 border border-transparent hover:bg-green-600 "
@@ -28,7 +28,7 @@ const HeaderOrder = () => {
                         </svg>
                     </span>
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 };

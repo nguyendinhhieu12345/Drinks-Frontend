@@ -70,7 +70,7 @@ export interface ICoupon {
         type: string
     }[],
     minPurchaseCondition?: {
-        value: string
+        value: number
     },
     subjectConditionList?: {
         objectId: string;
