@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 
 const io = new Server(8900, {
     cors: {
-        origin: "http://localhost:3001",
+        origin: ['http://localhost:3001', 'http://localhost:3000'],
         credentials: true
     },
 });
@@ -15,9 +15,22 @@ io.on("connection", (socket) => {
         socket.broadcast.emit('message', msg);
     });
 
+    // Joining branch-specific rooms
+    socket.on('joinBranch', (branchId) => {
+        socket.join(branchId);
+        console.log(`Employee joined branch room: ${branchId}`);
+    });
+
+    // Joining user-specific rooms
+    socket.on('joinUser', (userId) => {
+        socket.join(userId);
+        console.log(`User joined user-specific room: ${userId}`);
+    });
+
     // user tạo => screen emp => create order
     // user tạo => screen take away, delevẻy => create order
     socket.on("user_create_order", (data) => {
+        console.log(data)
         io.to(data.branchId).emit("user_create_order", {
             orderId: data.orderId
         })
@@ -27,6 +40,7 @@ io.on("connection", (socket) => {
     // employeeId == null ? "reload all branch" : "reload order detail hoac order all of employeeId"
     // screen take away, delevery, order detail
     socket.on("user_update_order", (data) => {
+        console.log(data)
         io.to(data.branchId).emit("user_update_order", {
             orderId: data.orderId,
             employeeId: data.employeeId
@@ -36,6 +50,7 @@ io.on("connection", (socket) => {
     // employee update status order => client (all status)
     // screen order detail web, app
     socket.on("employee_update_order", (data) => {
+        console.log(data)
         io.to(data.userId).emit("employee_update_order", {
             orderId: data.orderId
         })
@@ -44,6 +59,7 @@ io.on("connection", (socket) => {
     // employee update status order => client (create) => employee cùng chi nhánh cập nhập lại đơn order đã được nhận => empl khác
     // screen order detail web, app - delevery, takeaway app
     socket.on("employee_update_order_same_branch", (data) => {
+        console.log(data)
         io.to(data.branchId).emit("employee_update_order_same_branch", {
             orderId: data.orderId
         })
