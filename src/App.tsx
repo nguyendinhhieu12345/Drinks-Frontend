@@ -10,7 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import LoadingPage from "./components/LoadingPage/LoadingPage";
 import { User } from "./type";
 import "@goongmaps/goong-js/dist/goong-js.css";
-import { Socket, io } from "socket.io-client";
+import socket from "./socket/socket";
 
 interface LayoutProps {
     children?: React.ReactNode;
@@ -26,17 +26,30 @@ function App() {
     );
 
     useEffect(() => {
-        const socket: Socket = io("http://localhost:8900", {
-            withCredentials: true,
+        socket.on('connect', () => {
+            socket.emit('joinBranch', useCurrentUser?.data?.branchId); // Join the branch-specific room
         });
-        socket.on("connect", () => {
-            console.log("Connected to server");
+
+        socket.on("user_create_order", (data) => {
+            console.log(data);
         });
-    }, []);
+
+        socket.on("user_update_order", (data) => {
+            console.log(data);
+        });
+    }, [useCurrentUser?.data?.branchId]);
 
     return (
         // <Router>
         <div className="App">
+            <button onClick={() => {
+                socket.emit("employee_update_order", {
+                    userId: "U00000001",
+                    orderId: "OB000000002"
+                })
+            }}>
+                socket
+            </button>
             <AnimatePresence>
                 <Routes>
                     {routerCheck.map((route, index) => {
