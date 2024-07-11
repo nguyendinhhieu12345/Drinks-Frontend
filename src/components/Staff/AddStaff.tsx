@@ -73,10 +73,9 @@ function AddStaff(props: IAddStaff) {
             newStaff?.firstName.trim() !== "" &&
             newStaff?.lastName.trim() !== "" &&
             newStaff?.birthDate.trim() !== "" &&
-            newStaff?.branchId.trim() !== "" &&
             newStaff?.phoneNumber.trim() !== "" &&
             newStaff?.email.trim() !== "" &&
-            isPhone(newStaff?.phoneNumber) &&   
+            isPhone(newStaff?.phoneNumber) &&
             isEmail(newStaff?.email)
         ) {
             try {
@@ -134,16 +133,29 @@ function AddStaff(props: IAddStaff) {
             } catch (err: any) {
                 stopLoading();
                 if (err?.response?.data?.error?.errorCode === 13) {
-                    err?.response?.data?.devResponse?.details?.map((err: any) => (
-                        toast.error(err?.field + " " + err?.validate, {
+                    if (err?.response?.data?.devResponse?.details) {
+                        err?.response?.data?.devResponse?.details?.map((err: any) => (
+                            toast.error(err?.field + " " + err?.validate, {
+                                position: "bottom-left",
+                            })
+                        ))
+                    } else {
+                        toast.error(err?.response?.data?.devResponse?.message, {
                             position: "bottom-left",
                         })
-                    ))
+                    }
                 }
                 else {
-                    toast.error(err?.response?.data?.error?.errorMessage, {
-                        position: "bottom-left",
-                    })
+                    if (err?.response?.data?.error?.errorCode === 11) {
+                        toast.error(err?.response?.data?.devResponse?.message, {
+                            position: "bottom-left",
+                        })
+                    }
+                    else {
+                        toast.error(err?.response?.data?.error?.errorMessage, {
+                            position: "bottom-left",
+                        })
+                    }
                 }
             }
         } else {

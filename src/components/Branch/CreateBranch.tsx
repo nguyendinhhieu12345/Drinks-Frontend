@@ -255,7 +255,8 @@ function CreateBranch() {
                 newBranch.detail.trim() !== "" &&
                 newBranch.phoneNumber.trim() !== "" &&
                 newBranch.openTime.trim() !== "" &&
-                newBranch.closeTime.trim() !== ""
+                newBranch.closeTime.trim() !== "" &&
+                newBranch.image.length > 0
             ) {
                 let formData = new FormData();
                 const API_KEY = "2tgHvZJswyFkLug62ynzpCrs8RlqMcmzFVtoUjEL";
@@ -334,7 +335,14 @@ function CreateBranch() {
             }
         } catch (err: any) {
             stopLoading();
-            toast.error(err?.response?.data?.message);
+            if (err?.response?.data?.error?.errorCode === 13) {
+                err?.response?.data?.devResponse?.details?.map((err: any) => (
+                    toast.error(err?.field + " " + err?.validate)
+                ))
+            }
+            else {
+                toast.error(err?.response?.data?.error?.errorMessage)
+            }
         }
     };
 

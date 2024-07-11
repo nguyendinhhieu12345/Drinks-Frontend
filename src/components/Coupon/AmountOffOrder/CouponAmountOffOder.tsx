@@ -7,7 +7,7 @@ import { ICoupon } from "@/types/type";
 import { toast } from "react-toastify";
 import useLoading from "@/hooks/useLoading";
 import { Spinner } from "@material-tailwind/react";
-import { getToday } from "@/utils/helper";
+import { getToday, toastError } from "@/utils/helper";
 
 function CouponAmountOffOder() {
     const [couponData, setCouponData] = useState<ICoupon>({
@@ -72,18 +72,7 @@ function CouponAmountOffOder() {
         }
         catch (error: any) {
             stopLoading()
-            if (error?.response?.data?.error?.errorCode === 13) {
-                if (error?.response?.data?.devResponse?.details) {
-                    error?.response?.data?.devResponse?.details?.map((err: any) => (
-                        toast.error(err?.field + " " + err?.validate)
-                    ))
-                } else {
-                    toast.error(error?.response?.data?.devResponse?.message)
-                }
-            }
-            else {
-                toast.error(error?.response?.data?.error?.errorMessage)
-            }
+            toastError(error)
         }
     }
 
@@ -163,7 +152,7 @@ function CouponAmountOffOder() {
                             <input
                                 onChange={(e) => setCouponData((prev: any) => ({
                                     ...prev,
-                                    code: e.target.value
+                                    code: e.target.value.trim()
                                 }))}
                                 value={couponData?.code}
                                 className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
@@ -176,7 +165,7 @@ function CouponAmountOffOder() {
                             <textarea
                                 onChange={(e) => setCouponData((prev: any) => ({
                                     ...prev,
-                                    description: e.target.value
+                                    description: e.target.value.trim()
                                 }))}
                                 value={couponData?.description}
                                 className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 min-h-20 h-40 max-h-60"

@@ -270,15 +270,22 @@ export default function AddProduct() {
                     }
                 } else {
                     try {
-                        const data = await productApi.updateProduct(
-                            formData,
-                            productId?.id as string,
-                            typeProduct
-                        );
-                        if (data?.success) {
-                            stopLoading();
-                            toast.success(data?.message);
-                            nav(configRouter.products);
+                        const checkExistProductName = await productApi.checkExistProductName(name.trim())
+                        if (checkExistProductName?.success && !checkExistProductName?.data?.existed) {
+                            const data = await productApi.updateProduct(
+                                formData,
+                                productId?.id as string,
+                                typeProduct
+                            );
+                            if (data?.success) {
+                                stopLoading();
+                                toast.success(data?.message);
+                                nav(configRouter.products);
+                            }
+                        }
+                        else {
+                            stopLoading()
+                            toast.error("Product name " + name + " is existed");
                         }
                     } catch (err: any) {
                         stopLoading();

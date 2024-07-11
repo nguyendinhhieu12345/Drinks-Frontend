@@ -73,16 +73,25 @@ function CreateCategory(props: ICreateCategory) {
                         stopLoading();
                     }
                 } else {
-                    const data = await categoryApi.updateCategory(
-                        newCategory,
-                        props?.currentCategory?.id as string
-                    );
-                    if (data?.success) {
-                        toast.success(data?.message);
-                        props.setOpenCreateCategory(false);
-                        setName("");
-                        setImage([]);
-                        stopLoading();
+                    const checkExistCategoryName = await categoryApi.checkExistCategoryName(name.trim())
+                    if (checkExistCategoryName?.success && !checkExistCategoryName?.data?.existed) {
+                        const data = await categoryApi.updateCategory(
+                            newCategory,
+                            props?.currentCategory?.id as string
+                        );
+                        if (data?.success) {
+                            toast.success(data?.message);
+                            props.setOpenCreateCategory(false);
+                            setName("");
+                            setImage([]);
+                            stopLoading();
+                        }
+                    }
+                    else {
+                        stopLoading()
+                        toast.error("Category name " + name + " is existed", {
+                            position: "bottom-left",
+                        });
                     }
                 }
             } else {
