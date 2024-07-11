@@ -1,4 +1,3 @@
-import { Edit } from "@/components/SVG/Edit.svg"
 import { IOrderDetail } from "@/pages/AdminPage/OrderDetail"
 import { formatVND } from "@/utils/helper"
 
@@ -19,12 +18,6 @@ function OrderPayment(props: IOrderPayment) {
                     <span className="text-sm text-gray-500  font-semibold font-serif block">
                         {orderDetail?.data?.transaction?.paymentType}
                         <span className="text-yellow-300 px-2.5 py-1 border border-yellow-300 rounded-xl">{orderDetail?.data?.transaction?.status}</span>
-                        {(orderDetail?.data?.transaction?.status === "UNPAID" && orderDetail?.data?.transaction?.paymentUrl) &&
-                            <button className="ml-2" onClick={() => {
-                                localStorage.setItem("orderId", orderDetail?.data?.id)
-                                window.location.href = (orderDetail?.data?.transaction?.paymentUrl as string)
-                            }}><Edit /></button>
-                        }
                     </span>
                 </div>
                 <div className="mb-3 md:mb-0 lg:mb-0  flex flex-col sm:flex-wrap">

@@ -68,7 +68,7 @@ function GiftSelector(props: IGiftSelector) {
             <Dialog placeholder="" open={modalOpen} handler={handleOpenModel}>
                 <DialogHeader placeholder="">Add Product</DialogHeader>
                 <DialogBody placeholder="">
-                    <div className="w-full text-center">
+                    <div className="w-full text-center overflow-auto h-[600px]">
                         <div className="relative w-full">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 cursor-pointer z-999999">
                                 <span>&#128269;</span>

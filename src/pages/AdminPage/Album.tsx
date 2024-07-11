@@ -301,7 +301,9 @@ function Album() {
                                     <div className="flex justify-end text-right">
                                         <button
                                             className="p-2 cursor-pointer text-gray-400 hover:text-emerald-600 focus:outline-none"
-                                            onClick={() => handleCopy(album.imageUrl)}
+                                            onClick={() => {
+                                                handleCopy(album.imageUrl)
+                                            }}
                                         >
                                             <p data-tip="true" data-for="edit" className="text-xl">
                                                 <ClipboardText size={25} />

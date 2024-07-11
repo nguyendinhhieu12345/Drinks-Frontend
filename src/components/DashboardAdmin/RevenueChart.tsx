@@ -10,41 +10,10 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import * as dashboardApi from "@/api/adminApi/dashboardApi/dashboardApi"
-import { getOneMonthAgo, getToday } from "@/utils/helper";
+import { getOneWeekAgo, getToday } from "@/utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
-
-const data = [
-    {
-        timePoint: "05/01/2024",
-        revenue: 4000,
-    },
-    {
-        timePoint: "06/01/2024",
-        revenue: 3000,
-    },
-    {
-        timePoint: "07/01/2024",
-        revenue: 2000,
-    },
-    {
-        timePoint: "08/01/2024",
-        revenue: 2780,
-    },
-    {
-        timePoint: "09/01/2024",
-        revenue: 1890,
-    },
-    {
-        timePoint: "10/01/2024",
-        revenue: 2390,
-    },
-    {
-        timePoint: "11/01/2024",
-        revenue: 3490,
-    },
-];
 
 interface IDashboardChartRevenue {
     success: boolean,
@@ -63,7 +32,7 @@ const RevenueChart = (props: { branchSelect: string }) => {
         end_date: string;
         time_type: string;
     }>({
-        start_date: getOneMonthAgo(),
+        start_date: getOneWeekAgo(),
         end_date: getToday(),
         time_type: "day"
     })
@@ -106,6 +75,15 @@ const RevenueChart = (props: { branchSelect: string }) => {
 
     const formatDate = (dateString: string) => {
         const [year, month, day] = dateString.split('-');
+        if (day === undefined) {
+            if (month === undefined) {
+                return `${year}`
+            }
+            else {
+                return `${month}-${year}`
+            }
+        }
+
         return `${day}-${month}-${year}`;
     };
 
@@ -142,6 +120,7 @@ const RevenueChart = (props: { branchSelect: string }) => {
                                     end_date: e.target.value
                                 }))
                             }}
+                            min={dataGet?.start_date}
                         />
                         <p className="mx-2 font-medium text-base">
                             Type
@@ -163,7 +142,7 @@ const RevenueChart = (props: { branchSelect: string }) => {
                 <div className="w-full h-[350px] mt-5">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
-                            data={chartRevenue?.success ? chartRevenue?.data?.revenueList : data}
+                            data={chartRevenue?.data?.revenueList}
                             margin={{
                                 top: 5,
                                 right: 30,

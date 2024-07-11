@@ -166,7 +166,7 @@ function CouponBuyXGetY() {
                             <input
                                 onChange={(e) => setCouponData((prev: any) => ({
                                     ...prev,
-                                    code: e.target.value
+                                    code: e.target.value.trim()
                                 }))}
                                 className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                 type="text"
@@ -179,7 +179,7 @@ function CouponBuyXGetY() {
                             <textarea
                                 onChange={(e) => setCouponData((prev: any) => ({
                                     ...prev,
-                                    description: e.target.value
+                                    description: e.target.value.trim()
                                 }))}
                                 className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 min-h-20 h-40 max-h-60"
                                 placeholder="Desciption"

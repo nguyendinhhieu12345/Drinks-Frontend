@@ -114,3 +114,12 @@ export const getStatisticProduct = async (productId: string) => {
         return Promise.reject(error);
     }
 };
+
+export const checkExistProductName = async (productName: string) => {
+    try {
+        const res = await httpRequest.get(`/product/existed-name?product_name=${productName}`);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
