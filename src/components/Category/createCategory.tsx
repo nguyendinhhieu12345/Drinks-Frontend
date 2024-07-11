@@ -15,6 +15,7 @@ interface ICreateCategory {
 
 function CreateCategory(props: ICreateCategory) {
     const [name, setName] = useState<string>("");
+    const [newName, setNewName] = useState<string>("");
     const [image, setImage] = useState<File[]>([]);
     const [status, setStatus] = useState<boolean>(true);
     const { isLoading, startLoading, stopLoading } = useLoading();
@@ -73,8 +74,29 @@ function CreateCategory(props: ICreateCategory) {
                         stopLoading();
                     }
                 } else {
-                    const checkExistCategoryName = await categoryApi.checkExistCategoryName(name.trim())
-                    if (checkExistCategoryName?.success && !checkExistCategoryName?.data?.existed) {
+                    if (newName.trim() === name.trim()) {
+                        const checkExistCategoryName = await categoryApi.checkExistCategoryName(name.trim())
+                        if (checkExistCategoryName?.success && !checkExistCategoryName?.data?.existed) {
+                            const data = await categoryApi.updateCategory(
+                                newCategory,
+                                props?.currentCategory?.id as string
+                            );
+                            if (data?.success) {
+                                toast.success(data?.message);
+                                props.setOpenCreateCategory(false);
+                                setName("");
+                                setImage([]);
+                                stopLoading();
+                            }
+                        }
+                        else {
+                            stopLoading()
+                            toast.error("Category name " + name + " is existed", {
+                                position: "bottom-left",
+                            });
+                        }
+                    }
+                    else {
                         const data = await categoryApi.updateCategory(
                             newCategory,
                             props?.currentCategory?.id as string
@@ -86,12 +108,6 @@ function CreateCategory(props: ICreateCategory) {
                             setImage([]);
                             stopLoading();
                         }
-                    }
-                    else {
-                        stopLoading()
-                        toast.error("Category name " + name + " is existed", {
-                            position: "bottom-left",
-                        });
                     }
                 }
             } else {
@@ -134,7 +150,11 @@ function CreateCategory(props: ICreateCategory) {
                             className="block w-full h-12 border px-3 py-1 text-sm focus:outline-none leading-5 rounded-md bg-gray-100 focus:bg-white focus:border-gray-200 border-gray-200 p-2"
                             type="text"
                             placeholder="Category title"
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => {
+                                setName(e.target.value)
+                                setNewName(e.target.value)
+                            }
+                            }
                             value={name}
                         />
                     </div>

@@ -25,7 +25,7 @@ interface IPriceProductTopping {
 
 export default function AddProduct() {
     const [image, setImage] = useState<File[]>([]);
-    const [size, setSize] = useState<string>("Small");
+    const [size, setSize] = useState<string>("SMALL");
     const [pricingSize, setPricingSize] = useState<string>("");
     const [topping, setTopping] = useState<string>("");
     const [pricingTopping, setPricingTopping] = useState<string>("");
@@ -35,6 +35,7 @@ export default function AddProduct() {
     >([]);
     const [category, setCategory] = useState<ICategory[]>([]);
     const [name, setName] = useState<string>("");
+    const [newName, setNewName] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [categoryId, setCategoryId] = useState<string>("");
     const [status, setStatus] = useState<string>("ACTIVE");
@@ -156,14 +157,33 @@ export default function AddProduct() {
                         },
                     ]);
                     toast.success("Added size successfully");
-                    setSize("Small");
+                    setSize("SMALL");
                     setPricingSize("");
                 } else {
                     toast.error("Price not available");
                 }
             } else {
-                toast.error("Size already exists");
-                setPricingSize("");
+                // toast.error("Size already exists");
+                // setPricingSize("");
+                if (parseInt(pricingSize) > 0) {
+                    setListPriceSize(prevListPriceSize => {
+                        const index = prevListPriceSize.findIndex(item => item.size.trim() === size.trim());
+                        if (index !== -1) {
+                            // Size exists, update the priceSize
+                            const updatedList = [...prevListPriceSize];
+                            updatedList[index].priceSize = parseInt(pricingSize);
+                            return updatedList;
+                        } else {
+                            // Size does not exist, add a new item
+                            return [...prevListPriceSize, { size, priceSize: parseInt(pricingSize) }];
+                        }
+                    });
+                    toast.success("Updated size successfully");
+                    setSize("SMALL");
+                    setPricingSize("");
+                } else {
+                    toast.error("Price not available");
+                }
             }
         }
     };
@@ -192,9 +212,28 @@ export default function AddProduct() {
                     toast.error("Price not available");
                 }
             } else {
-                toast.error("Topping already exists");
-                setPricingTopping("");
-                setTopping("");
+                if (parseInt(pricingTopping) > 0) {
+                    setListPriceTopping(prevListPriceSize => {
+                        const index = prevListPriceSize.findIndex(item => item.topping.trim() === topping.trim());
+                        if (index !== -1) {
+                            // Size exists, update the priceSize
+                            const updatedList = [...prevListPriceSize];
+                            updatedList[index].priceTopping = parseInt(pricingTopping);
+                            return updatedList;
+                        } else {
+                            // Size does not exist, add a new item
+                            return [...prevListPriceSize, { topping, priceTopping: parseInt(pricingTopping) }];
+                        }
+                    });
+                    toast.success("Updated topping successfully");
+                    setTopping("");
+                    setPricingTopping("");
+                } else {
+                    toast.error("Price not available");
+                }
+                // toast.error("Topping already exists");
+                // setPricingTopping("");
+                // setTopping("");
             }
         }
     };
@@ -270,8 +309,26 @@ export default function AddProduct() {
                     }
                 } else {
                     try {
-                        const checkExistProductName = await productApi.checkExistProductName(name.trim())
-                        if (checkExistProductName?.success && !checkExistProductName?.data?.existed) {
+                        if (newName.trim() === name.trim()) {
+                            const checkExistProductName = await productApi.checkExistProductName(name.trim())
+                            if (checkExistProductName?.success && !checkExistProductName?.data?.existed) {
+                                const data = await productApi.updateProduct(
+                                    formData,
+                                    productId?.id as string,
+                                    typeProduct
+                                );
+                                if (data?.success) {
+                                    stopLoading();
+                                    toast.success(data?.message);
+                                    nav(configRouter.products);
+                                }
+                            }
+                            else {
+                                stopLoading()
+                                toast.error("Product name " + name + " is existed");
+                            }
+                        }
+                        else {
                             const data = await productApi.updateProduct(
                                 formData,
                                 productId?.id as string,
@@ -282,10 +339,6 @@ export default function AddProduct() {
                                 toast.success(data?.message);
                                 nav(configRouter.products);
                             }
-                        }
-                        else {
-                            stopLoading()
-                            toast.error("Product name " + name + " is existed");
                         }
                     } catch (err: any) {
                         stopLoading();
@@ -327,7 +380,11 @@ export default function AddProduct() {
                                         disabled={useCurrentUser?.data?.branchId ? true : false}
                                         type="text"
                                         placeholder="Product name"
-                                        onChange={(e) => setName(e.target.value)}
+                                        onChange={(e) => {
+                                            setName(e.target.value)
+                                            setNewName(e.target.value)
+                                        }
+                                        }
                                         value={name}
                                     />
                                 </div>
@@ -457,9 +514,9 @@ export default function AddProduct() {
                                                         }}
                                                         value={size}
                                                     >
-                                                        <option value="Small">Small</option>
-                                                        <option value="Medium">Medium</option>
-                                                        <option value="Large">Large</option>
+                                                        <option value="SMALL">SMALL</option>
+                                                        <option value="MEDIUM">MEDIUM</option>
+                                                        <option value="LARGE">LARGE</option>
                                                     </select>
                                                 </div>
                                                 <div className="mb-3 w-[48%]">
