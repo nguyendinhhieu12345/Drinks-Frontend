@@ -27,6 +27,7 @@ export default defineConfig({
             features: path.resolve(__dirname, "./src/features"),
             types: `${path.resolve(__dirname, "./src/@types")}`,
             utils: path.resolve(__dirname, "./src/utils"),
+            ckeditor: path.resolve(__dirname, "./ckeditor5/build/ckeditor.js")
         },
     },
     server: {
@@ -43,7 +44,12 @@ export default defineConfig({
             exclude: ["ckeditor5/build/ckeditor"],
         },
         rollupOptions: {
-            external: ["ckeditor5/build/ckeditor"]
+            external: ["ckeditor5/build/ckeditor"],
+            output: {
+                globals: {
+                    "ckeditor5/build/ckeditor": "CKEditor"
+                }
+            }
         }
     },
 });

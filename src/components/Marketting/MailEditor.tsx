@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import Editor from 'ckeditor5/build/ckeditor';
+import Editor from '../../ckeditor5/build/ckeditor';
 import { ArrowLeft } from '@phosphor-icons/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { configRouter } from '@/configs/router';
