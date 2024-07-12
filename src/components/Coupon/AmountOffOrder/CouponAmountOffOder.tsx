@@ -18,6 +18,7 @@ function CouponAmountOffOder() {
         startDate: getToday(),
         expirationDate: ""
     })
+    const [newName, setNewName] = useState<string>("");
     const { isLoading, startLoading, stopLoading } = useLoading();
     const nav = useNavigate();
     const { id } = useParams()
@@ -48,20 +49,44 @@ function CouponAmountOffOder() {
             startLoading()
             if (couponData?.code.trim() !== "" && couponData?.description.trim() !== "" && couponData?.unitReward?.trim() !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0) {
                 if (!id) {
-                    const data = await couponApi.addCouponOrder(couponData as ICoupon)
-                    if (data?.success) {
+                    const checkExistCouponCode = await couponApi.checkExistCounponCode(couponData?.code.trim())
+                    if (checkExistCouponCode?.success && !checkExistCouponCode?.data?.existed) {
+                        const data = await couponApi.addCouponOrder(couponData as ICoupon)
+                        if (data?.success) {
+                            stopLoading()
+                            toast.success(data?.message)
+                            handleRedirectCoupons()
+                        }
+                    }
+                    else {
                         stopLoading()
-                        toast.success(data?.message)
-                        handleRedirectCoupons()
+                        toast.error("Coupon code " + couponData?.code + " is existed");
                     }
                 }
                 else {
                     const { id, ...orther } = couponData
-                    const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
-                    if (data?.success) {
-                        stopLoading()
-                        toast.success(data?.message)
-                        handleRedirectCoupons()
+                    if (newName.trim() === couponData?.code?.trim()) {
+                        const checkExistCouponCode = await couponApi.checkExistCounponCode(couponData?.code.trim())
+                        if (checkExistCouponCode?.success && !checkExistCouponCode?.data?.existed) {
+                            const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
+                            if (data?.success) {
+                                stopLoading()
+                                toast.success(data?.message)
+                                handleRedirectCoupons()
+                            }
+                        }
+                        else {
+                            stopLoading()
+                            toast.error("Coupon code " + couponData?.code + " is existed");
+                        }
+                    }
+                    else {
+                        const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
+                        if (data?.success) {
+                            stopLoading()
+                            toast.success(data?.message)
+                            handleRedirectCoupons()
+                        }
                     }
                 }
             }
@@ -150,10 +175,13 @@ function CouponAmountOffOder() {
                         <div className="mb-3">
                             <p className="mb-3 font-semibold text-sm">Code</p>
                             <input
-                                onChange={(e) => setCouponData((prev: any) => ({
-                                    ...prev,
-                                    code: e.target.value.trim()
-                                }))}
+                                onChange={(e) => {
+                                    setCouponData((prev: any) => ({
+                                        ...prev,
+                                        code: e.target.value.trim()
+                                    }))
+                                    setNewName(e.target.value)
+                                }}
                                 value={couponData?.code}
                                 className="block w-full h-10 border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2"
                                 type="text"
@@ -165,7 +193,7 @@ function CouponAmountOffOder() {
                             <textarea
                                 onChange={(e) => setCouponData((prev: any) => ({
                                     ...prev,
-                                    description: e.target.value.trim()
+                                    description: e.target.value
                                 }))}
                                 value={couponData?.description}
                                 className="block w-full border px-3 py-1 text-sm rounded-md  focus:bg-white border-gray-600 p-2 min-h-20 h-40 max-h-60"
