@@ -154,3 +154,12 @@ export const getCouponOrder = async (
         return Promise.reject(error);
     }
 };
+
+export const checkExistCounponCode = async (couponCode: string) => {
+    try {
+        const res = await httpRequest.get(`/coupon/existed-code?coupon_code=${couponCode}`);
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
