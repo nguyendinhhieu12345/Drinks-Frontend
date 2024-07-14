@@ -81,11 +81,11 @@ export const setupInterceptor = (store: Store, dispatch: AppDispatch): void => {
                             ...user,
                             data: {
                                 employeeId: user?.data?.employeeId,
-                                accessToken: user?.data?.accessToken,
+                                accessToken: data?.data?.accessToken,
                             },
                         };
                         await dispatch(refetchTokenStore(dataTemplate));
-                        config.headers.Authorization = "Bearer " + data.accessToken;
+                        config.headers.Authorization = "Bearer " + data?.data?.accessToken;
                         isRefreshing = false;
                         refreshPromise = null;
                         return config;
