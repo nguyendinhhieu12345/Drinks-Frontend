@@ -192,17 +192,17 @@ export default function Users() {
                 />
                 <Dialog placeholder="" open={open} handler={handleOpen}>
                     <DialogHeader placeholder="">
-                        {userId?.status === "BLOCKED"
+                        {userId?.status === "ACTIVE"
                             ? "Confirm unblocking the user"
                             : "Confirm user blocking"}
                     </DialogHeader>
                     <DialogBody placeholder="">
                         When you{" "}
-                        {userId?.status === "BLOCKED"
+                        {userId?.status === "ACTIVE"
                             ? "'Confirm' unblock user"
                             : "'Confirm' block user"}{" "}
                         then the user will{" "}
-                        {userId?.status !== "BLOCKED"
+                        {userId?.status !== "ACTIVE"
                             ? "Can't access the website anymore."
                             : "continue to access the website."}
                     </DialogBody>
