@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { configRouter } from '@/configs/router';
 import { Spinner } from '@material-tailwind/react';
 import useLoading from '@/hooks/useLoading';
-import { checkTypeImage, imageUrlToFile } from '@/utils/helper';
+import { checkTypeImage, imageUrlToFile, toastError } from '@/utils/helper';
 import { toast } from 'react-toastify';
 import * as marketingApi from "@/api/adminApi/marketingApi/marketingApi"
 
@@ -79,7 +79,7 @@ const EmailEditor: React.FC = () => {
                 }
             } catch (err: any) {
                 stopLoading();
-                toast.error(err?.response?.data?.error?.errorMessage);
+                toastError(err, "top-right")
             }
         } else {
             toast.error("Please fill out all fields completely");
@@ -97,7 +97,7 @@ const EmailEditor: React.FC = () => {
             }
         } catch (err: any) {
             nav(configRouter.marketing)
-            toast.error(err?.response?.data?.error?.subErrorMessage);
+            toastError(err, "top-right")
         }
     }
 

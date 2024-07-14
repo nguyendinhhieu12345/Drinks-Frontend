@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { ICategory } from "@/types/type";
 import ButtonCloseDrawer from "@/components/ButtonCloseDrawer/ButtonCloseDrawer";
 import OptionCategory from "@/components/Category/OptionCategory";
+import { toastError } from "@/utils/helper";
 
 interface IResponseCategory {
     timestamp: string;
@@ -43,7 +44,7 @@ export default function Categorys() {
                 getAllCategory();
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.error?.errorMessage);
+            toastError(err, "top-right")
         }
     };
 

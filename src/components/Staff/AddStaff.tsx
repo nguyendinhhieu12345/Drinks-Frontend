@@ -6,7 +6,7 @@ import useLoading from "@/hooks/useLoading";
 import { toast } from "react-toastify";
 import { Spinner, Switch } from "@material-tailwind/react";
 import InputWrap from "../InputWrap/InputWrap";
-import { getToday, isEmail, isPhone } from "@/utils/helper";
+import { getToday, isEmail, isPhone, toastError } from "@/utils/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
@@ -132,31 +132,7 @@ function AddStaff(props: IAddStaff) {
                 }
             } catch (err: any) {
                 stopLoading();
-                if (err?.response?.data?.error?.errorCode === 13) {
-                    if (err?.response?.data?.devResponse?.details) {
-                        err?.response?.data?.devResponse?.details?.map((err: any) => (
-                            toast.error(err?.field + " " + err?.validate, {
-                                position: "bottom-left",
-                            })
-                        ))
-                    } else {
-                        toast.error(err?.response?.data?.devResponse?.message, {
-                            position: "bottom-left",
-                        })
-                    }
-                }
-                else {
-                    if (err?.response?.data?.error?.errorCode === 11) {
-                        toast.error(err?.response?.data?.devResponse?.message, {
-                            position: "bottom-left",
-                        })
-                    }
-                    else {
-                        toast.error(err?.response?.data?.error?.errorMessage, {
-                            position: "bottom-left",
-                        })
-                    }
-                }
+                toastError(err, "bottom-left")
             }
         } else {
             stopLoading();

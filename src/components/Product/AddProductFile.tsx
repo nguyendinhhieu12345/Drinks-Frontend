@@ -14,6 +14,7 @@ import * as XLSX from "xlsx";
 import useLoading from "@/hooks/useLoading";
 import { toast } from "react-toastify";
 import * as productApi from "@/api/adminApi/productApi/productApi"
+import { toastError } from "@/utils/helper";
 
 interface IAddProductFile {
     getAllProduct: (key: string, page: number, productStatus: string, categoryId: string) => Promise<void>
@@ -94,7 +95,7 @@ function AddProductFile(props: IAddProductFile) {
             }
         } catch (err: any) {
             stopLoading();
-            toast.error(err?.response?.data?.message);
+            toastError(err, "top-right")
             setOpen(prev => !prev)
         }
     }

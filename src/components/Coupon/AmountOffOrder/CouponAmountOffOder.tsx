@@ -46,29 +46,13 @@ function CouponAmountOffOder() {
 
     const handleAddCouponShipping = async () => {
         try {
-            startLoading()
             if (couponData?.code.trim() !== "" && couponData?.description.trim() !== "" && couponData?.unitReward?.trim() !== "" && couponData?.startDate !== "" && couponData?.valueReward !== 0) {
-                if (!id) {
-                    const checkExistCouponCode = await couponApi.checkExistCounponCode(couponData?.code.trim())
-                    if (checkExistCouponCode?.success && !checkExistCouponCode?.data?.existed) {
-                        const data = await couponApi.addCouponOrder(couponData as ICoupon)
-                        if (data?.success) {
-                            stopLoading()
-                            toast.success(data?.message)
-                            handleRedirectCoupons()
-                        }
-                    }
-                    else {
-                        stopLoading()
-                        toast.error("Coupon code " + couponData?.code + " is existed");
-                    }
-                }
-                else {
-                    const { id, ...orther } = couponData
-                    if (newName.trim() === couponData?.code?.trim()) {
+                if ((couponData?.unitReward === "PERCENTAGE" && ((couponData?.valueReward as number) <= 100 && (couponData?.valueReward as number) > 0)) || (couponData?.unitReward === "MONEY" && ((couponData?.valueReward as number) > 0))) {
+                    if (!id) {
+                        startLoading()
                         const checkExistCouponCode = await couponApi.checkExistCounponCode(couponData?.code.trim())
                         if (checkExistCouponCode?.success && !checkExistCouponCode?.data?.existed) {
-                            const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
+                            const data = await couponApi.addCouponOrder(couponData as ICoupon)
                             if (data?.success) {
                                 stopLoading()
                                 toast.success(data?.message)
@@ -81,12 +65,39 @@ function CouponAmountOffOder() {
                         }
                     }
                     else {
-                        const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
-                        if (data?.success) {
-                            stopLoading()
-                            toast.success(data?.message)
-                            handleRedirectCoupons()
+                        startLoading()
+                        const { id, ...orther } = couponData
+                        if (newName.trim() === couponData?.code?.trim()) {
+                            const checkExistCouponCode = await couponApi.checkExistCounponCode(couponData?.code.trim())
+                            if (checkExistCouponCode?.success && !checkExistCouponCode?.data?.existed) {
+                                const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
+                                if (data?.success) {
+                                    stopLoading()
+                                    toast.success(data?.message)
+                                    handleRedirectCoupons()
+                                }
+                            }
+                            else {
+                                stopLoading()
+                                toast.error("Coupon code " + couponData?.code + " is existed");
+                            }
                         }
+                        else {
+                            const data = await couponApi.editCouponOrder(orther, couponData?.id as string)
+                            if (data?.success) {
+                                stopLoading()
+                                toast.success(data?.message)
+                                handleRedirectCoupons()
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (couponData?.unitReward === "PERCENTAGE") {
+                        toast.error("Please enter a discount value less than 100%!")
+                    }
+                    else {
+                        toast.error("Please enter a valid price!")
                     }
                 }
             }
@@ -97,7 +108,7 @@ function CouponAmountOffOder() {
         }
         catch (error: any) {
             stopLoading()
-            toastError(error)
+            toastError(error, "top-right")
         }
     }
 

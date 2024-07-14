@@ -14,6 +14,7 @@ import {
 } from "@material-tailwind/react";
 import useLoading from "@/hooks/useLoading";
 import { toast } from "react-toastify";
+import { toastError } from "@/utils/helper";
 
 interface IResponseUser {
     timestamp: string;
@@ -92,7 +93,7 @@ export default function Users() {
         }
         catch (err: any) {
             stopLoading()
-            toast.error(err?.response?.data?.error?.subErrorMessage)
+            toastError(err, "top-right")
         }
     }
 

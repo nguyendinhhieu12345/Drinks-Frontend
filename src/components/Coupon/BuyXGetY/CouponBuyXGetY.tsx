@@ -9,7 +9,7 @@ import useLoading from "@/hooks/useLoading";
 import { Spinner } from "@material-tailwind/react";
 import ProductSelector from "@/components/Coupon/AmountOffProduct/ProductSelector";
 import GiftSelector from "./GiftSelector";
-import { getToday } from "@/utils/helper";
+import { getToday, toastError } from "@/utils/helper";
 
 function CouponBuyXGetY() {
     const [couponData, setCouponData] = useState<ICoupon>({
@@ -100,18 +100,7 @@ function CouponBuyXGetY() {
         }
         catch (error: any) {
             stopLoading()
-            if (error?.response?.data?.error?.errorCode === 13) {
-                if (error?.response?.data?.devResponse?.details) {
-                    error?.response?.data?.devResponse?.details?.map((err: any) => (
-                        toast.error(err?.field + " " + err?.validate)
-                    ))
-                } else {
-                    toast.error(error?.response?.data?.devResponse?.message)
-                }
-            }
-            else {
-                toast.error(error?.response?.data?.error?.errorMessage)
-            }
+            toastError(error, "top-right")
         }
     }
 
