@@ -13,9 +13,18 @@ export const addProduct = async (formData: FormData, type: string) => {
 
 export const addFileProduct = async (formData: FormData, type: string) => {
     try {
-        const res = await httpRequest.post(`/product/import?product_type=${type}&force=true`, formData, {
+        const res = await httpRequest.post(`/product/import?product_type=${type}&force=false`, formData, {
             "Content-Type": "multipart/form-data",
         });
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const downloadFileProduct = async (type: string) => {
+    try {
+        const res = await httpRequest.get(`/product/download/import-file?product_type=${type}`);
         return res;
     } catch (error) {
         return Promise.reject(error);

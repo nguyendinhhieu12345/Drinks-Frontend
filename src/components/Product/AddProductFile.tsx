@@ -45,21 +45,21 @@ function AddProductFile(props: IAddProductFile) {
                             if (!parsedData[i]["Product name"]) {
                                 parsedData[i]["Product name"] = "";
                             }
-                            if (!parsedData[i]["Category code"]) {
-                                parsedData[i]["Category code"] = "";
+                            if (!parsedData[i]["Category"]) {
+                                parsedData[i]["Category"] = "";
                             }
                             if (!parsedData[i]["Status"]) {
                                 parsedData[i]["Status"] = "";
                             }
-                            if (!parsedData[i]["description"]) {
-                                parsedData[i]["description"] = "";
+                            if (!parsedData[i]["Description"]) {
+                                parsedData[i]["Description"] = "";
                             }
                             parsedData[i] = {
                                 "Product name": parsedData[i]["Product name"],
-                                "Category code": parsedData[i]["Category code"],
+                                "Category": parsedData[i]["Category"],
                                 "Status": parsedData[i]["Status"],
-                                "description": parsedData[i]["description"],
-                                "image": "",
+                                "Description": parsedData[i]["Description"],
+                                "Image": "",
                                 ...parsedData[i]
                             }
                         }
