@@ -12,7 +12,7 @@ import DetailStatusLine from "@/components/OrderDetail/DetailStatusLine";
 import OrderProductDetail from "@/components/OrderDetail/OrderProductDetail";
 import OrderPayment from "@/components/OrderDetail/OrderPayment";
 import DialogReviewProduct from "@/components/OrderDetail/DialogReviewProduct";
-import { messageToast } from "@/utils/helper";
+import { messageToast, toastError } from "@/utils/helper";
 
 interface ItemDetail {
     quantity: number;
@@ -157,7 +157,7 @@ function OrderDetail() {
                 catch (e: unknown) {
                     if (e instanceof AxiosError && e.response) {
                         stopLoading()
-                        setError(e?.response?.data?.error?.errorMessage)
+                        toastError(e, "top-right")
                     }
                 }
             }
@@ -238,10 +238,10 @@ function OrderDetail() {
         }
     }
 
-    const handleRedirectOrderRefund = (orderId: string) => {
-        // nav(configRouter?.requireRefundOrder.slice(0, -3) + orderId)
-        console.log(orderId)
-    }
+    // const handleRedirectOrderRefund = (orderId: string) => {
+    //     // nav(configRouter?.requireRefundOrder.slice(0, -3) + orderId)
+    //     console.log(orderId)
+    // }
 
     useEffect(() => {
         id && getOrderDetails()
@@ -275,7 +275,7 @@ function OrderDetail() {
 
                 {/* Order payment */}
                 <OrderPayment orderDetail={orderDetail} />
-                {
+                {/* {
                     (orderDetail?.data?.refundStatus !== "NOT_REFUND" && statusOrderLine?.message && statusOrderLine?.data?.filter(prev => prev?.orderStatus === "SUCCEED")?.length > 0) &&
                     <div className="mt-3 flex justify-end">
                         <button
@@ -285,7 +285,7 @@ function OrderDetail() {
                             {orderDetail?.data?.refundStatus === "CAN_REFUND" ? "Require refund" : "See Require Refund"}
                         </button>
                     </div>
-                }
+                } */}
             </div>
 
             {/* review product in order */}

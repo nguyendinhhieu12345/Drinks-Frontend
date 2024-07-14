@@ -1,4 +1,4 @@
-import { toast } from "react-toastify";
+import { toast, ToastPosition } from "react-toastify";
 
 export const formatVND = (value: number): string => {
     return value.toLocaleString("vi-VN", {
@@ -141,25 +141,35 @@ export const messageToast = {
     fillInput: "Please fill in all the fields completely and in the correct format!"
 }
 
-export const toastError = (error: any) => {
-    if (error?.response?.data?.error?.errorCode === 13) {
-        if (error?.response?.data?.error?.subErrorMessage) {
-            toast.error(error?.response?.data?.error?.subErrorMessage)
-        }
-        if (error?.response?.data?.devResponse?.details) {
-            error?.response?.data?.devResponse?.details?.map((err: any) => (
-                toast.error(err?.field + " " + err?.validate)
-            ))
-        } else {
-            toast.error(error?.response?.data?.devResponse?.message)
-        }
+export const toastError = (error: any, position: ToastPosition) => {
+    // if (error?.response?.data?.error?.errorCode === 13) {
+    //     if (error?.response?.data?.error?.subErrorMessage) {
+    //         toast.error(error?.response?.data?.error?.subErrorMessage)
+    //     }
+    //     if (error?.response?.data?.devResponse?.details) {
+    //         error?.response?.data?.devResponse?.details?.map((err: any) => (
+    //             toast.error(err?.field + " " + err?.validate)
+    //         ))
+    //     } else {
+    //         toast.error(error?.response?.data?.devResponse?.message)
+    //     }
+    // }
+    // else {
+    //     if (error?.response?.data?.error?.subErrorMessage) {
+    //         toast.error(error?.response?.data?.error?.subErrorMessage)
+    //     }
+    //     else {
+    //         toast.error(error?.response?.data?.error?.errorMessage)
+    //     }
+    // }
+    if (error?.response?.data?.error?.subErrorMessage) {
+        toast.error(error?.response?.data?.error?.subErrorMessage, {
+            position: position
+        })
     }
     else {
-        if (error?.response?.data?.error?.subErrorMessage) {
-            toast.error(error?.response?.data?.error?.subErrorMessage)
-        }
-        else {
-            toast.error(error?.response?.data?.error?.errorMessage)
-        }
+        toast.error("Server Error. Please try again!", {
+            position: position
+        })
     }
 }

@@ -6,7 +6,7 @@ import * as productApi from "@/api/adminApi/productApi/productApi";
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import { ICategory, IProduct } from "@/types/type";
 import { toast } from "react-toastify";
-import { checkTypeImage, formatVND, imageUrlToFile } from "@/utils/helper";
+import { checkTypeImage, formatVND, imageUrlToFile, toastError } from "@/utils/helper";
 import useLoading from "@/hooks/useLoading";
 import { Radio } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
@@ -256,7 +256,7 @@ export default function AddProduct() {
                 }
             } catch (err: any) {
                 stopLoading();
-                toast.error(err?.response?.data?.error?.errorMessage);
+                toastError(err, "top-right")
             }
         }
         else {
@@ -305,7 +305,7 @@ export default function AddProduct() {
                         }
                     } catch (err: any) {
                         stopLoading();
-                        toast.error(err?.response?.data?.devResponse?.message);
+                        toastError(err, "top-right")
                     }
                 } else {
                     try {
@@ -342,7 +342,7 @@ export default function AddProduct() {
                         }
                     } catch (err: any) {
                         stopLoading();
-                        toast.error(err?.response?.data?.devResponse?.message);
+                        toastError(err, "top-right")
                     }
                 }
             } else {

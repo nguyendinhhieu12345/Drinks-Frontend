@@ -7,7 +7,7 @@ import * as productApi from "@/api/adminApi/productApi/productApi";
 import TableConfirmDelete from "@/components/TableAdmin/TableConfirmDelete";
 import TableAdmin from "@/components/TableAdmin/TableAdmin";
 import { ICategory, IProduct } from "@/types/type";
-import { formatVND } from "@/utils/helper";
+import { formatVND, toastError } from "@/utils/helper";
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -117,7 +117,7 @@ export default function Products() {
                 getAllProduct("", 1, "", "");
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.error?.errorMessage);
+            toastError(err, "top-right")
         }
     };
 
@@ -131,7 +131,7 @@ export default function Products() {
                 <h1 className="mt-2 mb-4 text-lg font-bold text-gray-700 ">Products</h1>
 
                 {/* Add and delete */}
-                <AddAndDelete getAllProduct={getAllProduct} handleRedirectAddProduct={handleRedirectAddProduct} />
+                {!useCurrentUser?.data?.branchId && <AddAndDelete getAllProduct={getAllProduct} handleRedirectAddProduct={handleRedirectAddProduct} />}
 
                 {/* Filter */}
                 <FilterProduct

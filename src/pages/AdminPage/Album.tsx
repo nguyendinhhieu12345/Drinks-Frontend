@@ -7,7 +7,7 @@ import {
     DialogBody,
     DialogFooter,
 } from "@material-tailwind/react";
-import { checkTypeImage } from "@/utils/helper";
+import { checkTypeImage, toastError } from "@/utils/helper";
 import { toast } from "react-toastify";
 import * as albumApi from "@/api/adminApi/albumApi/albumApi"
 import useLoading from "@/hooks/useLoading";
@@ -141,7 +141,7 @@ function Album() {
                 }
                 catch (err: any) {
                     stopLoading()
-                    toast.error(err?.response?.data?.error?.message)
+                    toastError(err, "top-right")
                 }
             }
             else {
@@ -175,7 +175,7 @@ function Album() {
         }
         catch (err: any) {
             stopLoading()
-            toast.error(err?.response?.data?.message)
+            toastError(err, "top-right")
         }
     }
 

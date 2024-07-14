@@ -8,6 +8,7 @@ import * as marketingApi from "@/api/adminApi/marketingApi/marketingApi"
 import TableAdmin from "@/components/TableAdmin/TableAdmin";
 import TableConfirmDelete from "@/components/TableAdmin/TableConfirmDelete";
 import { toast } from "react-toastify";
+import { toastError } from "@/utils/helper";
 
 interface IResponseBlog {
     timestamp: string;
@@ -52,7 +53,7 @@ export default function Marketing() {
                 getAllMarketing(1);
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.error?.errorMessage);
+            toastError(err, "top-right")
         }
     };
 

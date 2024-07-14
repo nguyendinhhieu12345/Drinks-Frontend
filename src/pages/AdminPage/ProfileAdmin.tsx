@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { User } from "@/type";
 import { toast } from "react-toastify";
 import useLoading from "@/hooks/useLoading";
-import { isPhone } from "@/utils/helper";
+import { isPhone, toastError } from "@/utils/helper";
 
 interface IProfileAdmin {
     username: string,
@@ -88,14 +88,7 @@ export default function ProfileAdmin() {
         }
         catch (error: any) {
             stopLoading()
-            if (error?.response?.data?.error?.errorCode === 13) {
-                error?.response?.data?.devResponse?.details?.map((err: any) => (
-                    toast.error(err?.field + " " + err?.validate)
-                ))
-            }
-            else {
-                toast.error(error?.response?.data?.error?.errorMessage)
-            }
+            toastError(error, "top-right")
         }
     }
 

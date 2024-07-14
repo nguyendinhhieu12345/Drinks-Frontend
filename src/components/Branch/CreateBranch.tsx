@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 import * as branchApi from "@/api/adminApi/branchApi/branchApi";
-import { checkTypeImage, imageUrlToFile } from "@/utils/helper";
+import { checkTypeImage, imageUrlToFile, toastError } from "@/utils/helper";
 
 interface IProvince {
     province_id: string;
@@ -335,14 +335,7 @@ function CreateBranch() {
             }
         } catch (err: any) {
             stopLoading();
-            if (err?.response?.data?.error?.errorCode === 13) {
-                err?.response?.data?.devResponse?.details?.map((err: any) => (
-                    toast.error(err?.field + " " + err?.validate)
-                ))
-            }
-            else {
-                toast.error(err?.response?.data?.error?.errorMessage)
-            }
+            toastError(err, "top-right")
         }
     };
 

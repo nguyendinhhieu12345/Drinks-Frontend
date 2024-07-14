@@ -14,6 +14,7 @@ import { Key } from "@phosphor-icons/react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
+import { toastError } from "@/utils/helper";
 
 interface IEmployeeResponse {
     timestamp: string;
@@ -95,7 +96,7 @@ export default function OurStaff() {
                 }
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.error?.errorMessage);
+            toastError(err, "top-right")
         }
     };
 
@@ -114,7 +115,7 @@ export default function OurStaff() {
                 toast.success(data?.message);
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.error?.errorMessage);
+            toastError(err, "top-right")
         }
     }
 

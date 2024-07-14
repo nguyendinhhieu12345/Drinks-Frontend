@@ -1,7 +1,7 @@
 import * as categoryApi from "@/api/adminApi/categoryApi/categoryApi";
 import useLoading from "@/hooks/useLoading";
 import { ICategory } from "@/types/type";
-import { checkTypeImage, imageUrlToFile } from "@/utils/helper";
+import { checkTypeImage, imageUrlToFile, toastError } from "@/utils/helper";
 import { Spinner, Switch } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -118,9 +118,7 @@ function CreateCategory(props: ICreateCategory) {
             }
         } catch (error: any) {
             stopLoading();
-            toast.error(error?.response?.data?.devResponse?.message, {
-                position: "bottom-left",
-            })
+            toastError(error, "bottom-left")
         }
     };
 

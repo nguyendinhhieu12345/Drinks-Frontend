@@ -9,6 +9,7 @@ import { IBranch } from "@/types/type";
 import * as branchApi from "@/api/adminApi/branchApi/branchApi";
 import { useNavigate } from "react-router-dom";
 import { configRouter } from "@/configs/router";
+import { toastError } from "@/utils/helper";
 
 export interface IResponseBranch {
     timestamp: string;
@@ -42,7 +43,7 @@ export default function Branchs() {
                 getAllBranch(1);
             }
         } catch (err: any) {
-            toast.error(err.message);
+            toastError(err, "top-right")
         }
     };
 
