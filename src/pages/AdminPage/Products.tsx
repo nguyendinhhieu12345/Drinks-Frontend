@@ -13,9 +13,10 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { User } from "@/type";
-import { Rating, Tooltip } from "@material-tailwind/react";
+import { Tooltip } from "@material-tailwind/react";
 import AddAndDelete from "@/components/Product/AddAndDelete";
 import FilterProduct from "@/components/Product/FilterProduct";
+import { Star } from "@phosphor-icons/react";
 
 interface IProductsResponse {
     timestamp: string;
@@ -205,7 +206,7 @@ export default function Products() {
                                     <td className="px-4 py-2">
                                         <Tooltip content="Click see all reviews">
                                             <button onClick={() => handleGetAllReviews(prod?.id)} className="text-sm font-semibold">
-                                                <Rating placeholder="" value={prod?.ratingSummary?.star} readonly ratedColor="amber" className="w-2 h-2 my-1" />
+                                                <p className="hidden sm:flex sm:items-center sm:text-base">{prod?.ratingSummary?.quantity} reviews| {prod?.ratingSummary?.star.toFixed(1)} <Star size={18} color="#FACC15" weight="fill" /></p>
                                             </button>
                                         </Tooltip>
                                     </td>

@@ -91,7 +91,7 @@ function Reviews() {
                                         className="border-2 border-gray-900/10 bg-blue-100"
                                     />
                                     <div className="space-x-2">
-                                        <p className="w-5">{statistiProduct?.data?.reviewCountTotal === 0 ? 0 : (total.count / statistiProduct?.data?.reviewCountTotal) * 100}%</p>
+                                        <p className="w-5">{statistiProduct?.data?.reviewCountTotal === 0 ? 0 : ((total.count / statistiProduct?.data?.reviewCountTotal) * 100).toFixed(1)}%</p>
                                     </div>
                                 </div>
                             ))
